@@ -1,4 +1,4 @@
-1000 rem aritm v0.3.1 for c64 basic 2.0 is foss.
+1000 rem aritm v0.3.2 for c64 basic 2.0 is foss.
 1020 rem (c) 1992-2018 by mikael o. bonnier, lund, sweden.
 1030 rem e-mail: <mikael.bonnier@gmail.com>.
 1040 rem absolutely no warranty.
@@ -111,6 +111,7 @@
 1965 let j%=mod%
 1970 print mid$(str$(j%),2);
 1980 print " = ";:input#1,a$:a%=val(a$)
+1985 print
 1990 if -1=a% then goto 1120:rem c 
 2000 if (1=c%)+(2=c%) then let r%=i%+j%:goto 2040:rem endif
 2010 if (3=c%)+(4=c%) then let r%=i%-j%:goto 2040:rem endif
@@ -118,7 +119,7 @@
 2030 if 6=c% then let r%=int(i%/j%)
 2040 rem lbl endif
 2050 if r%<>a% then goto 2140:rem wrong
-2060 print:print "right! ";
+2060 print "right! ";
 2070 x=t:y=100:gosub 1113
 2075 if 0>=mod% then goto 2100:rem endif
 2080 let l%=l%-1
@@ -128,7 +129,7 @@
 2120 if 0<l% then let d=500:gosub 3402:rem delay
 2130 goto 2250:rem endif 2
 2140 rem lbl wrong
-2150 print:print "wrong.";
+2150 print "wrong.";
 2160 print str$(i%);
 2170 gosub 3280:rem sign
 2180 print mid$(str$(j%),2);" is";str$(r%);"."
@@ -196,6 +197,7 @@
 2770 print str$(n%)
 2780 rem lbl input
 2790 print "toggle item 1-6, or choose 0 or -1: ";:input#1,a$:a%=val(a$)
+2795 print:rem c64 input# doesn't linefeed
 2800 if (-1>a%)+(6<a%)+(0=a%)*(0=n%) then goto 2780:rem input
 2810 if 0=a% then goto 1180:rem s
 2820 if -1=a% then goto 1120:rem c
@@ -232,6 +234,7 @@
 3120 rem lbl input
 3130 print "choose 1-";mid$(str$(4-(l%>0)),2);": ";
 3140 input#1,a$:s%=val(a$)
+3145 print
 3150 if (1>s%)+(4-(l%>0)<s%) then goto 3120:rem input
 3160 let s%=s%-(l%<=0)
 3170 rem on s goto k,e,h,a,q
