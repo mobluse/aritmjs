@@ -112,7 +112,7 @@
 1970 print mid$(str$(j%),2);
 1980 print " = ";:input#1,a$:a%=val(a$)
 1985 print
-1990 if -1=a% then goto 1120:rem c 
+1990 if -1=a% or ".1"=a$ then goto 1120:rem c
 2000 if (1=c%)+(2=c%) then let r%=i%+j%:goto 2040:rem endif
 2010 if (3=c%)+(4=c%) then let r%=i%-j%:goto 2040:rem endif
 2020 if 5=c% then let r%=i%*j%:goto 2040:rem endif
