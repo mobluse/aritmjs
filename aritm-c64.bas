@@ -200,7 +200,7 @@
 2795 print:rem c64 input# doesn't linefeed
 2800 if (-1>a%)+(6<a%)+(0=a%)*(0=n%) then goto 2780:rem input
 2810 if 0=a% then goto 1180:rem s
-2820 if -1=a% then goto 1120:rem c
+2820 if -1=a% or ".1"=a$ then goto 1120:rem c
 2830 gosub 3350:rem 10^a%
 2840 x=m:y=r:gosub 1114:x=div:y=10:gosub 1113
 2845 if 0=mod% then goto 2870:rem else
