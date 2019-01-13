@@ -278,7 +278,7 @@
 3540 rem sub about
 3550 gosub 3410:rem cls
 3560 print "about"
-3570 print "aritm 0.3 (c) 1992-2018 by" 
+3570 print "aritm 0.3.2 (c) 1992-2019 by" 
 3575 print "mikael o. bonnier, lund, sweden."
 3580 print "absolutely no warranty."
 3585 print "foss, see license gplv3+."
