@@ -48,7 +48,7 @@
 1400 next i
 1410 rem lbl sub1
 1420 x=m:y=1000:gosub 1114:x=div:y=10:gosub 1113
-1420 if 0=mod% then goto 1490:rem sub2
+1425 if 0=mod% then goto 1490:rem sub2
 1430 for i=0 to 9
 1440 for j=i to 9+i
 1450 let a(u%)=300000000+j*100000+i*1000+1
