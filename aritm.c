@@ -1,4 +1,4 @@
-/*** A_r_i_t_m  -  trÑnar dig i enkel huvudrÑkning
+/*** A_r_i_t_m  -  tr√§nar dig i enkel huvudr√§kning
  *** Copyright (C) 1992-93  Mikael Bonnier, Lund, Sweden
  *** Prerequisite: ANSI.SYS or other equivalent ansidriver loaded.
  *** Compile: bcc -ms aritm.c
@@ -29,8 +29,8 @@
 
 #define toupperx(ch) { 			   \
 					(ch) = toupper(ch);  \
-					if((ch) == 'Ü') 	   \
-						(ch) = 'è'; 		   \
+					if((ch) == '√•') 	   \
+						(ch) = '√Ö'; 		   \
 				} /*** toupperx(ch) ***/
 
 void genadd(char mod);
@@ -86,14 +86,14 @@ void main(int argc, char *argv[])
 	k = 0;
 	reqd = 1;
 	tot = 0;
-	printf("A_r_i_t_m  -  trÑnar dig i enkel huvudrÑkning"
+	printf("A_r_i_t_m  -  tr√§nar dig i enkel huvudr√§kning"
 			 "\nCopyright (C) 1992-93  Mikael Bonnier, Lund, Sweden");
 	ioregs.h.ah = 0x37; 		// DOS SWITCHAR subfunction of INT 21h
 	ioregs.h.al = 0x00; 		// Get current SWITCHAR
 	intdos(&ioregs, &ioregs);
 	switchar = ioregs.h.dl;	// return in register DL
 	if(argc<2 || argc>5) {
-		printf("\n\nFel antal omkopplare. Mellan en och fyra Ñr pÜbjudet.");
+		printf("\n\nFel antal omkopplare. Mellan en och fyra √§r p√•bjudet.");
 		instructions(1);
 	}
 	strcpy(wrongfile, "prn");
@@ -130,14 +130,14 @@ void main(int argc, char *argv[])
 /*	for(i=0; i<1000; ++i)
 		printf("\n%3d=\"%s\"", i, itoword(i));
 */
-	printf("\n\n%d frÜgor.", k);
+	printf("\n\n%d fr√•gor.", k);
 	ticks1 = clock();
 	do {
 		shuffle();
 		ask();
 	} while(pack());
 	ticks2 = clock();
-	printf("\n\nBra!!!   Du klarade %.0f frÜgor/minut.   \2 \1 \2 \1 \2"
+	printf("\n\nBra!!!   Du klarade %.0f fr√•gor/minut.   \2 \1 \2 \1 \2"
 			 , (CLK_TCK*tot*60)/(ticks2-ticks1) );
 } /*** main() ***/
 
@@ -241,7 +241,7 @@ ierr:
 			anslen = ultragets(ansbuf, 5, "0123456789");
 			if( ansbuf[0] == '\0' ) {
 				bell(ATTNFQ);
-				printf("\r\x1B[%dCFîrsîk igen.", COL);
+				printf("\r\x1B[%dCF√∂rs√∂k igen.", COL);
 							// Requires ANSI terminal, COL right.
 				goto ierr;
 			}
@@ -252,12 +252,12 @@ ierr:
 		// Requires ANSI terminal, strlen(qbuf)+length_of_answer right.
 		if(ans == quest[j].ans) {
 			++quest[j].correct;
-			printf(" RÑtt!");
+			printf(" R√§tt!");
 		}
 		else {
 			--quest[j].correct;
 			bell(ATTNFQ);
-			printf(" Fel.%20c\r\x1B[%dC%s\b\b Ñr %d.", ' ', COL, qbuf,
+			printf(" Fel.%20c\r\x1B[%dC%s\b\b √§r %d.", ' ', COL, qbuf,
 				quest[j].ans);
 			break; // Stop asking if wrong answer, break for(i=0...).
 		}
@@ -296,7 +296,7 @@ void instructions(int exitstatus) // uses global variable progpath.
 		exit(OTHERERR);
 	}
 	if( NULL == (in = fopen(completename, "rt")) ) {
-		fprintf(stderr, "\n\naritm: Filen '%s' kan inte îppnas.", completename);
+		fprintf(stderr, "\n\naritm: Filen '%s' kan inte √∂ppnas.", completename);
 		exit(OTHERERR);
 	}
 	fseek(in, 0L, SEEK_SET);
@@ -314,15 +314,15 @@ void instructions(int exitstatus) // uses global variable progpath.
 	} /*** if((inst_str...)!=NULL) ***/
 	fclose(in);
 	if(inst_str == NULL) {
-		fprintf(stderr, "\n\naritm: Slut pÜ minnet.");
+		fprintf(stderr, "\n\naritm: Slut p√• minnet.");
 		exit(OTHERERR);
 	}
 	inst_str[n] = '\0';
 	printf(inst_str, switchar, DIVSIGN, /**DIVSIGN, DECSIGN,**/
 				 MULSIGN/**, MULSIGN**/);
 // Features to be inqluded:
-//						  "\n\t\t\t\t1: ﬁ_X%cY_›, 0ÛXÛ89000, 0%c001ÛYÛ9000"
-//							"\n\t\t\t\t1: X%cY, 0ÛXÛ9000, 0ÛYÛ9000"
+//						  "\n\t\t\t\t1: ‚ñê_X%cY_‚ñå, 0‚â§X‚â§89000, 0%c001‚â§Y‚â§9000"
+//							"\n\t\t\t\t1: X%cY, 0‚â§X‚â§9000, 0‚â§Y‚â§9000"
 	free(inst_str);
 	exit(exitstatus);
 } /*** instructions() ***/
@@ -366,13 +366,13 @@ int ultragets(char *strbuf, int maxchars, const char *allwd)
 char *itoword(int number)  // number<1000
 {
 	static char literal[21];
-	static char *unitword[] = {"noll", "ett", "tvÜ", "tre", "fyra", "fem",
-														 "sex", "sju", "Ütta", "nio"};
+	static char *unitword[] = {"noll", "ett", "tv√•", "tre", "fyra", "fem",
+														 "sex", "sju", "√•tta", "nio"};
 	// Vardagliga ord.
 	static char *teenword[] = {"tio", "elva", "tolv", "tretton", "fjorton",
 														"femton", "sexton", "sjutton", "arton", "nitton"};
-	static char *tensword[] = {"noll", "tio", "tjugo", "tretti", "fîrti",
-														"femti", "sexti", "sjutti", "Ütti", "nitti"};
+	static char *tensword[] = {"noll", "tio", "tjugo", "tretti", "f√∂rti",
+														"femti", "sexti", "sjutti", "√•tti", "nitti"};
 	char decstr[4];
 	int n, lenleft;
 
@@ -434,11 +434,11 @@ void expndquest(char *qbuf, int indx)
 		case 'f':			if(litr) {
 										strcpy(tmpbuf, itoword(quest[indx].op2));
 										toupperx(tmpbuf[0]);
-										sprintf(qbuf, "%s frÜn %s? ", tmpbuf,
+										sprintf(qbuf, "%s fr√•n %s? ", tmpbuf,
 														itoword(quest[indx].op1));
 									}
 									else
-										sprintf(qbuf, "%d frÜn %d= ", quest[indx].op2,
+										sprintf(qbuf, "%d fr√•n %d= ", quest[indx].op2,
 														quest[indx].op1);
 									break;
 		default:      if(litr) {
@@ -447,7 +447,7 @@ void expndquest(char *qbuf, int indx)
 																		break;
 											case '-': 		opertn = "minus";
 																		break;
-											case MULSIGN: opertn = "gÜnger";
+											case MULSIGN: opertn = "g√•nger";
 																		break;
 										}
 										strcpy(tmpbuf, itoword(quest[indx].op1));
@@ -475,16 +475,16 @@ void prequit(void)
 			++wrong;
 	if(wrong == 0)
 		goto end;
-	printf("\n\nVill du skriva ut de %s frÜgor som du har svarat fel pÜ\n"
-				 "fler gÜnger Ñn du svarat rÑtt? [nj] ", itoword(wrong));
+	printf("\n\nVill du skriva ut de %s fr√•gor som du har svarat fel p√•\n"
+				 "fler g√•nger √§n du svarat r√§tt? [nj] ", itoword(wrong));
 	ans = getch();
 	printf("%s", (ans = toupper(ans)) == 'J' ? "ja" : "nej");
 	if( ans == 'J' ) {
 		if( NULL == (out = fopen(wrongfile, "at")) ) {
-			fprintf(stderr, "\n\naritm: Filen '%s' gÜr inte att îppna.", wrongfile);
+			fprintf(stderr, "\n\naritm: Filen '%s' g√•r inte att √∂ppna.", wrongfile);
 			exit(OTHERERR);
 		}
-		fprintf(out, "\n\nA_r_i_t_m  -  Att îva mer pÜ:\n\n");
+		fprintf(out, "\n\nA_r_i_t_m  -  Att √∂va mer p√•:\n\n");
 		for(i=0, n=1; i<k; ++i) {
 			if(quest[i].correct < 0) {
 				expndquest(qbuf, i);
@@ -496,7 +496,7 @@ void prequit(void)
 		fclose(out);
 	}
 end:
-	printf("\n\nGîr om detta nÜgon annan gÜng.");
+	printf("\n\nG√∂r om detta n√•gon annan g√•ng.");
 	exit(0);
 } /*** prequit() ***/
 
