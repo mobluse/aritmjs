@@ -98,11 +98,11 @@
 1860 let k%=1
 1870 rem lbl k
 1880 gosub 3410:rem cls
-1890 print mid$(str$(l%),2);" problems left. -1 esc"
+1890 print mid$(str$(l%),2);" problems left.":print "-1 esc"
 1900 let t=a(k%)
 1910 x=t:y=100000000:gosub 1114
 1915 let c%=div
-1920 if 6=c% then print "integer part of ";
+1920 if 6=c% then print "int part of ";
 1930 x=t:y=100000:gosub 1114:x=div:y=1000:gosub 1113
 1935 let i%=mod%
 1940 print mid$(str$(i%),2);
