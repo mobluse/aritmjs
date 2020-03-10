@@ -196,7 +196,7 @@
 2760 rem lbl after sub
 2770 print str$(n%)
 2780 rem lbl input
-2790 print "toggle item 1-6, or ":print"choose 0 or -1: ";input#1,a$:a%=val a$
+2790 print "toggle item 1-6, or ":print"choose 0 or -1: ";:input#1,a$:a%=val(a$)
 2795 print:rem c64 input# doesn't linefeed
 2800 if (-1>a%)+(6<a%)+(0=a%)*(0=n%) then goto 2780:rem input
 2810 if 0=a% then goto 1180:rem s
