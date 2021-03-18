@@ -5,7 +5,7 @@ Convert BASIC to JavaScript:
 * https://paulsperambulations.wordpress.com/2017/03/04/converting-basic-to-javascript/
 * https://www.codeproject.com/Articles/25069/JSBasic-A-BASIC-to-JavaScript-Compiler
 
-How to produce the C64 d64 diskette image in Windows 10 using VICE 2.4 or 3.5:
+How to produce the C64 d64 diskette image in Windows 10 using WinVICE/VICE 2.4 - 3.5:
 
     petcat -w2 -o aritm.prg -- aritm-c64.bas
     c1541 -format aritm03_m6,00 d64 aritm03.d64 -write aritm.prg aritm
