@@ -17,7 +17,7 @@ How to produce the VIC20 d64 diskette image in Windows 10:
     
 How to make the VIC-20 bas-file from prg-file:
 
-    WinVICE-2.4-x64\c1541 -attach aritm03_mvb1.d64 -extract
+    WinVICE-2.4-x64\c1541 -attach aritm03-vic20.d64 -extract
     move aritm-vic20 aritm-vic20.prg
     WinVICE-2.4-x64\petcat -nh -2 -- aritm-vic20.prg | sed 's/^ //' | mac2unix | unix2dos > aritm-vic20.bas
 
