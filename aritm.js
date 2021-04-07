@@ -9,6 +9,8 @@
 // <http://www.df.lth.se.orbin.se/~mikaelb/basic/>.
 // Documentation:
 // 876543210, 8:Type, 7-5:Op1, 4-3:Op2, 2:Res d, 1-0:#Todo.
+// Install js24 in Debian or Raspberry Pi OS:
+// sudo apt install libmozjs-24-bin
 // Program:
 var r=0;
 var c=0;
@@ -126,6 +128,7 @@ else if (0 != fnmodulus(fndiv(m,1000000),10)) {
 --u;
 var l = u;
 // Lbl U
+U:
 print("Shuffling...")
 for (var i = u; i >= 2; --i) {
     var j=Math.floor(i*Math.random())+1;
@@ -135,6 +138,7 @@ for (var i = u; i >= 2; --i) {
 }
 var k=1;
 // Lbl K
+K:
 cls();
 print(l+" problems left. -1 Esc");
 var t=a[k];
@@ -185,7 +189,7 @@ else {
     putstr(i);
     sign();
     print(j+" is "+r+".");
-    if (99>fnmodulus(t, 100) {
+    if (99>fnmodulus(t, 100)) {
         ++l;
         a[k]=t+1;
     }
@@ -194,12 +198,13 @@ else {
     delay();
 }
 if (k <= u) {
-    goto K
+    goto K; // WAS: K
 }
+W:
 if (0 >= l) {
-    goto W
+    goto W; // WAS: W
 }
-}
+} // start()
 
 function setup() {
     for (;;) {
