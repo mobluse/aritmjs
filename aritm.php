@@ -17,14 +17,12 @@ function mod()
 {
     global $md, $x, $y;
     $md = floor(0.5 + ($x / $y - floor($x / $y)) * $y);
-
 }
 
 function idiv()
 {
     global $dv, $x, $y;
     $dv = floor(0.5 + $x / $y);
-
 }
 
 start:
@@ -339,9 +337,8 @@ function sub()
     $n = $n + 100 - 10 * (6 == $a);
     goto endif0;
     else0:
-print ' ';
+    print ' ';
     endif0:
-
 }
 
 input:
@@ -427,7 +424,6 @@ function menuitem()
     $a = $a + 1;
     echo $a;
     echo ' ';
-
 }
 
 function sign()
@@ -435,23 +431,19 @@ function sign()
     global $c;
     if (1 == $c || 2 == $c) {
         echo '+';
-
         return;
     }
     if (3 == $c || 4 == $c) {
         echo '-';
-
         return;
     }
     if (5 == $c) {
         echo '*';
-
         return;
     }
     if (6 == $c) {
         echo '/';
     }
-
 }
 
 function pow10()
@@ -469,7 +461,6 @@ function delay()
     global $d;
     $d = $d * 1000;
     usleep($d);
-
 }
 
 function cls()
@@ -479,7 +470,6 @@ function cls()
         echo "\n";
     } // $t
     echo "Aritm\n";
-
 }
 
 function help()
@@ -505,13 +495,11 @@ function about()
     echo "FOSS, see license GPLv3+.\n";
     $d = 5000;
     delay();
-
 }
 
 function sound()
 {
     fprintf(STDOUT, '%s', "\x07");
     usleep(100000);
-
 }
 ?>
