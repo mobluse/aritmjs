@@ -431,14 +431,17 @@ function sign()
     global $c;
     if (1 == $c || 2 == $c) {
         echo '+';
+
         return;
     }
     if (3 == $c || 4 == $c) {
         echo '-';
+
         return;
     }
     if (5 == $c) {
         echo '*';
+
         return;
     }
     if (6 == $c) {
@@ -453,7 +456,6 @@ function pow10()
     for ($i = 1; $i <= $a; $i++) {
         $r = $r * 10;
     } // $i
-
 }
 
 function delay()
@@ -481,7 +483,6 @@ function help()
     echo "More help on <http://aritm.orbin.se/>.\n";
     $d = 5000;
     delay();
-
 }
 
 function about()
