@@ -1,16 +1,16 @@
 #!/usr/bin/env php
 <?php
-# Aritm v0.3.3 for PHP 7.3 is FOSS.
-# (c) 1992-2021 by Mikael O. Bonnier, Lund, Sweden.
-# E-mail: <mikael.bonnier@gmail.com>.
-# Absolutely no warranty.
-# License GPLv3+, see
-# <http://www.gnu.org/licenses/gpl.html>.
-# More programs at
-# <http://www.df.lth.se.orbin.se/~mikaelb/basic/>. ~ is tilde.
-# Documentation:
-# 76543210, 7:type, 6-4:op1, 3-2:op2, 1-0:#todo.
-# Program:
+// Aritm v0.3.3 for PHP 7.3 is FOSS.
+// (c) 1992-2021 by Mikael O. Bonnier, Lund, Sweden.
+// E-mail: <mikael.bonnier@gmail.com>.
+// Absolutely no warranty.
+// License GPLv3+, see
+// <http://www.gnu.org/licenses/gpl.html>.
+// More programs at
+// <http://www.df.lth.se.orbin.se/~mikaelb/basic/>. ~ is tilde.
+// Documentation:
+// 76543210, 7:type, 6-4:op1, 3-2:op2, 1-0:#todo.
+// Program:
 goto start;
 
 function mod() {
@@ -48,7 +48,7 @@ cls();
 print "Generating\n";
 print "Problems...\n";
 $u=1;
-# $aa=array_fill(1, n, 0.0);
+// $aa=array_fill(1, n, 0.0);
 
 add1:
 $x=$m;
@@ -61,8 +61,8 @@ for ($i=0; $i<=9; ++$i) {
 for ($j=0; $j<=9; ++$j) {
 $aa[$u]=10000000+$i*10000+$j*100+1;
 $u=$u+1;
-} # $j
-} # $i
+} // $j
+} // $i
 
 add2:
 $x=$m;
@@ -77,8 +77,8 @@ for ($j=0; $j<=9; ++$j) {
 $t=10*(floor(8*rnd())+1);
 $aa[$u]=20000000+($t+$i)*10000+$j*100+1;
 $u=$u+1;
-} # $j
-} # $i
+} // $j
+} // $i
 
 sub1:
 $x=$m;
@@ -92,8 +92,8 @@ for ($i=0; $i<=9; ++$i) {
 for ($j=$i; $j<=9+$i; ++$j) {
 $aa[$u]=30000000+$j*10000+$i*100+1;
 $u=$u+1;
-} # $j
-} # $i
+} // $j
+} // $i
 
 sub2:
 $x=$m;
@@ -108,8 +108,8 @@ for ($j=$i; $j<=9+$i; ++$j) {
 $t=10*(floor(9*rnd())+1);
 $aa[$u]=40000000+($t+$j)*10000+$i*100+1;
 $u=$u+1;
-} # $j
-} # $i
+} // $j
+} // $i
 
 mul:
 $x=$m;
@@ -123,8 +123,8 @@ for ($i=0; $i<=9; ++$i) {
 for ($j=0; $j<=9; ++$j) {
 $aa[$u]=50000000+$i*10000+$j*100+1;
 $u=$u+1;
-} # $j
-} # $i
+} // $j
+} // $i
 
 div:
 $x=$m;
@@ -139,8 +139,8 @@ for ($j=1; $j<=9; ++$j) {
 $t=$i*$j+floor($j*rnd());
 $aa[$u]=60000000+$t*10000+$j*100+1;
 $u=$u+1;
-} # $j
-} # $i
+} // $j
+} // $i
 endif1:
 $u=$u-1;
 $l=$u;
@@ -152,7 +152,7 @@ $j=floor($i*rnd())+1;
 $t=$aa[$i];
 $aa[$i]=$aa[$j];
 $aa[$j]=$t;
-} # $i
+} // $i
 $k=1;
 
 k:
@@ -185,7 +185,7 @@ print $j;
 print " = ";
 $ans = readline();
 $a=(float)$ans;
-# print $ans;
+// print $ans;
 if (-1==$a || ".1"==$ans) goto c;
 if (1==$c || 2==$c) { $r=$i+$j; goto endif2; }
 if (3==$c || 4==$c) { $r=$i-$j; goto endif2; }
@@ -241,7 +241,7 @@ if (0==$md) goto endif7;
 $aa[$n]=$t;
 $n=$n+1;
 endif7:
-} # $k
+} // $k
 $u=$n-1;
 goto u;
 
@@ -297,7 +297,7 @@ input:
 print "Toggle item 1-6, or choose 0 or -1: ";
 $ans = readline();
 $a=(float)$ans;
-# print $ans;
+// print $ans;
 if (-1>$a || 6<$a || 0==$a && 0==$n) goto input;
 if (0==$a) goto s;
 if (-1==$a || ".1"==$ans) goto c;
@@ -347,10 +347,10 @@ print 4+($l>0);
 print ": ";
 $ans = readline();
 $s=(int)$ans;
-# print $ans;
+// print $ans;
 if (1>$s || 4+($l>0)<$s) goto input2;
 $s=$s+($l<=0);
-# on s goto k,e,h,a,q
+// on s goto k,e,h,a,q
 switch($s) {
 case 1: goto k;
 case 2: goto e;
@@ -382,7 +382,7 @@ global $r, $i, $a;
 $r=1;
 for ($i=1; $i<=$a; ++$i) {
 $r=$r*10;
-} # $i
+} // $i
 return;
 }
 
@@ -397,7 +397,7 @@ function cls() {
 global $t;
 for ($t=1; $t<=40; ++$t) {
 print "\n";
-} # $t
+} // $t
 print "Aritm\n";
 return;
 }
