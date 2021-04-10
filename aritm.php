@@ -1,16 +1,16 @@
 #!/usr/bin/env php
 <?php
-# aritm v0.3.3 for php is foss.
-# (c) 1992-2021 by mikael o. bonnier, lund, sweden.
-# e-mail: <mikael.bonnier(a)gmail.com>.
-# absolutely no warranty.
-# license gplv3+, see
+# Aritm v0.3.3 for PHP 7.3 is FOSS.
+# (c) 1992-2021 by Mikael O. Bonnier, Lund, Sweden.
+# E-mail: <mikael.bonnier@gmail.com>.
+# Absolutely no warranty.
+# License GPLv3+, see
 # <http://www.gnu.org/licenses/gpl.html>.
-# more programs at
-# <http://www.df.lth.se.orbin.se/*mikaelb/basic/>. * is tilde.
-# documentation:
-# 76543210, 7:type, 6-4:op1, 3-2:op2, 1-0:/todo.
-# program:
+# More programs at
+# <http://www.df.lth.se.orbin.se/~mikaelb/basic/>. ~ is tilde.
+# Documentation:
+# 76543210, 7:type, 6-4:op1, 3-2:op2, 1-0:#todo.
+# Program:
 goto start;
 
 function mod() {
@@ -19,7 +19,7 @@ $md=floor(0.5+($x/$y-floor($x/$y))*$y);
 return;
 }
 
-function div() {
+function idiv() {
 global $dv, $x, $y;
 $dv=floor(0.5+$x/$y);
 return;
@@ -45,14 +45,15 @@ goto menu;
 
 s:
 cls();
-print "generating\n";
-print "problems...\n";
+print "Generating\n";
+print "Problems...\n";
 $u=1;
 # $aa=array_fill(1, n, 0.0);
+
 add1:
 $x=$m;
 $y=10;
-div();
+idiv();
 $x=$dv;
 mod();
 if (0==$md) goto add2;
@@ -66,7 +67,7 @@ $u=$u+1;
 add2:
 $x=$m;
 $y=100;
-div();
+idiv();
 $x=$dv;
 $y=10;
 mod();
@@ -82,7 +83,7 @@ $u=$u+1;
 sub1:
 $x=$m;
 $y=1000;
-div();
+idiv();
 $x=$dv;
 $y=10;
 mod();
@@ -97,7 +98,7 @@ $u=$u+1;
 sub2:
 $x=$m;
 $y=10000;
-div();
+idiv();
 $x=$dv;
 $y=10;
 mod();
@@ -113,11 +114,11 @@ $u=$u+1;
 mul:
 $x=$m;
 $y=100000;
-div();
+idiv();
 $x=$dv;
 $y=10;
 mod();
-if (0==$md) goto divi;
+if (0==$md) goto div;
 for ($i=0; $i<=9; ++$i) {
 for ($j=0; $j<=9; ++$j) {
 $aa[$u]=50000000+$i*10000+$j*100+1;
@@ -125,10 +126,10 @@ $u=$u+1;
 } # $j
 } # $i
 
-divi:
+div:
 $x=$m;
 $y=1000000;
-div();
+idiv();
 $x=$dv;
 $y=10;
 mod();
@@ -145,7 +146,7 @@ $u=$u-1;
 $l=$u;
 
 u:
-print "shuffling...\n";
+print "Shuffling...\n";
 for ($i=$u; $i>=2; --$i) {
 $j=floor($i*rnd())+1;
 $t=$aa[$i];
@@ -153,19 +154,20 @@ $aa[$i]=$aa[$j];
 $aa[$j]=$t;
 } # $i
 $k=1;
+
 k:
 cls();
 print $l;
-print " problems left. -1 esc\n";
+print " problems left. -1 Esc\n";
 $t=$aa[$k];
 $x=$t;
 $y=10000000;
-div();
+idiv();
 $c=$dv;
-if (6==$c) print "integer part of ";
+if (6==$c) print "Integer part of ";
 $x=$t;
 $y=10000;
-div();
+idiv();
 $x=$dv;
 $y=1000;
 mod();
@@ -174,7 +176,7 @@ print $i;
 sign();
 $x=$t;
 $y=100;
-div();
+idiv();
 $x=$dv;
 $y=100;
 mod();
@@ -185,13 +187,13 @@ $ans = readline();
 $a=(float)$ans;
 # print $ans;
 if (-1==$a or ".1"==$ans) goto c;
-if ((1==$c)+(2==$c)) { $r=$i+$j; goto endif4; }
-if ((3==$c)+(4==$c)) { $r=$i-$j; goto endif4; }
+if ((1==$c) or (2==$c)) { $r=$i+$j; goto endif4; }
+if ((3==$c) or (4==$c)) { $r=$i-$j; goto endif4; }
 if (5==$c) { $r=$i*$j; goto endif4; }
 if (6==$c) $r=floor($i/$j);
 endif4:
 if ($r!=$a) goto wrong;
-print "right.\n";
+print "Right!\n";
 $x=$t;
 $y=100;
 mod();
@@ -205,8 +207,9 @@ $d=500;
 delay();
 endif6:
 goto endif7;
+
 wrong:
-print "wrong. ";
+print "Wrong. ";
 print $i;
 sign();
 print $j;
@@ -227,7 +230,7 @@ delay();
 endif7:
 if ($k<=$u) goto k;
 if (0>=$l) goto w;
-print "checking...\n";
+print "Checking...\n";
 $n=1;
 for ($k=1; $k<=u; ++$k) {
 $t=$aa[$k];
@@ -241,29 +244,31 @@ endif9:
 } # $k
 $u=$n-1;
 goto u;
+
 w:
-print "good.   well done.\n";
+print "Good!!!  Well done!\n";
 $d=5000;
 delay();
 goto c;
+
 e:
 cls();
 $a=0;
 $n=0;
 $t=$m;
 sub();
-print "addition 1\n";
+print "Addition 1\n";
 sub();
-print "addition 2\n";
+print "Addition 2\n";
 sub();
-print "subtraction 1\n";
+print "Subtraction 1\n";
 sub();
-print "subtraction 2\n";
+print "Subtraction 2\n";
 sub();
-print "multiplication\n";
+print "Multiplication\n";
 sub();
-print "division | -1 esc\n";
-print "0 ok and go ";
+print "Division | -1 Esc\n";
+print "0 OK and go ";
 print "$n\n";
 goto input;
 
@@ -272,35 +277,34 @@ global $a, $x, $t, $y, $dv, $md, $n;
 $a=$a+1;
 $x=$t;
 $y=10;
-div();
+idiv();
 $t=$dv;
 print $a;
 $x=$t;
 $y=10;
 mod();
-if (0==$md) goto else2;
+if (0==$md) goto else3;
 print "*";
 $n=$n+100-10*(6==$a);
-goto endif10;
-else2:
+goto endif3;
+else3:
 print " ";
-endif10:
+endif3:
 return;
 }
 
 input:
-print "toggle item 1-6, or choose 0\n";
-print "or -1: ";
+print "Toggle item 1-6, or choose 0 or -1: ";
 $ans = readline();
 $a=(float)$ans;
 # print $ans;
-if ((-1>$a)+(6<$a)+(0==$a)*(0==$n)) goto input;
+if ((-1>$a) or (6<$a) or (0==$a) and (0==$n)) goto input;
 if (0==$a) goto s;
 if (-1==$a or ".1"==$ans) goto c;
 pow10();
 $x=$m;
 $y=$r;
-div();
+idiv();
 $x=$dv;
 $y=10;
 mod();
@@ -326,19 +330,19 @@ exit(0);
 
 contmenu:
 menuitem();
-print "continue\n";
+print "Continue\n";
 
 menu:
 menuitem();
-print "setup and go\n";
+print "Setup and go\n";
 menuitem();
-print "help\n";
+print "Help\n";
 menuitem();
-print "about\n";
+print "About\n";
 menuitem();
-print "exit\n";
+print "Exit\n";
 input2:
-print "choose 1-";
+print "Choose 1-";
 print 4+($l>0);
 print ": ";
 $ans = readline();
@@ -366,9 +370,9 @@ return;
 
 function sign() {
 global $c;
-if ((1==$c) or (2==$c)) print "+";
-if ((3==$c) or (4==$c)) print "-";
-if (5==$c) print "*";
+if ((1==$c) or (2==$c)) { print "+"; return; }
+if ((3==$c) or (4==$c)) { print "-"; return; }
+if (5==$c) { print "*"; return; }
 if (6==$c) print "/";
 return;
 }
@@ -394,16 +398,16 @@ global $t;
 for ($t=1; $t<=40; ++$t) {
 print "\n";
 } # $t
-print "aritm\n";
+print "Aritm\n";
 return;
 }
 
 function help() {
 global $d;
 cls();
-print "help\n";
-print "you can mix problems anyway you like.\n";
-print "more help on <http://aritm.orbin.se/>.\n";
+print "Help\n";
+print "You can mix problems anyway you like.\n";
+print "More help on <http://aritm.orbin.se/>.\n";
 $d=5000;
 delay();
 return;
@@ -412,11 +416,11 @@ return;
 function about() {
 global $d;
 cls();
-print "about\n";
-print "aritm 0.3 (c) 1992-2019 by\n";
-print "mikael o. bonnier, lund, sweden.\n";
-print "absolutely no warranty.\n";
-print "foss, see license gplv3+.\n";
+print "About\n";
+print "Aritm 0.3 (c) 1992-2019 by\n";
+print "Mikael O. Bonnier, Lund, Sweden.\n";
+print "Absolutely no warranty.\n";
+print "FOSS, see license GPLv3+.\n";
 $d=5000;
 delay();
 return;
