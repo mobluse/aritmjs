@@ -39,7 +39,7 @@ $aa=array_fill(1, 590, 0.0);
 c:
 cls();
 $a=0;
-if (($l>0) and $m) goto contmenu;
+if ($l>0 && $m) goto contmenu;
 if (0==$m) $m=10;
 goto menu;
 
@@ -133,7 +133,7 @@ idiv();
 $x=$dv;
 $y=10;
 mod();
-if (0==$md) goto endif3;
+if (0==$md) goto endif1;
 for ($i=0; $i<=9; ++$i) {
 for ($j=1; $j<=9; ++$j) {
 $t=$i*$j+floor($j*rnd());
@@ -141,7 +141,7 @@ $aa[$u]=60000000+$t*10000+$j*100+1;
 $u=$u+1;
 } # $j
 } # $i
-endif3:
+endif1:
 $u=$u-1;
 $l=$u;
 
@@ -186,27 +186,27 @@ print " = ";
 $ans = readline();
 $a=(float)$ans;
 # print $ans;
-if (-1==$a or ".1"==$ans) goto c;
-if ((1==$c) or (2==$c)) { $r=$i+$j; goto endif4; }
-if ((3==$c) or (4==$c)) { $r=$i-$j; goto endif4; }
-if (5==$c) { $r=$i*$j; goto endif4; }
+if (-1==$a || ".1"==$ans) goto c;
+if (1==$c || 2==$c) { $r=$i+$j; goto endif2; }
+if (3==$c || 4==$c) { $r=$i-$j; goto endif2; }
+if (5==$c) { $r=$i*$j; goto endif2; }
 if (6==$c) $r=floor($i/$j);
-endif4:
+endif2:
 if ($r!=$a) goto wrong;
 print "Right!\n";
 $x=$t;
 $y=100;
 mod();
-if (0>=$md) goto endif5;
+if (0>=$md) goto endif3;
 $l=$l-1;
 $aa[$k]=$t-1;
-endif5:
+endif3:
 $k=$k+1;
-if (!(0<$l)) goto endif6;
+if (!(0<$l)) goto endif4;
 $d=500;
 delay();
-endif6:
-goto endif7;
+endif4:
+goto endif5;
 
 wrong:
 print "Wrong. ";
@@ -219,28 +219,28 @@ print ".\n";
 $x=$t;
 $y=100;
 mod();
-if (99<=$md) goto endif8;
+if (99<=$md) goto endif6;
 $l=$l+1;
 $aa[$k]=$t+1;
-endif8:
+endif6:
 $k=$k+1;
 sound();
 $d=1000;
 delay();
-endif7:
+endif5:
 if ($k<=$u) goto k;
 if (0>=$l) goto w;
 print "Checking...\n";
 $n=1;
-for ($k=1; $k<=u; ++$k) {
+for ($k=1; $k<=$u; ++$k) {
 $t=$aa[$k];
 $x=$t;
 $y=100;
 mod();
-if (0==$md) goto endif9;
+if (0==$md) goto endif7;
 $aa[$n]=$t;
 $n=$n+1;
-endif9:
+endif7:
 } # $k
 $u=$n-1;
 goto u;
@@ -283,13 +283,13 @@ print $a;
 $x=$t;
 $y=10;
 mod();
-if (0==$md) goto else3;
+if (0==$md) goto else0;
 print "*";
 $n=$n+100-10*(6==$a);
-goto endif3;
-else3:
+goto endif0;
+else0:
 print " ";
-endif3:
+endif0:
 return;
 }
 
@@ -298,9 +298,9 @@ print "Toggle item 1-6, or choose 0 or -1: ";
 $ans = readline();
 $a=(float)$ans;
 # print $ans;
-if ((-1>$a) or (6<$a) or (0==$a) and (0==$n)) goto input;
+if (-1>$a || 6<$a || 0==$a && 0==$n) goto input;
 if (0==$a) goto s;
-if (-1==$a or ".1"==$ans) goto c;
+if (-1==$a || ".1"==$ans) goto c;
 pow10();
 $x=$m;
 $y=$r;
@@ -308,12 +308,12 @@ idiv();
 $x=$dv;
 $y=10;
 mod();
-if (0==$md) goto else3;
+if (0==$md) goto else1;
 $m=$m-$r;
-goto endif11;
-else3:
+goto endif8;
+else1:
 $m=$m+$r;
-endif11:
+endif8:
 goto e;
 
 h:
@@ -348,7 +348,7 @@ print ": ";
 $ans = readline();
 $s=(int)$ans;
 # print $ans;
-if ((1>$s) or (4+($l>0)<$s)) goto input2;
+if (1>$s || 4+($l>0)<$s) goto input2;
 $s=$s+($l<=0);
 # on s goto k,e,h,a,q
 switch($s) {
@@ -370,8 +370,8 @@ return;
 
 function sign() {
 global $c;
-if ((1==$c) or (2==$c)) { print "+"; return; }
-if ((3==$c) or (4==$c)) { print "-"; return; }
+if (1==$c || 2==$c) { print "+"; return; }
+if (3==$c || 4==$c) { print "-"; return; }
 if (5==$c) { print "*"; return; }
 if (6==$c) print "/";
 return;
