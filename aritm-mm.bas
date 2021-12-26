@@ -1,4 +1,4 @@
-1000 ' Aritm v0.3.3 for MM-BASIC 5.07.01 is FOSS.
+1000 ' Aritm v0.3.3 for MMBasic V5.07.01 is FOSS.
 1020 ' (C) 1992-2021 by Mikael O. Bonnier, Lund, Sweden.
 1030 ' E-mail: <mikael.bonnier@gmail.com>.
 1040 ' Absolutely no warranty.
@@ -265,7 +265,7 @@ End Function
 3540 ' Sub About
 3550 GoSub 3410:' ClS
 3560 Print "About"
-3570 Print "Aritm 0.3 (C) 1992-2013 by"
+3570 Print "Aritm 0.3 (C) 1992-2021 by"
 3575 Print "Mikael O. Bonnier, Lund, Sweden."
 3580 Print "Absolutely no warranty."
 3585 Print "FOSS, see license GPLv3+."
