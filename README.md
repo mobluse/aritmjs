@@ -1,5 +1,15 @@
 # aritmjs
-Aritm for JavaScript JS24 is FOSS.
+Aritm for various programming languages, e.g. dialects of BASIC, PHP, and JavaScript, is FOSS.
+
+Run online:
+* https://mobluse.github.io/jsbasic/
+* https://www.commanderx16.com/forum/index.php?/files/file/73-aritm/
+
+See demos on YouTube:
+* Transam Triton: https://youtu.be/DEfL17FnStc
+* C64/THEC64 MINI: https://youtu.be/65AOkL8Yz6E
+
+Aritm exists for many plattforms e.g. graphing calculators (TI and Casio), spread sheets, feature phones with Java, etc., see http://aritm.orbin.se. 
 
 Convert BASIC to JavaScript:
 * https://paulsperambulations.wordpress.com/2017/03/04/converting-basic-to-javascript/
