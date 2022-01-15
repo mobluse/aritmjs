@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
-// Aritm v0.3.3 for PHP 7.3 is FOSS.
-// (c) 1992-2021 by Mikael O. Bonnier, Lund, Sweden.
+// Aritm v0.3.3 for PHP 7.4.27 is FOSS.
+// (c) 1992-2022 by Mikael O. Bonnier, Lund, Sweden.
 // E-mail: <mikael.bonnier@gmail.com>.
 // Absolutely no warranty.
 // License GPLv3+, see
@@ -205,7 +205,7 @@ echo ' = ';
 $ans = readline();
 $a = (float) $ans;
 // print $ans;
-if (-1 == $a || '.1' == $ans) {
+if (-1 == $a || '.1' == $ans || ',1' == $ans || '01' == $ans) {
     goto c;
 }
 if (1 == $c || 2 == $c) {
@@ -352,7 +352,7 @@ if (-1 > $a || 6 < $a || 0 == $a && 0 == $n) {
 if (0 == $a) {
     goto s;
 }
-if (-1 == $a || '.1' == $ans) {
+if (-1 == $a || '.1' == $ans || ',1' == $ans || '01' == $ans) {
     goto c;
 }
 pow10();
@@ -490,7 +490,7 @@ function about()
     global $d;
     cls();
     echo "About\n";
-    echo "Aritm 0.3 (c) 1992-2019 by\n";
+    echo "Aritm 0.3 (c) 1992-2022 by\n";
     echo "Mikael O. Bonnier, Lund, Sweden.\n";
     echo "Absolutely no warranty.\n";
     echo "FOSS, see license GPLv3+.\n";
