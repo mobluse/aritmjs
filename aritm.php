@@ -11,6 +11,11 @@
 // Documentation:
 // 76543210, 7:type, 6-4:op1, 3-2:op2, 1-0:#todo.
 // Program:
+$md = 0.0;
+$dv = 0.0;
+$x = 0.0;
+$y = 0.0;
+
 goto start;
 
 function mod()
