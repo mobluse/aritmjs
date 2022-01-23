@@ -1,10 +1,11 @@
-1000 REM Aritm v0.3 for GW-BASIC 3.23 is FOSS.
+1000 GOTO 20
+1010 REM Aritm v0.3 for GW-BASIC 3.23 is FOSS.
 1020 REM (C) 1992-2013 by Mikael O. Bonnier, Lund, Sweden.
 1030 REM E-mail: <mikael.bonnier@gmail.com>.
 1040 REM Absolutely no warranty.
-1050 REM License GPLv3+, see 
+1050 REM License GPLv3+, see
 1060 REM <http://www.gnu.org/licenses/gpl.html>.
-1070 REM More programs at 
+1070 REM More programs at
 1080 REM <http://www.df.lth.se.orbin.se/~mikaelb/basic/>.
 1090 REM Documentation:
 1100 REM 876543210, 8:Type, 7-5:Op1, 4-3:Op2, 2:Res'd, 1-0:#Todo.
@@ -101,7 +102,7 @@
 1960 LET J=FNMODULUS%(FNDIV#(T#,1000#),100#)
 1970 PRINT USING "#";J;
 1980 INPUT " = ",A
-1990 IF -1=A THEN GOTO 1120:REM C 
+1990 IF -1=A THEN GOTO 1120:REM C
 2000 IF (1=C)+(2=C) THEN LET R=I+J:GOTO 2040:REM EndIf
 2010 IF (3=C)+(4=C) THEN LET R=I-J:GOTO 2040:REM EndIf
 2020 IF 5=C THEN LET R=I*J:GOTO 2040:REM EndIf
@@ -217,12 +218,12 @@
 3140 INPUT ": ",S
 3150 IF (1>S)+(4-(L>0)<S) THEN GOTO 3120:REM Input
 3160 LET S=S-(L<=0)
-3170 REM On S Goto K,E,H,A,Q 
+3170 REM On S Goto K,E,H,A,Q
 3180 IF 1=S THEN GOTO 1870:REM K
 3190 IF 2=S THEN GOTO 2430:REM E
 3200 IF 3=S THEN GOTO 2910:REM H
 3210 IF 4=S THEN GOTO 2940:REM A
-3220 IF 5=S THEN GOTO 2970:REM Q 
+3220 IF 5=S THEN GOTO 2970:REM Q
 3230 STOP
 3240 REM Sub MenuItem
 3250 LET A=A+1
@@ -262,7 +263,7 @@
 3540 REM Sub About
 3550 GOSUB 3410:REM ClS
 3560 PRINT "About"
-3570 PRINT "Aritm 0.3 (C) 1992-2013 by" 
+3570 PRINT "Aritm 0.3 (C) 1992-2013 by"
 3575 PRINT "Mikael O. Bonnier, Lund, Sweden."
 3580 PRINT "Absolutely no warranty."
 3585 PRINT "FOSS, see license GPLv3+."
