@@ -1,4 +1,5 @@
-1000 GOTO 20
+20 GOTO 1010
+1000 A=0:GOTO 20:REM Aritm
 1010 REM Aritm v0.3 for GW-BASIC 3.23 is FOSS.
 1020 REM (C) 1992-2013 by Mikael O. Bonnier, Lund, Sweden.
 1030 REM E-mail: <mikael.bonnier@gmail.com>.

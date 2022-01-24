@@ -210,7 +210,7 @@ echo ' = ';
 $ans = readline();
 $a = (float) $ans;
 // print $ans;
-if (-1 == $a || '.1' == $ans || ',1' == $ans || '01' == $ans) {
+if (-1 == $a || strcmp('.1', $ans) == 0 || strcmp(',1', $ans) == 0 || strcmp('01', $ans) == 0) {
     goto c;
 }
 if (1 == $c || 2 == $c) {
@@ -357,7 +357,7 @@ if (-1 > $a || 6 < $a || 0 == $a && 0 == $n) {
 if (0 == $a) {
     goto s;
 }
-if (-1 == $a || '.1' == $ans || ',1' == $ans || '01' == $ans) {
+if (-1 == $a || strcmp('.1', $ans) == 0 || strcmp(',1', $ans) == 0 || strcmp('01', $ans) == 0) {
     goto c;
 }
 pow10();
