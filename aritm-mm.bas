@@ -1,5 +1,5 @@
-1000 ' Aritm v0.3.4 for PicoMiteVGA MMBasic Version 5.07.03b4 is FOSS.
-1020 ' (C) 1992-2021 by Mikael O. Bonnier, Lund, Sweden.
+1000 ' Aritm v0.3.4 for MMB4L & PicoMite MMBasic Version 5.07.03 is FOSS.
+1020 ' (C) 1992-2022 by Mikael O. Bonnier, Lund, Sweden.
 1030 ' E-mail: <mikael.bonnier@gmail.com>.
 1040 ' Absolutely no warranty.
 1050 ' License GPLv3+, see
@@ -9,7 +9,7 @@
 1090 ' Documentation:
 1100 ' 876543210, 8:Type, 7-5:Op1, 4-3:Op2, 2:Res'd, 1-0:#Todo.
 1110 ' Program:
-1112 SetPin GP28,DOUT:' WS2812B RGB LED on GP28
+1112 If MM.DEVICE$="PicoMite" Then SetPin GP28,DOUT:' WS2812B RGB LED on GP28
 1113 Function FNMODULUS(X,Y) As INTEGER
 FNMODULUS=Cint(X Mod Y)
 End Function
@@ -113,9 +113,9 @@ End Function
 2040 ' Lbl EndIf
 2050 If Abs(R-A)>1E-6 Then GoTo 2140:' Wrong
 2060 Print "Right! ";
-2062 Bitbang WS2812 B,GP28,1,RGB(green)
+2062 If MM.DEVICE$="PicoMite" Then Bitbang WS2812 B,GP28,1,RGB(green)
 2065 Pause 100
-2068 Bitbang WS2812 B,GP28,1,RGB(black)
+2068 If MM.DEVICE$="PicoMite" Then Bitbang WS2812 B,GP28,1,RGB(black)
 2070 If 0>=FNMODULUS(TF,100) Then GoTo 2100:' EndIf
 2080 L=L-1
 2090 AF(K)=TF-1
@@ -263,7 +263,7 @@ End Function
 3540 ' Sub About
 3550 GoSub 3410:' ClS
 3560 Print "About"
-3570 Print "Aritm 0.3 (C) 1992-2021 by"
+3570 Print "Aritm 0.3 (C) 1992-2022 by"
 3575 Print "Mikael O. Bonnier, Lund, Sweden."
 3580 Print "Absolutely no warranty."
 3585 Print "FOSS, see license GPLv3+."
@@ -271,8 +271,8 @@ End Function
 3600 Return
 3610 ' Sub Sound
 3620 ' For Maker Pi Pico do on command line: Option Audio GP18,GP19
-3640 Bitbang WS2812 B,GP28,1,RGB(red)
+3640 If MM.DEVICE$="PicoMite" Then Bitbang WS2812 B,GP28,1,RGB(red)
 3665 Play tone 880,880,200
 3670 Pause 200
-3680 Bitbang WS2812 B,GP28,1,RGB(black)
+3680 If MM.DEVICE$="PicoMite" Then Bitbang WS2812 B,GP28,1,RGB(black)
 3690 Return

@@ -1,15 +1,29 @@
 #!/usr/bin/python3
 import pexpect
 import math
+
 #c='php aritm.php'
 #c='pcbasic aritm-gw.bas -n -i=stdio'
-c='../zce/zce -r0 -xc aritm-zx81.bas'
-#s=': ' # PHP/GW-BASIC
-s='> ' # ZX81
-#b,e=-6,-1 # PHP/GW-BASIC
-b,e=-9,-4 # ZX81
+#c='../mmb4l-2022.01.00-a3-armv6l/mmbasic aritm-mm.bas'
+c='picocom /dev/ttyACM0'
+#c='../zce/zce -r0 -xc aritm-zx81.bas'
+
+s=': ' # PHP/MM-&GW-BASIC
+#s='> ' # ZX81
+
+b,e=-6,-1 # PHP/MM-&GW-BASIC
+#b,e=-9,-4 # ZX81
+
 print(c)
+
+# PicoMite via picocom
 child=pexpect.spawn(c)
+child.expect('dy')
+child.sendline('')
+child.expect('> ')
+child.sendline('run')
+# End PicoMite
+
 n=5*100+90-1
 child.expect(s)
 print('L1')
@@ -36,7 +50,7 @@ child.expect('[=>] ')
 print('L4')
 for i in range(n):
     s=child.before[b:e]
-    s = s.replace(b'f',b' ') # PHP/GW-BASIC
+    s = s.replace(b'f',b' ') # PHP/MM-&GW-BASIC
     s = s.replace(b'F',b' ') # ZX81
     print(s)
     r=int(math.floor(eval(s)))
