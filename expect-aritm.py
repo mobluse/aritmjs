@@ -3,9 +3,9 @@ import pexpect
 import math
 
 #c='php aritm.php'
-#c='pcbasic aritm-gw.bas -n -i=stdio'
+c='pcbasic aritm-gw.bas -n -i=stdio'
 #c='../mmb4l-2022.01.00-a3-armv6l/mmbasic aritm-mm.bas'
-c='picocom /dev/ttyACM0'
+#c='picocom /dev/ttyACM0' # PicoMite MMBasic
 #c='../zce/zce -r0 -xc aritm-zx81.bas'
 
 s=': ' # PHP/MM-&GW-BASIC
@@ -15,13 +15,13 @@ b,e=-6,-1 # PHP/MM-&GW-BASIC
 #b,e=-9,-4 # ZX81
 
 print(c)
+child=pexpect.spawn(c)
 
 # PicoMite via picocom
-child=pexpect.spawn(c)
-child.expect('dy')
-child.sendline('')
-child.expect('> ')
-child.sendline('run')
+#child.expect('dy')
+#child.sendline('')
+#child.expect('> ')
+#child.sendline('run')
 # End PicoMite
 
 n=5*100+90-1
