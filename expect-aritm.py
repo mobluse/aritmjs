@@ -3,15 +3,17 @@ import pexpect
 import math
 
 #c='php aritm.php'
-c='pcbasic aritm-gw.bas -n -i=stdio'
+c='pcbasic aritm-bc3c2.bas -n -i=stdio'
 #c='../mmb4l-2022.01.00-a3-armv6l/mmbasic aritm-mm.bas'
 #c='picocom /dev/ttyACM0' # PicoMite MMBasic
 #c='../zce/zce -r0 -xc aritm-zx81.bas'
 
-s=': ' # PHP/MM-&GW-BASIC
+#s=': ' # PHP/MM-&GW-BASIC
+s='\? ' # BASICODE
 #s='> ' # ZX81
 
-b,e=-6,-1 # PHP/MM-&GW-BASIC
+#b,e=-6,-1 # PHP/MM-&GW-BASIC
+b,e=-11,-4 # BASICODE
 #b,e=-9,-4 # ZX81
 
 print(c)
@@ -46,17 +48,20 @@ child.sendline('6')
 child.expect(s)
 print('L3')
 child.sendline('0')
-child.expect('[=>] ')
+#child.expect('[=>] ')
+child.expect('\? ')
 print('L4')
 for i in range(n):
     s=child.before[b:e]
-    s = s.replace(b'f',b' ') # PHP/MM-&GW-BASIC
-    s = s.replace(b'F',b' ') # ZX81
+    s=s.replace(b'f',b' ') # PHP/MM-&GW-BASIC
+    s=s.replace(b'F',b' ') # ZX81
+    s=s.replace(b'\n',b' ')
     print(s)
     r=int(math.floor(eval(s)))
     print('%i: result %g'%(i,r))
     child.sendline(str(r))
-    child.expect('[=>] ')
+    #child.expect('[=>] ')
+    child.expect('\? ')
 print('L5')
 print(child.before)
 child.interact()
