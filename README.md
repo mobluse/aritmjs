@@ -2,6 +2,7 @@
 Aritm for various programming languages, e.g. dialects of BASIC, PHP, and JavaScript, is FOSS.
 
 Run online:
+* http://bc3c.orbin.se
 * https://mobluse.github.io/jsbasic/
 * https://www.commanderx16.com/forum/index.php?/files/file/73-aritm/
 
