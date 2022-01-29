@@ -3,7 +3,7 @@ import pexpect
 import math
 
 #c='php aritm.php'
-c='pcbasic aritm-bc3c2.bas -n -i=stdio'
+c='pcbasic aritm-bc3c-gw.bas -n -i=stdio'
 #c='../mmb4l-2022.01.00-a3-armv6l/mmbasic aritm-mm.bas'
 #c='picocom /dev/ttyACM0' # PicoMite MMBasic
 #c='../zce/zce -r0 -xc aritm-zx81.bas'
@@ -13,7 +13,7 @@ s='\? ' # BASICODE
 #s='> ' # ZX81
 
 #b,e=-6,-1 # PHP/MM-&GW-BASIC
-b,e=-11,-4 # BASICODE
+b,e=-8,-3 # BASICODE
 #b,e=-9,-4 # ZX81
 
 print(c)
@@ -56,6 +56,7 @@ for i in range(n):
     s=s.replace(b'f',b' ') # PHP/MM-&GW-BASIC
     s=s.replace(b'F',b' ') # ZX81
     s=s.replace(b'\n',b' ')
+    s=s.replace(b'\r',b' ')
     print(s)
     r=int(math.floor(eval(s)))
     print('%i: result %g'%(i,r))
