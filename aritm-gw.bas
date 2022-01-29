@@ -9,7 +9,6 @@
 1070 REM More programs at
 1080 REM <http://www.df.lth.se.orbin.se/~mikaelb/basic/>.
 1090 REM Documentation:
-1100 REM 76543210, 7:Type, 6-4:Op1, 3-2:Op2, 1-0:#Todo.
 1100 REM 6543210, 6:Type, 5-3:Op1, 2-1:Op2, 0:#Todo.
 1110 REM Program:
 1115 RANDOMIZE TIMER
