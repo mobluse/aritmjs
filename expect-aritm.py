@@ -7,7 +7,8 @@ import math
 #c='~/Downloads/mmb4l-2022.01.00-a3-armv6l/mmbasic aritm-mm.bas'
 #c='picocom /dev/ttyACM0' # PicoMite MMBasic
 #c='~/Downloads/zce/zce -r0 -xc aritm-zx81.bas'
-c='./faux1 -a 6000 -l apps/applesoft.woz -c 6000R'
+#c='./faux1 -a 6000 -l apps/applesoft.woz -c 6000R'
+c='yabasic aritm-ya.bas'
 
 s=': ' # PHP/Applesoft-&MM-&GW-BASIC
 #s='\? ' # BASICODE
@@ -32,17 +33,17 @@ child=pexpect.spawn(c)
 # End PicoMite
 
 # Applesoft Lite via Faux1
-fn='/home/pi/aritmjs/aritm-al.bas'
-print(fn)
-file=open(fn,'r')
-lines=file.readlines()
-for line in lines:
-    child.expect(']')
-    line=line.strip()
-    print(line)
-    child.sendline(line)
-child.expect(']')
-child.sendline('run')
+#fn='/home/pi/aritmjs/aritm-al.bas'
+#print(fn)
+#file=open(fn,'r')
+#lines=file.readlines()
+#for line in lines:
+#    child.expect(']')
+#    line=line.strip()
+#    print(line)
+#    child.sendline(line)
+#child.expect(']')
+#child.sendline('run')
 # End Applesoft Lite
 
 #child.interact()
