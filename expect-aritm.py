@@ -3,17 +3,22 @@ import pexpect
 import math
 
 #c='php aritm.php'
-c='pcbasic aritm-bc3c-gw.bas -n -i=stdio'
-#c='../mmb4l-2022.01.00-a3-armv6l/mmbasic aritm-mm.bas'
+#c='pcbasic aritm-bc3c-gw.bas -n -i=stdio'
+#c='~/Downloads/mmb4l-2022.01.00-a3-armv6l/mmbasic aritm-mm.bas'
 #c='picocom /dev/ttyACM0' # PicoMite MMBasic
-#c='../zce/zce -r0 -xc aritm-zx81.bas'
+#c='~/Downloads/zce/zce -r0 -xc aritm-zx81.bas'
+c='./faux1 -a 6000 -l apps/applesoft.woz -c 6000R'
 
-#s=': ' # PHP/MM-&GW-BASIC
-s='\? ' # BASICODE
+s=': ' # PHP/Applesoft-&MM-&GW-BASIC
+#s='\? ' # BASICODE
 #s='> ' # ZX81
 
-#b,e=-6,-1 # PHP/MM-&GW-BASIC
-b,e=-8,-3 # BASICODE
+s3='= ' # PHP/Applesoft-&MM-&GW-BASIC
+#s2='> ' # ZX81
+#s2='\? '
+
+b,e=-6,-1 # PHP/Applesoft-&MM-&GW-BASIC
+#b,e=-9,-3 # BASICODE
 #b,e=-9,-4 # ZX81
 
 print(c)
@@ -25,6 +30,22 @@ child=pexpect.spawn(c)
 #child.expect('> ')
 #child.sendline('run')
 # End PicoMite
+
+# Applesoft Lite via Faux1
+fn='/home/pi/aritmjs/aritm-al.bas'
+print(fn)
+file=open(fn,'r')
+lines=file.readlines()
+for line in lines:
+    child.expect(']')
+    line=line.strip()
+    print(line)
+    child.sendline(line)
+child.expect(']')
+child.sendline('run')
+# End Applesoft Lite
+
+#child.interact()
 
 n=5*100+90-1
 child.expect(s)
@@ -48,8 +69,7 @@ child.sendline('6')
 child.expect(s)
 print('L3')
 child.sendline('0')
-#child.expect('[=>] ')
-child.expect('\? ')
+child.expect(s3)
 print('L4')
 for i in range(n):
     s=child.before[b:e]
@@ -61,8 +81,7 @@ for i in range(n):
     r=int(math.floor(eval(s)))
     print('%i: result %g'%(i,r))
     child.sendline(str(r))
-    #child.expect('[=>] ')
-    child.expect('\? ')
+    child.expect(s3)
 print('L5')
 print(child.before)
 child.interact()
