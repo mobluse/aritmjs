@@ -1,16 +1,20 @@
 # aritmjs
 Aritm for various programming languages, e.g. dialects of BASIC, PHP, and JavaScript, is FOSS.
 
-Run online:
-* http://bc3c.orbin.se
-* https://mobluse.github.io/jsbasic/
+Run online in browser:
+* http://bc3c.orbin.se (Works well in Chrome on Android and iPhone.)
+* https://calormen.com/jsbasic/ (Works well in Chrome on iPhone.)
 * https://www.commanderx16.com/forum/index.php?/files/file/73-aritm/
 
 See demos on YouTube:
 * Transam Triton: https://youtu.be/DEfL17FnStc
 * C64/THEC64 MINI: https://youtu.be/65AOkL8Yz6E
+* Feature Phones (with Java ME/J2ME): https://youtu.be/hnBfS8jpjZU
 
-Aritm exists for many plattforms e.g. graphing calculators (TI and Casio), spread sheets, feature phones with Java, etc., see http://aritm.orbin.se. 
+Aritm exists for many plattforms e.g. graphing calculators (TI and Casio), spreadsheets, feature phones with Java, etc., see http://aritm.orbin.se. 
+
+The original purpose of this repository was to develop a version for JavaScript that works like the BASIC versions for retro computers, but since
+JavaScript doesn't have `goto` that has been difficult to write so far.
 
 Convert BASIC to JavaScript:
 * https://paulsperambulations.wordpress.com/2017/03/04/converting-basic-to-javascript/
