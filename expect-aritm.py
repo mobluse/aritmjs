@@ -3,12 +3,12 @@ import pexpect
 import math
 
 #c='php aritm.php'
-#c='pcbasic aritm-bc3c-gw.bas -n -i=stdio'
+c='pcbasic aritm-gw.bas -n -i=stdio'
 #c='~/Downloads/mmb4l-2022.01.00-a3-armv6l/mmbasic aritm-mm.bas'
 #c='picocom /dev/ttyACM0' # PicoMite MMBasic
 #c='~/Downloads/zce/zce -r0 -xc aritm-zx81.bas'
 #c='./faux1 -a 6000 -l apps/applesoft.woz -c 6000R'
-c='yabasic aritm-ya.bas'
+#c='yabasic aritm-ya.bas'
 
 s=': ' # PHP/Applesoft-&MM-&GW-BASIC
 #s='\? ' # BASICODE
