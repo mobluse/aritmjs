@@ -2,9 +2,9 @@
 1020 rem (c) 1992-2019 by mikael o. bonnier, lund, sweden.
 1030 rem e-mail: <mikael.bonnier@gmail.com>.
 1040 rem absolutely no warranty.
-1050 rem license gplv3+, see 
+1050 rem license gplv3+, see
 1060 rem <http://www.gnu.org/licenses/gpl.html>.
-1070 rem more programs at 
+1070 rem more programs at
 1080 rem <http://www.df.lth.se.orbin.se/~mikaelb/basic/>. ~ is tilde.
 1090 rem documentation:
 1100 rem 876543210, 8:type, 7-5:op1, 4-3:op2, 2:res'd, 1-0:#todo.
@@ -112,7 +112,7 @@
 1970 print mid$(str$(j%),2);
 1980 print " = ";:input#1,a$:a%=val(a$)
 1985 print
-1990 if -1=a% then goto 1120:rem c 
+1990 if -1=a% then goto 1120:rem c
 2000 if (1=c%)+(2=c%) then let r%=i%+j%:goto 2040:rem endif
 2010 if (3=c%)+(4=c%) then let r%=i%-j%:goto 2040:rem endif
 2020 if 5=c% then let r%=i%*j%:goto 2040:rem endif
@@ -278,13 +278,13 @@
 3540 rem sub about
 3550 gosub 3410:rem cls
 3560 print "about"
-3570 print "aritm 0.3.2 (c) 1992-2019 by" 
+3570 print "aritm 0.3.2 (c) 1992-2019 by"
 3575 print "mikael o. bonnier, lund, sweden."
 3580 print "absolutely no warranty."
 3585 print "foss, see license gplv3+."
 3590 let d=5000:gosub 3402:rem delay
 3600 return
-3610 rem sub sound 
+3610 rem sub sound
 3615 rem x=54272 to 54296:poke x,0:next
 3620 rem  54296,15
 3630 rem  54277,190

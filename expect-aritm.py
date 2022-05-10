@@ -3,24 +3,28 @@ import pexpect
 import math
 
 #c='php aritm.php'
-c='pcbasic aritm-bc3c-gw.bas -n -i=stdio'
+#c='pcbasic aritm-bc3c-gw.bas -n -i=stdio'
 #c='~/Downloads/mmb4l-2022.01.00-a3-armv6l/mmbasic aritm-mm.bas'
 #c='picocom /dev/ttyACM0' # PicoMite MMBasic
 #c='~/Downloads/zce/zce -r0 -xc aritm-zx81.bas'
 #c='./faux1 -a 6000 -l apps/applesoft.woz -c 6000R'
 #c='yabasic aritm-ya.bas'
+c='cbmbasic aritm-cbm.bas'
 
-s=': ' # PHP/Applesoft-&MM-&GW-BASIC
-#s='\? ' # BASICODE
+#s=': ' # PHP/Applesoft-&MM-&GW-BASIC
 #s='> ' # ZX81
+#s='\? ' # BASICODE
+s='\[C' # cbmbasic
 
-s3='= ' # PHP/Applesoft-&MM-&GW-BASIC
-#s2='> ' # ZX81
-#s2='\? '
+#s3='= ' # PHP/Applesoft-&MM-&GW-BASIC
+#s3='> ' # ZX81
+#s3='\? ' # BASICODE
+s3='\[C' # cbmbasic
 
-b,e=-6,-1 # PHP/Applesoft-&MM-&GW-BASIC
+#b,e=-6,-1 # PHP/Applesoft-&MM-&GW-BASIC
 #b,e=-9,-3 # BASICODE
 #b,e=-9,-4 # ZX81
+b,e=-10,-5 # cbmbasic
 
 print(c)
 child=pexpect.spawn(c)
