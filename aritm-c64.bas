@@ -10,7 +10,7 @@
 1100 rem 876543210, 8:type, 7-5:op1, 4-3:op2, 2:res'd, 1-0:#todo.
 1110 rem program:
 1112 goto 1115
-1113 mod%=int((x/y-int(x/y))*y+.5):return
+1113 md%=int((x/y-int(x/y))*y+.5):return
 1114 div=int(x/y+.5):return
 1115 let r=rnd(-time):let r=rnd(0)
 1116 open 1,0:print chr$(142);chr$(158):poke 53281,0:poke 53280,11
@@ -29,7 +29,7 @@
 1230 rem dim a(n%)
 1240 rem lbl add1
 1250 x=m:y=10:gosub 1114:x=div:gosub 1113
-1255 if 0=mod% then goto 1320:rem add2
+1255 if 0=md% then goto 1320:rem add2
 1260 for i=0 to 9
 1270 for j=0 to 9
 1280 let a(u%)=100000000+i*100000+j*1000+1
@@ -38,7 +38,7 @@
 1310 next i
 1320 rem lbl add2
 1330 x=m:y=100:gosub 1114:x=div:y=10:gosub 1113
-1335 if 0=mod% then goto 1410:rem sub1
+1335 if 0=md% then goto 1410:rem sub1
 1340 for i=0 to 9
 1350 for j=0 to 9
 1360 let t%=10*(int(8*rnd(1))+1)
@@ -48,7 +48,7 @@
 1400 next i
 1410 rem lbl sub1
 1420 x=m:y=1000:gosub 1114:x=div:y=10:gosub 1113
-1425 if 0=mod% then goto 1490:rem sub2
+1425 if 0=md% then goto 1490:rem sub2
 1430 for i=0 to 9
 1440 for j=i to 9+i
 1450 let a(u%)=300000000+j*100000+i*1000+1
@@ -57,7 +57,7 @@
 1480 next i
 1490 rem lbl sub2
 1500 x=m:y=10000:gosub 1114:x=div:y=10:gosub 1113
-1505 if 0=mod% then goto 1580:rem mul
+1505 if 0=md% then goto 1580:rem mul
 1510 for i=0 to 9
 1520 for j=i to 9+i
 1530 let t%=10*(int(9*rnd(1))+1)
@@ -67,7 +67,7 @@
 1570 next i
 1580 rem lbl mul
 1590 x=m:y=100000:gosub 1114:x=div:y=10:gosub 1113
-1595 if 0=mod% then goto 1660:rem div
+1595 if 0=md% then goto 1660:rem div
 1600 for i=0 to 9
 1610 for j=0 to 9
 1620 let a(u%)=500000000+i*100000+j*1000+1
@@ -76,7 +76,7 @@
 1650 next i
 1660 rem lbl div
 1670 x=m:y=1000000:gosub 1114:x=div:y=10:gosub 1113
-1675 if 0=mod% then goto 1750:rem endif
+1675 if 0=md% then goto 1750:rem endif
 1680 for i=0 to 9
 1690 for j=1 to 9
 1700 let t%=i*j+int(j*rnd(1))
@@ -104,11 +104,11 @@
 1915 let c%=div
 1920 if 6=c% then print "integer part of ";
 1930 x=t:y=100000:gosub 1114:x=div:y=1000:gosub 1113
-1935 let i%=mod%
+1935 let i%=md%
 1940 print mid$(str$(i%),2);
 1950 gosub 3280:rem sign
 1960 x=t:y=1000:gosub 1114:x=div:y=100:gosub 1113
-1965 let j%=mod%
+1965 let j%=md%
 1970 print mid$(str$(j%),2);
 1980 print " = ";:input#1,a$:a%=val(a$)
 1985 print
@@ -121,7 +121,7 @@
 2050 if r%<>a% then goto 2140:rem wrong
 2060 print "right! ";
 2070 x=t:y=100:gosub 1113
-2075 if 0>=mod% then goto 2100:rem endif
+2075 if 0>=md% then goto 2100:rem endif
 2080 let l%=l%-1
 2090 let a(k%)=t-1
 2100 rem lbl endif
@@ -134,7 +134,7 @@
 2170 gosub 3280:rem sign
 2180 print mid$(str$(j%),2);" is";str$(r%);"."
 2190 x=t:y=100:gosub 1113
-2195 if 99<=mod% then goto 2220:rem endif
+2195 if 99<=md% then goto 2220:rem endif
 2200 let l%=l%+1
 2210 let a(k%)=t+1
 2220 rem lbl endif
@@ -149,7 +149,7 @@
 2300 for k=1 to u%
 2310 let t=a(k)
 2320 x=t:y=100:gosub 1113
-2325 if 0=mod% then goto 2350:rem endif
+2325 if 0=md% then goto 2350:rem endif
 2330 let a(n%)=t
 2340 let n%=n%+1
 2350 rem endif
@@ -185,7 +185,7 @@
 2665 let t=div
 2670 print mid$(str$(a%),2);
 2680 x=t:y=10:gosub 1113
-2685 if 0=mod% then goto 2720:rem else
+2685 if 0=md% then goto 2720:rem else
 2690 print "*";
 2700 let n%=n%+100+10*(6=a%)
 2710 goto 2740:rem endif
@@ -203,7 +203,7 @@
 2820 if -1=a% or ".1"=a$ then goto 1120:rem c
 2830 gosub 3350:rem 10^a%
 2840 x=m:y=r:gosub 1114:x=div:y=10:gosub 1113
-2845 if 0=mod% then goto 2870:rem else
+2845 if 0=md% then goto 2870:rem else
 2850 let m=m-r
 2860 goto 2890:rem endif
 2870 rem lbl else
