@@ -39,3 +39,13 @@ How to make the VIC-20 bas-file from prg-file in Windows 10:
 Essential VIC-20 info:
 * http://www.sleepingelephant.com/ipw-web/bulletin/bb/viewtopic.php?p=66937#p66937
 * https://www.pagetable.com/?p=273
+
+How to produce the p-file for ZX81:
+
+    zxtext2p -o aritm-zx81.p aritm-zx81.bas
+
+How to produce the tap-file for ZX Spectrum:
+
+    bas2tap aritm-zxsp.bas
+
+Note that the ZX Spectrum version doesn't work due to overflow problems. 
