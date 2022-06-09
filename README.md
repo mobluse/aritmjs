@@ -40,12 +40,26 @@ Essential VIC-20 info:
 * http://www.sleepingelephant.com/ipw-web/bulletin/bb/viewtopic.php?p=66937#p66937
 * https://www.pagetable.com/?p=273
 
-How to produce the p-file for ZX81:
+How to produce the p-file for ZX81 in Linux:
 
     zxtext2p -o aritm-zx81.p aritm-zx81.bas
+    xz81 aritm-zx81.p
 
-How to produce the tap-file for ZX Spectrum:
+In xz81 ZX81 emulator: `RUN 4800`  
+That creates a new aritm-zx81.p that auto-starts.
 
-    bas2tap aritm-zxsp.bas
+Convert the ZX81 version to ZX Spectrum:
 
-Note that the ZX Spectrum version doesn't work due to overflow problems. 
+    sed 's/GOTO/GO TO/;s/GOSUB/GO SUB/;s/RAND/RANDOMIZE/;s/SCROLL/POKE 23692,255/' aritm-zx81.bas > aritm-zx81sp.bas
+
+How to produce the tap-file for ZX Spectrum in Linux:
+
+    bas2tap -a10 aritm-zx81sp.bas
+
+How to run the ZX Spectrum version in Linux:
+
+    zesarux --machine 48k aritm-zx81sp.tap
+
+Note that the ZX Spectrum version doesn't work due to convertion problems. There is the orginal version for ZX Spectrum `aritm-zxsp.bas` from
+which the ZX81 version was made, but that also doesn't work, but that is not strange since it uses 9 digit precision instead of 8 digit as the
+ZX81 version.
