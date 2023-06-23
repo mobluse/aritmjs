@@ -34,7 +34,7 @@ How to make the VIC-20 bas-file from prg-file in Windows 10:
 
     c1541 -attach aritm03-vic20.d64 -extract
     move aritm-vic20 aritm-vic20.prg
-    petcat -nh -2 -- aritm-vic20.prg | wsl sed 's/^ //' | wsl mac2unix | wsl unix2dos > aritm-vic20.bas
+    petcat -nh -2 -- aritm-vic20.prg | wsl sed 's/^ *//' | wsl mac2unix | wsl unix2dos > aritm-vic20.bas
 
 Essential VIC-20 info:
 * http://www.sleepingelephant.com/ipw-web/bulletin/bb/viewtopic.php?p=66937#p66937
