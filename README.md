@@ -11,7 +11,7 @@ See demos on YouTube:
 * C64/THEC64 MINI: https://youtu.be/65AOkL8Yz6E
 * Feature Phones (with Java ME/J2ME): https://youtu.be/hnBfS8jpjZU
 
-Aritm exists for many plattforms e.g. graphing calculators (TI and Casio), spreadsheets, feature phones with Java, etc., see http://aritm.orbin.se. 
+Aritm exists for many plattforms e.g. graphing calculators (TI and Casio), spreadsheets, feature phones with Java, etc., see http://aritm.orbin.se. Aritm was first developed in C in 1992, and then in Java, TI-BASIC 83, and TinyBASIC. The versions for other BASIC dialects were developed from the Tiny BASIC version or its descendants. 
 
 The original purpose of this repository was to develop a version for JavaScript that works like the BASIC versions for retro computers, but since
 JavaScript doesn't have `goto` that has been difficult to write so far.
