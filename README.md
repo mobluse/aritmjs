@@ -4,7 +4,7 @@ Aritm for various programming languages, e.g. dialects of BASIC, PHP, and JavaSc
 Run online in browser:
 * http://bc3c.orbin.se (Works well in Chrome on Android and iPhone.)
 * https://calormen.com/jsbasic/ (Works well in Chrome on iPhone.)
-* https://www.commanderx16.com/forum/index.php?/files/file/73-aritm/
+* https://www.commanderx16.com/webemu/x16emu.html?manifest=/forum/download/file.php?id=1518
 
 See demos on YouTube:
 * Transam Triton: https://youtu.be/DEfL17FnStc
