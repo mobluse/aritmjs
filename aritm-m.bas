@@ -241,7 +241,7 @@
 3390 NEXT I%
 3400 RETURN
 3402 REM Delay
-3404 FOR T2=1 TO 3*D:REM Change factor so that D=1000 is 1 s.
+3404 FOR T2=1 TO 1.5*D:REM Change factor so that D=1000 is 1 s.
 3405 REM
 3406 NEXT
 3408 RETURN
