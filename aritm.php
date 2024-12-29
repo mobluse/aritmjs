@@ -168,7 +168,7 @@ $u = $u - 1;
 $l = $u;
 
 u:
-print "Shuffling...\n";
+echo "Shuffling...\n";
 for ($i = $u; $i >= 2; $i--) {
     $j = floor($i * rnd()) + 1;
     $t = $aa[$i];
@@ -209,7 +209,6 @@ echo $j;
 echo ' = ';
 $ans = readline();
 $a = (float) $ans;
-// print $ans;
 if (-1 == $a || strcmp('.1', $ans) == 0 || strcmp(',1', $ans) == 0 || strcmp('01', $ans) == 0) {
     goto c;
 }
@@ -252,7 +251,7 @@ endif4:
 goto endif5;
 
 wrong:
-print 'Wrong. ';
+echo 'Wrong. ';
 echo $i;
 sign();
 echo $j;
@@ -297,7 +296,7 @@ $u = $n - 1;
 goto u;
 
 w:
-print "Good!!!  Well done!\n";
+echo "Good!!!  Well done!\n";
 $d = 5000;
 delay();
 goto c;
@@ -342,15 +341,14 @@ function sub()
     $n = $n + 100 - 10 * (6 == $a);
     goto endif0;
     else0:
-    print ' ';
+    echo ' ';
     endif0:
 }
 
 input:
-print 'Toggle item 1-6, or choose 0 or -1: ';
+echo 'Toggle item 1-6, or choose 0 or -1: ';
 $ans = readline();
 $a = (float) $ans;
-// print $ans;
 if (-1 > $a || 6 < $a || 0 == $a && 0 == $n) {
     goto input;
 }
@@ -403,12 +401,11 @@ echo "About\n";
 menuitem();
 echo "Exit\n";
 input2:
-print 'Choose 1-';
+echo 'Choose 1-';
 echo 4 + ($l > 0);
 echo ': ';
 $ans = readline();
 $s = (int) $ans;
-// print $ans;
 if (1 > $s || 4 + ($l > 0) < $s) {
     goto input2;
 }
