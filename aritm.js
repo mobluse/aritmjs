@@ -1,4 +1,5 @@
-//usr/bin/js60 -s -w -e '
+//usr/bin/js102 -w -e '
+// WAS: -s // also with js60
 // Aritm v0.3 for JavaScript JS24 is FOSS.
 // (C) 1992-2021 by Mikael O. Bonnier, Lund, Sweden.
 // E-mail: <mikael.bonnier@gmail.com>.
@@ -9,7 +10,8 @@
 // <http://www.df.lth.se.orbin.se/~mikaelb/basic/>.
 // Documentation:
 // 76543210, 7:Type, 6-4:Op1, 3-2:Op2, 1-0:#Todo.
-// Install js24 in Debian or Raspberry Pi OS:
+// Install js102 or js24 in Debian or Raspberry Pi OS:
+// sudo apt install libmozjs-102-dev
 // sudo apt install libmozjs-24-bin
 // Program:
 var c=0;
@@ -116,7 +118,7 @@ for (var i = u; i >= 2; --i) {
     var j = Math.floor(i*Math.random())+1;
     var t = a[i];
     a[i] = a[j];
-    a[j] =t;
+    a[j] = t;
 }
 var k=1;
 
@@ -136,7 +138,7 @@ putstr(j);
 putstr(" = ");
 var ans = readline();
 var iA = parseInt(ans, 10);
-if (-1 == iA || '.1' == ans) {
+if (-1 == iA || '.1' == ans || ',1' == ans || '01' == ans) {
     goto C;
 }
 switch (c) {
@@ -250,7 +252,7 @@ do {
 if (0 == iA) {
     goto S;
 }
-if (-1 == iA || '.1' == ans) {
+if (-1 == iA || '.1' == ans || ',1' == ans || '01' == ans) {
     goto C;
 }
 pow10();
@@ -268,7 +270,7 @@ print("Continue");
 
 menu:
 menuItem();
-print("Setup and Go");
+print("Setup and go");
 menuItem();
 print("Help");
 menuItem();
@@ -323,7 +325,7 @@ function delay() {
 }
 
 function cls() {
-    for (var t=0; t<24; ++t) {
+    for (var t=0; t<40; ++t) {
         print();
     }
     print("Aritm");
@@ -340,10 +342,16 @@ function help() {
 function about() {
     cls();
     print("About");
-    print("Aritm 0.3 (C) 1992-2018 by");
+    print("Aritm 0.3 (C) 1992-2024 by");
     print("Mikael O. Bonnier, Lund, Sweden.");
     print("Absolutely no warranty.");
     print("FOSS, see license GPLv3+.");
     d=5000; delay();
+}
+
+function sound()
+{
+    putstr("\x07");
+    d=100; delay();
 }
 //'
