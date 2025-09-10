@@ -33,7 +33,7 @@ $d = 0;
 
 function delay() {
     global $d;
-#    usleep($d * 1000);
+    usleep($d * 1000);
 }
 
 function mod() {
