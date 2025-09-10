@@ -29,9 +29,11 @@ $i = 0;
 $j = 0;
 $ans = "";
 $n = 0;
+$d = 0;
 
-function delay($duration) {
-#    usleep($duration * 1000);
+function delay() {
+    global $d;
+#    usleep($d * 1000);
 }
 
 function mod() {
@@ -81,12 +83,12 @@ function sign() {
     }
 }
 
-function pow10($power) {
-    $result = 1;
-    for ($i = 1; $i <= $power; $i++) {
-        $result *= 10;
+function pow10() {
+    global $r, $i, $a;
+    $r = 1;
+    for ($i = 1; $i <= $a; $i++) {
+        $r *= 10;
     }
-    return $result;
 }
 
 function help() {
@@ -94,7 +96,9 @@ function help() {
     echo "Help\n";
     echo "You can mix problems anyway you like.\n";
     echo "More help on <http://aritm.orbin.se/>.\n";
-    delay(5000);
+    global $d;
+    $d = 5000;
+    delay();
 }
 
 function about() {
@@ -104,12 +108,15 @@ function about() {
     echo "Mikael O. Bonnier, Lund, Sweden.\n";
     echo "Absolutely no warranty.\n";
     echo "FOSS, see license GPLv3+.\n";
-    delay(5000);
+    global $d;
+    $d = 5000;
+    delay();
 }
 
-function menuitem(&$counter) {
-    $counter++;
-    echo $counter . ' ';
+function menuitem() {
+    global $a;
+    $a++;
+    echo $a . ' ';
 }
 
 function generateProblems() {
@@ -234,19 +241,15 @@ function shuffleProblems() {
 }
 
 function practiceSession() {
-    global $k, $u, $l, $t, $x, $y, $c, $dv, $md, $i, $j, $ans, $a, $r, $aa;
-
-    generateProblems();
+    global $k, $u, $l, $t, $x, $y, $c, $dv, $md, $i, $j, $ans, $a, $r, $aa, $d;
 
     while ($l > 0) {
-        shuffleProblems();
-        $k = 1;
-
         // Practice loop
         while ($k <= $u && $l > 0) {
             cls();
             echo $l . " problems left. -1 Esc\n";
 
+            echo $k . "!!!\n";
             $t = $aa[$k];
             $x = $t;
             $y = 10000000;
@@ -281,7 +284,7 @@ function practiceSession() {
             $ans = readline();
             $a = (float) $ans;
 
-            if ($a == -1 || strcmp('.1', $ans) == 0 || strcmp(',1', $ans) == 0 || strcmp('01', $ans) == 0) {
+            if (-1 == $a || strcmp('.1', $ans) == 0 || strcmp(',1', $ans) == 0 || strcmp('01', $ans) == 0) {
                 return;
             }
 
@@ -321,7 +324,8 @@ function practiceSession() {
 
                 $k++;
                 sound();
-                delay(1000);
+                $d = 1000;
+                delay();
             } else {
                 echo "Right!\n";
                 $x = $t;
@@ -333,14 +337,16 @@ function practiceSession() {
                 }
                 $k++;
                 if ($l > 0) {
-                    delay(500);
+                    $d = 500;
+                    delay();
                 }
             }
         }
 
         if ($l <= 0) {
             echo "Good!!!Well done!\n";
-            delay(5000);
+            $d = 5000;
+            delay();
             return;
         } else {
             echo "Checking...\n";
@@ -356,22 +362,37 @@ function practiceSession() {
                 }
             }
             $u = $n - 1;
+            shuffleProblems();
+            $k = 1;
         }
     }
 }
 
+function nr() {
+    global $a, $m, $x, $y, $r, $dv, $md;
+    $a++;
+    $x = $m;
+    pow10();
+    $y = $r;
+    idiv();
+    $x = $dv;
+    $y = 10;
+    mod();
+    echo $a . (($md != 0) ? '*' : ' ');
+}
+
 function setupMenu() {
-    global $m, $md, $dv, $x, $y, $n, $ans, $a, $i;
+    global $m, $md, $dv, $x, $y, $n, $ans, $a, $i, $r, $k;
 
     while (true) {
         cls();
         $n = 0;
 
         // Calculate the number of selected exercises
-        for ($i = 1; $i <= 6; $i++) {
-            $power = pow10($i);
+        for ($a = 1; $a <= 6; $a++) {
+            pow10();
             $x = $m;
-            $y = $power;
+            $y = $r;
             idiv();
             $x = $dv;
             $y = 10;
@@ -381,54 +402,25 @@ function setupMenu() {
             }
         }
 
-        // Display menu items with proper formatting (no extra space)
-        $x = $m;
-        $y = 10;
-        idiv();
-        $x = $dv;
-        $y = 10;
-        mod();
-        echo "1" . (($md != 0) ? '*' : ' ') . "Addition 1\n";
+        // Display menu items
+        $a = 0;
+        nr();
+        echo "Addition 1\n";
 
-        $x = $m;
-        $y = 100;
-        idiv();
-        $x = $dv;
-        $y = 10;
-        mod();
-        echo "2" . (($md != 0) ? '*' : ' ') . "Addition 2\n";
+        nr();
+        echo "Addition 2\n";
 
-        $x = $m;
-        $y = 1000;
-        idiv();
-        $x = $dv;
-        $y = 10;
-        mod();
-        echo "3" . (($md != 0) ? '*' : ' ') . "Subtraction 1\n";
+        nr();
+        echo "Subtraction 1\n";
 
-        $x = $m;
-        $y = 10000;
-        idiv();
-        $x = $dv;
-        $y = 10;
-        mod();
-        echo "4" . (($md != 0) ? '*' : ' ') . "Subtraction 2\n";
+        nr();
+        echo "Subtraction 2\n";
 
-        $x = $m;
-        $y = 100000;
-        idiv();
-        $x = $dv;
-        $y = 10;
-        mod();
-        echo "5" . (($md != 0) ? '*' : ' ') . "Multiplication\n";
+        nr();
+        echo "Multiplication\n";
 
-        $x = $m;
-        $y = 1000000;
-        idiv();
-        $x = $dv;
-        $y = 10;
-        mod();
-        echo "6" . (($md != 0) ? '*' : ' ') . "Division|-1 Esc\n";
+        nr();
+        echo "Division|-1 Esc\n";
 
         echo '0 OK and go ' . $n . "\n";
 
@@ -447,6 +439,9 @@ function setupMenu() {
 
             if ($a == 0) {
                 if ($n > 0) {
+                    generateProblems();
+                    shuffleProblems();
+                    $k = 1;
                     practiceSession();
                     return;
                 } else {
@@ -457,7 +452,7 @@ function setupMenu() {
         }
 
         // Toggle the selected exercise type
-        $r = pow10($a);
+        pow10();
         $x = $m;
         $y = $r;
         idiv();
@@ -480,7 +475,7 @@ function mainMenu() {
     $a = 0;
 
     if ($l > 0 && $m) {
-        menuitem($a);
+        menuitem();
         echo "Continue\n";
     }
 
@@ -488,13 +483,13 @@ function mainMenu() {
         $m = 10;
     }
 
-    menuitem($a);
+    menuitem();
     echo "Setup and go\n";
-    menuitem($a);
+    menuitem();
     echo "Help\n";
-    menuitem($a);
+    menuitem();
     echo "About\n";
-    menuitem($a);
+    menuitem();
     echo "Exit\n";
 
     $maxOption = 4 + ($l > 0 ? 1 : 0);
