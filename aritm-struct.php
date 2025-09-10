@@ -33,7 +33,7 @@ $d = 0;
 
 function delay() {
     global $d;
-#    usleep($d * 1000);
+    usleep($d * 1000);
 }
 
 function mod() {
@@ -249,7 +249,6 @@ function practiceSession() {
             cls();
             echo $l . " problems left. -1 Esc\n";
 
-            echo $k . "!!!\n";
             $t = $aa[$k];
             $x = $t;
             $y = 10000000;
@@ -344,7 +343,7 @@ function practiceSession() {
         }
 
         if ($l <= 0) {
-            echo "Good!!!Well done!\n";
+            echo "Good!!! Well done!\n";
             $d = 5000;
             delay();
             return;
