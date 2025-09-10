@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
-// Aritm v0.3.3 for PHP 8.2.29 is FOSS.
-// (c) 1992-2025 by Mikael O. Bonnier, Lund, Sweden. Refactoring by DeepSeek w/ DeepThink AI.
+// Aritm v0.3.4 for PHP 8.2.29 is FOSS.
+// (c) 1992-2025 by Mikael O. Bonnier, Lund, Sweden.
 // E-mail: <mikael.bonnier@gmail.com>.
 // Absolutely no warranty.
 // License GPLv3+, see
@@ -29,7 +29,10 @@ $i = 0;
 $j = 0;
 $ans = "";
 $n = 0;
-$d = 0;
+
+function delay($duration) {
+#    usleep($duration * 1000);
+}
 
 function mod() {
     global $md, $x, $y;
@@ -46,14 +49,11 @@ function rnd() {
 }
 
 function cls() {
+    global $t;
     for ($t = 1; $t <= 40; $t++) {
         echo "\n";
     }
     echo "Aritm\n";
-}
-
-function delay($duration) {
-    usleep($duration * 1000);
 }
 
 function sound() {
@@ -100,7 +100,7 @@ function help() {
 function about() {
     cls();
     echo "About\n";
-    echo "Aritm 0.3 (c) 1992-2022 by\n";
+    echo "Aritm 0.3 (c) 1992-2025 by\n";
     echo "Mikael O. Bonnier, Lund, Sweden.\n";
     echo "Absolutely no warranty.\n";
     echo "FOSS, see license GPLv3+.\n";
@@ -222,7 +222,7 @@ function generateProblems() {
 }
 
 function shuffleProblems() {
-    global $u, $aa;
+    global $u, $aa, $i, $j, $t;
 
     echo "Shuffling...\n";
     for ($i = $u; $i >= 2; $i--) {
@@ -281,7 +281,6 @@ function practiceSession() {
             $ans = readline();
             $a = (float) $ans;
 
-            // Use strcmp like the original code
             if ($a == -1 || strcmp('.1', $ans) == 0 || strcmp(',1', $ans) == 0 || strcmp('01', $ans) == 0) {
                 return;
             }
@@ -340,7 +339,7 @@ function practiceSession() {
         }
 
         if ($l <= 0) {
-            echo "Good!!!  Well done!\n";
+            echo "Good!!!Well done!\n";
             delay(5000);
             return;
         } else {
@@ -362,11 +361,10 @@ function practiceSession() {
 }
 
 function setupMenu() {
-    global $m, $md, $dv, $x, $y, $n, $ans, $a;
+    global $m, $md, $dv, $x, $y, $n, $ans, $a, $i;
 
     while (true) {
         cls();
-        $a = 0;
         $n = 0;
 
         // Calculate the number of selected exercises
@@ -383,7 +381,7 @@ function setupMenu() {
             }
         }
 
-        // Display menu items with proper asterisks
+        // Display menu items with proper formatting (no extra space)
         $x = $m;
         $y = 10;
         idiv();
@@ -430,34 +428,36 @@ function setupMenu() {
         $x = $dv;
         $y = 10;
         mod();
-        echo "6" . (($md != 0) ? '*' : ' ') . "Division | -1 Esc\n";
+        echo "6" . (($md != 0) ? '*' : ' ') . "Division|-1 Esc\n";
 
         echo '0 OK and go ' . $n . "\n";
 
-        echo 'Toggle item 1-6, or choose 0 or -1: ';
-        $input = readline();
-        $choice = (int)$input;
+        while (true) {
+            echo 'Toggle item 1-6, or choose 0 or -1: ';
+            $ans = readline();
+            $a = (int)$ans;
 
-        // Use strcmp like the original code for special cases
-        if ($choice == -1 || strcmp('.1', $input) == 0 || strcmp(',1', $input) == 0 || strcmp('01', $input) == 0) {
-            return;
-        }
-
-        if ($choice < -1 || $choice > 6 || ($choice == 0 && $n == 0)) {
-            continue;
-        }
-
-        if ($choice == 0) {
-            if ($n > 0) {
-                practiceSession();
+            if (-1 == $a || strcmp('.1', $ans) == 0 || strcmp(',1', $ans) == 0 || strcmp('01', $ans) == 0) {
                 return;
-            } else {
+            }
+
+            if ($ans == "" || $a < -1 || $a > 6 || ($a == 0 && $n == 0)) {
                 continue;
             }
+
+            if ($a == 0) {
+                if ($n > 0) {
+                    practiceSession();
+                    return;
+                } else {
+                    continue;
+                }
+            }
+            break;
         }
 
         // Toggle the selected exercise type
-        $r = pow10($choice);
+        $r = pow10($a);
         $x = $m;
         $y = $r;
         idiv();
