@@ -2,28 +2,29 @@
 import pexpect
 import math
 
-#c='php aritm.php'
+c='node aritm-node.js'
+#c='php aritm-struct.php'
 #c='pcbasic aritm-bc3c-gw.bas -n -i=stdio'
 #c='~/Downloads/mmb4l-2022.01.00-a3-armv6l/mmbasic aritm-mm.bas'
 #c='picocom /dev/ttyACM0' # PicoMite MMBasic
-c='/home/pi/Downloads/zce/zce -r0 -xc aritm-zx81.bas'
+#c='/home/pi/Downloads/zce/zce -r0 -xc aritm-zx81.bas'
 #c='./faux1 -a 6000 -l apps/applesoft.woz -c 6000R'
 #c='yabasic aritm-ya.bas'
 #c='cbmbasic aritm-cbm.bas'
 
-#s=': ' # PHP/Applesoft-&MM-&GW-BASIC
-s='> ' # ZX81
+s=': ' # PHP/Applesoft-&MM-&GW-BASIC
+#s='> ' # ZX81
 #s='\? ' # BASICODE
 #s='\[C' # cbmbasic
 
-#s3='= ' # PHP/Applesoft-&MM-&GW-BASIC
-s3='> ' # ZX81
+s3='= ' # PHP/Applesoft-&MM-&GW-BASIC
+#s3='> ' # ZX81
 #s3='\? ' # BASICODE
 #s3='\[C' # cbmbasic
 
-#b,e=-6,-1 # PHP/Applesoft-&MM-&GW-BASIC
+b,e=-6,-1 # Node.js/PHP/Applesoft-&MM-&GW-BASIC
 #b,e=-9,-3 # BASICODE
-b,e=-9,-4 # ZX81
+#b,e=-9,-4 # ZX81
 #b,e=-10,-5 # cbmbasic
 
 print(c)
@@ -78,6 +79,7 @@ child.expect(s3)
 print('L4')
 for i in range(n):
     s=child.before[b:e]
+    s=s.replace(b'J',b' ') # Node.js \x1b[0J
     s=s.replace(b'f',b' ') # PHP/MM-&GW-BASIC
     s=s.replace(b'F',b' ') # ZX81
     s=s.replace(b'\n',b' ')
