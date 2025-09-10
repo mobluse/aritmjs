@@ -9,6 +9,9 @@
 // <http://www.df.lth.se.orbin.se/~mikaelb/basic/>. ~ is tilde.
 // Documentation:
 // 76543210, 7:type, 6-4:op1, 3-2:op2, 1-0:#todo.
+// Install js102 or js24 in Debian or Raspberry Pi OS:
+// sudo apt install libmozjs-102-dev
+// sudo apt install libmozjs-24-bin
 
 // Global variables
 var md = 0.0;
@@ -17,7 +20,7 @@ var x = 0.0;
 var y = 0.0;
 var r = 0.0;
 var l = 0;
-var m = 0;
+var m = 10;
 var aa = [];
 var a = 0;
 var u = 0;
@@ -32,6 +35,7 @@ var d = 0;
 
 function delay() {
     var start = new Date().getTime();
+    //d = 0;
     while (new Date().getTime() < start + d);
 }
 
@@ -49,9 +53,9 @@ function rnd() {
 
 function cls() {
     for (t = 1; t <= 40; t++) {
-        print("\n");
+        print();
     }
-    print("Aritm\n");
+    print("Aritm");
 }
 
 function sound() {
@@ -87,20 +91,20 @@ function pow10() {
 
 function help() {
     cls();
-    print("Help\n");
-    print("You can mix problems anyway you like.\n");
-    print("More help on <http://aritm.orbin.se/>.\n");
+    print("Help");
+    print("You can mix problems anyway you like.");
+    print("More help on <http://aritm.orbin.se/>.");
     d = 5000;
     delay();
 }
 
 function about() {
     cls();
-    print("About\n");
-    print("Aritm 0.3 (c) 1992-2025 by\n");
-    print("Mikael O. Bonnier, Lund, Sweden.\n");
-    print("Absolutely no warranty.\n");
-    print("FOSS, see license GPLv3+.\n");
+    print("About");
+    print("Aritm 0.3 (c) 1992-2025 by");
+    print("Mikael O. Bonnier, Lund, Sweden.");
+    print("Absolutely no warranty.");
+    print("FOSS, see license GPLv3+.");
     d = 5000;
     delay();
 }
@@ -112,7 +116,7 @@ function menuitem() {
 
 function generateProblems() {
     cls();
-    print("Generating\nProblems...\n");
+    print("Generating\nProblems...");
     u = 1;
 
     // Addition 1
@@ -218,7 +222,7 @@ function generateProblems() {
 }
 
 function shuffleProblems() {
-    print("Shuffling...\n");
+    print("Shuffling...");
     for (i = u; i >= 2; i--) {
         j = Math.floor(i * rnd()) + 1;
         t = aa[i];
@@ -295,8 +299,7 @@ function practiceSession() {
                 sign();
                 putstr(j.toString());
                 putstr(' is ');
-                putstr(r.toString());
-                print(".\n");
+                print(r.toString());
 
                 x = t;
                 y = 100;
@@ -311,7 +314,7 @@ function practiceSession() {
                 d = 1000;
                 delay();
             } else {
-                print("Right!\n");
+                print("Right!");
                 x = t;
                 y = 100;
                 mod();
@@ -328,12 +331,12 @@ function practiceSession() {
         }
 
         if (l <= 0) {
-            print("Good!!! Well done!\n");
+            print("Good!!! Well done!");
             d = 5000;
             delay();
             return;
         } else {
-            print("Checking...\n");
+            print("Checking...");
             n = 1;
             for (k = 1; k <= u; k++) {
                 t = aa[k];
@@ -403,7 +406,7 @@ function setupMenu() {
         nr();
         print("Division|-1 Esc");
 
-        putstr('0 OK and go ' + n + "\n");
+        print('0 OK and go ' + n);
 
         while (true) {
             putstr('Toggle item 1-6, or choose 0 or -1: ');
@@ -492,12 +495,12 @@ function mainMenu() {
             about();
             break;
         case 5:
-            quit();
+            quit2();
             break;
     }
 }
 
-function quit() {
+function quit2() {
     cls();
     quit();
 }
