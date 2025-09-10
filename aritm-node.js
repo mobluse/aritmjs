@@ -19,7 +19,7 @@ let x = 0.0;
 let y = 0.0;
 let r = 0.0;
 let l = 0;
-let m = 0;
+let m = 10;
 let aa = [];
 let a = 0;
 let u = 0;
@@ -28,9 +28,10 @@ let t = 0;
 let c = 0;
 let i = 0;
 let j = 0;
-let ans = "";
+let ans = '';
 let n = 0;
 let d = 0;
+let sb = '';
 
 // Create readline interface
 const rl = readline.createInterface({
@@ -39,12 +40,13 @@ const rl = readline.createInterface({
 });
 
 function question(prompt) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     rl.question(prompt, resolve);
   });
 }
 
 function delay() {
+  //d = 0;
   return new Promise(resolve => setTimeout(resolve, d));
 }
 
@@ -61,8 +63,9 @@ function rnd() {
 }
 
 function cls() {
-  // Clear screen and print Aritm header
-  process.stdout.write('\x1Bc');
+  for (t = 1; t <= 40; t++) {
+      console.log('');
+  }
   console.log("Aritm");
 }
 
@@ -75,17 +78,17 @@ function sign() {
   switch (c) {
     case 1:
     case 2:
-      process.stdout.write('+');
+      sb += '+';
       break;
     case 3:
     case 4:
-      process.stdout.write('-');
+      sb += '-';
       break;
     case 5:
-      process.stdout.write('*');
+      sb += '*';
       break;
     case 6:
-      process.stdout.write('/');
+      sb += '/';
       break;
   }
 }
@@ -252,8 +255,9 @@ async function practiceSession() {
       idiv();
       c = dv;
 
+      sb = ' ';
       if (c == 6) {
-        process.stdout.write('Integer part of ');
+        sb += 'Integer part of ';
       }
 
       x = t;
@@ -263,7 +267,7 @@ async function practiceSession() {
       y = 1000;
       mod();
       i = md;
-      process.stdout.write(i.toString());
+      sb += i.toString();
 
       sign();
 
@@ -274,10 +278,8 @@ async function practiceSession() {
       y = 100;
       mod();
       j = md;
-      process.stdout.write(j.toString());
-      process.stdout.write(' = ');
-
-      ans = await question('');
+      sb += j.toString();
+      ans = await question(sb + ' = ');
       a = parseFloat(ans);
 
       if (-1 == a || '.1' === ans || ',1' === ans || '01' === ans) {
