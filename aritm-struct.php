@@ -18,7 +18,7 @@ $x = 0.0;
 $y = 0.0;
 $r = 0.0;
 $l = 0;
-$m = 0;
+$m = 10;
 $aa = array();
 $a = 0;
 $u = 0;
@@ -33,7 +33,7 @@ $d = 0;
 
 function delay() {
     global $d;
-    usleep($d * 1000);
+#    usleep($d * 1000);
 }
 
 function mod() {
@@ -473,13 +473,9 @@ function mainMenu() {
     cls();
     $a = 0;
 
-    if ($l > 0 && $m) {
+    if ($l > 0) {
         menuitem();
         echo "Continue\n";
-    }
-
-    if ($m == 0) {
-        $m = 10;
     }
 
     menuitem();
@@ -491,7 +487,7 @@ function mainMenu() {
     menuitem();
     echo "Exit\n";
 
-    $maxOption = 4 + ($l > 0 ? 1 : 0);
+    $maxOption = $a;
     $s = 0;
 
     while ($s < 1 || $s > $maxOption) {
@@ -500,21 +496,29 @@ function mainMenu() {
         $s = (int) $ans;
     }
 
-    if ($l > 0 && $m) {
-        switch ($s) {
-            case 1: practiceSession(); break;
-            case 2: setupMenu(); break;
-            case 3: help(); break;
-            case 4: about(); break;
-            case 5: quit(); break;
-        }
+    $optionIndex = 0;
+    if ($l > 0) {
+        $optionIndex = $s;
     } else {
-        switch ($s) {
-            case 1: setupMenu(); break;
-            case 2: help(); break;
-            case 3: about(); break;
-            case 4: quit(); break;
-        }
+        $optionIndex = $s + 1;
+    }
+
+    switch ($optionIndex) {
+        case 1:
+            practiceSession();
+            break;
+        case 2:
+            setupMenu();
+            break;
+        case 3:
+            help();
+            break;
+        case 4:
+            about();
+            break;
+        case 5:
+            quit();
+            break;
     }
 }
 
