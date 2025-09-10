@@ -12,12 +12,12 @@ c='node aritm-node.js'
 #c='yabasic aritm-ya.bas'
 #c='cbmbasic aritm-cbm.bas'
 
-s=': ' # PHP/Applesoft-&MM-&GW-BASIC
+s=': ' # Node.js/PHP/Applesoft-&MM-&GW-BASIC
 #s='> ' # ZX81
 #s='\? ' # BASICODE
 #s='\[C' # cbmbasic
 
-s3='= ' # PHP/Applesoft-&MM-&GW-BASIC
+s3='= ' # Node.js/PHP/Applesoft-&MM-&GW-BASIC
 #s3='> ' # ZX81
 #s3='\? ' # BASICODE
 #s3='\[C' # cbmbasic
