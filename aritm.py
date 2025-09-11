@@ -283,7 +283,7 @@ def practiceSession():
 
                 k += 1
                 sound()
-                d = 1000
+                d = 1200
                 delay()
             else:
                 print("Right!")
