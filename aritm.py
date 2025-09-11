@@ -10,10 +10,9 @@
 # Documentation:
 # 76543210, 7:type, 6-4:op1, 3-2:op2, 1-0:#todo.
 
-import math
+from math import floor
 import random
 import time
-import os
 import sys
 
 # Global variables
@@ -23,7 +22,7 @@ x = 0.0
 y = 0.0
 r = 0.0
 l = 0
-m = 0
+m = 10
 aa = []
 a = 0
 u = 0
@@ -32,48 +31,51 @@ t = 0
 c = 0
 i = 0
 j = 0
-ans = ""
+ans = ''
 n = 0
 d = 0
 
 def delay():
+    global d
+    #d = 0
     time.sleep(d / 1000)
 
 def mod():
     global md, x, y
-    md = math.floor(0.5 + (x / y - math.floor(x / y)) * y)
+    md = x%y
 
 def idiv():
     global dv, x, y
-    dv = math.floor(0.5 + x / y)
+    dv = x//y
 
 def rnd():
     return random.random()
 
 def cls():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    for i in range(40):
+        print()
     print("Aritm")
 
 def sound():
-    print('\a', end='', flush=True)
-    time.sleep(0.1)
+    print(end='\a', flush=True)
+    global d
+    d = 100
+    delay()
 
 def sign():
     global c
     if c in [1, 2]:
-        print('+', end='')
+        print(end='+')
     elif c in [3, 4]:
-        print('-', end='')
+        print(end='-')
     elif c == 5:
-        print('*', end='')
+        print(end='*')
     elif c == 6:
-        print('/', end='')
+        print(end='/')
 
 def pow10():
-    global r, i, a
-    r = 1
-    for i in range(1, a + 1):
-        r *= 10
+    global r, a
+    r = 10**a
 
 def help():
     cls()
@@ -98,16 +100,15 @@ def about():
 def menuitem():
     global a
     a += 1
-    print(f"{a} ", end='')
+    print(end=f"{a} ")
 
 def generateProblems():
     global m, md, dv, x, y, u, aa, l, i, j, t
-    
+
     cls()
     print("Generating")
     print("Problems...")
     u = 1
-    aa = [0] * 591  # Initialize with zeros
 
     # Addition 1
     x = m
@@ -131,7 +132,7 @@ def generateProblems():
     if md != 0:
         for i in range(0, 10):
             for j in range(0, 10):
-                t = 10 * (math.floor(8 * rnd()) + 1)
+                t = 10 * (floor(8 * rnd()) + 1)
                 aa[u] = 20000000 + (t + i) * 10000 + j * 100 + 1
                 u += 1
 
@@ -158,7 +159,7 @@ def generateProblems():
     if md != 0:
         for i in range(0, 10):
             for j in range(i, 10 + i):
-                t = 10 * (math.floor(9 * rnd()) + 1)
+                t = 10 * (floor(9 * rnd()) + 1)
                 aa[u] = 40000000 + (t + j) * 10000 + i * 100 + 1
                 u += 1
 
@@ -185,7 +186,7 @@ def generateProblems():
     if md != 0:
         for i in range(0, 10):
             for j in range(1, 10):
-                t = i * j + math.floor(j * rnd())
+                t = i * j + floor(j * rnd())
                 aa[u] = 60000000 + t * 10000 + j * 100 + 1
                 u += 1
 
@@ -194,17 +195,17 @@ def generateProblems():
 
 def shuffleProblems():
     global u, aa, i, j, t
-    
+
     print("Shuffling...")
     for i in range(u, 1, -1):
-        j = math.floor(i * rnd()) + 1
+        j = floor(i * rnd()) + 1
         t = aa[i]
         aa[i] = aa[j]
         aa[j] = t
 
 def practiceSession():
     global k, u, l, t, x, y, c, dv, md, i, j, ans, a, r, aa, d
-    
+
     while l > 0:
         # Practice loop
         while k <= u and l > 0:
@@ -218,7 +219,7 @@ def practiceSession():
             c = dv
 
             if c == 6:
-                print('Integer part of ', end='')
+                print(end='Integer part of ')
 
             x = t
             y = 10000
@@ -239,16 +240,18 @@ def practiceSession():
             mod()
             j = md
             print(j, end='')
-            print(' = ', end='')
+            print(end=' = ')
 
             ans = input().strip()
             try:
                 a = float(ans)
             except ValueError:
-                a = -1
+                a = -2
 
             if a == -1 or ans in ['.1', ',1', '01']:
                 return
+            if a == -2:
+                continue
 
             if c in [1, 2]:
                 r = i + j
@@ -257,14 +260,17 @@ def practiceSession():
             elif c == 5:
                 r = i * j
             elif c == 6:
-                r = math.floor(i / j)
+                x = i
+                y = j
+                idiv()
+                r = dv
 
             if r != a:
-                print('Wrong. ', end='')
+                print(end='Wrong. ')
                 print(i, end='')
                 sign()
                 print(j, end='')
-                print(' is ', end='')
+                print(end=' is ')
                 print(r, end='')
                 print(".")
 
@@ -289,7 +295,7 @@ def practiceSession():
                     aa[k] = t - 1
                 k += 1
                 if l > 0:
-                    d = 500
+                    d = 600
                     delay()
 
         if l <= 0:
@@ -326,7 +332,7 @@ def nr():
 
 def setupMenu():
     global m, md, dv, x, y, n, ans, a, r, k
-    
+
     while True:
         cls()
         n = 0
@@ -405,7 +411,7 @@ def setupMenu():
 
 def mainMenu():
     global l, m, a
-    
+
     cls()
     a = 0
 
@@ -422,12 +428,11 @@ def mainMenu():
     menuitem()
     print("Exit")
 
-    maxOption = a
     s = 0
 
-    while s < 1 or s > maxOption:
+    while s < 1 or s > a:
         try:
-            s = int(input(f'Choose 1-{maxOption}: '))
+            s = int(input(f'Choose 1-{a}: '))
         except ValueError:
             s = 0
 
