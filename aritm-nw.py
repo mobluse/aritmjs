@@ -5,7 +5,7 @@
 # License GPLv3+, see
 # <http://www.gnu.org/licenses/gpl.html>.
 # More programs at
-# <http://www.df.lth.se.orbin.se/~mikaelb/basic/>. ~ is tilde.
+# <https://github.com/mobluse/aritmjs>.
 # Documentation:
 # 76543210, 7:type, 6-4:op1, 3-2:op2, 1-0:#todo.
 
@@ -80,8 +80,10 @@ def pow10():
 def help():
   cls()
   print("Help")
-  print("You can mix problems\nanyway you like.")
-  print("More help on\n<http://aritm.orbin.se/>.")
+  print("You can mix problems")
+  print("anyway you like.")
+  print("More help on")
+  print("<http://aritm.orbin.se/>.")
   global d
   d = 5000
   delay()
@@ -90,7 +92,8 @@ def about():
   cls()
   print("About")
   print("Aritm 0.3 (c) 1992-2025 by")
-  print("Mikael O. Bonnier, Lund,\nSweden.")
+  print("Mikael O. Bonnier, Lund,")
+  print("Sweden.")
   print("Absolutely no warranty.")
   print("FOSS, see license GPLv3+.")
   global d
@@ -410,7 +413,7 @@ def setupMenu():
     else:
       m -= r
 
-def mainMenu():
+def menu():
   global l, m, a
 
   cls()
@@ -454,10 +457,13 @@ def quit():
   cls()
   raise KeyboardInterrupt
 
-def mainLoop():
-  while True:
-    mainMenu()
+def main():
+  try:
+    while True:
+      menu()
+  except:
+    pass
 
 # Initialize and start the program
 aa = [0.0] * 591
-mainLoop()
+main()
