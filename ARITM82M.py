@@ -1,5 +1,5 @@
 # Aritm for TI-82 Advanced Edition Python in MicroPython
-from time import sleep, ticks_us
+from time import sleep, monotonic
 
 # Global variables
 l = 0
@@ -11,12 +11,11 @@ k = 0
 c = 0
 n = 0
 sb = ''
-_seed = 12345
 
 def delay(d):
   #d=0
   sleep(d/1000)
-    
+
 def my_random():
     global _seed
     _seed = (1664525 * _seed + 1013904223) & 0xFFFFFFFF
@@ -269,7 +268,7 @@ def setupMenu():
 
       if a == 0:
         if n > 0:
-          _seed = ticks_us()
+          _seed = int(monotonic()*1000000) & 0xFFFFFFFF
           generate()
           shuffle()
           k = 1
