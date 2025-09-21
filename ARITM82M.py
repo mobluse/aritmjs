@@ -1,7 +1,17 @@
-# Aritm for TI-82 Advanced Edition Python in MicroPython
-from time import sleep, monotonic
+# Aritm Mini v0.3.4 for TI-82 Advanced Edition Python V5.6.5 is FOSS.
+# (c) 1992-2025 by Mikael O. Bonnier, Lund, Sweden.
+# E-mail: <mikael.bonnier@gmail.com>.
+# Absolutely no warranty.
+# License GPLv3+, see
+# <http://www.gnu.org/licenses/gpl.html>.
+# More programs at
+# <https://github.com/mobluse/aritmjs>.
+# Documentation:
+# 76543210, 7:type, 6-4:op1, 3-2:op2, 1-0:#todo.
 
-# Global variables
+from time import sleep, monotonic
+from random import random
+
 l = 0
 m = 10
 aa = []
@@ -16,13 +26,8 @@ def delay(d):
   #d=0
   sleep(d/1000)
 
-def my_random():
-    global _seed
-    _seed = (1664525 * _seed + 1013904223) & 0xFFFFFFFF
-    return _seed / 4294967296.0
-
 def rnd():
-  return my_random()
+  return random()
 
 def cls():
   for i in range(10):
@@ -31,10 +36,34 @@ def cls():
 
 def sign(c):
   global sb
-  if c == 5:
+  if c in [1, 2]:
+    sb += '+'
+  elif c in [3, 4]:
+    sb += '-'
+  elif c == 5:
     sb += '*'
   elif c == 6:
     sb += '/'
+
+#def help():
+#  cls()
+#  print("Help")
+#  print("You can mix problems")
+#  print("anyway you like.")
+#  print("More help on")
+#  print("<http://aritm.orbin.se/>.")
+#  d = 5000
+#  delay(d)
+
+#def about():
+#  cls()
+#  print("About")
+#  print("Aritm 0.3 (c) 1992-2025 by")
+#  print("Mikael O. Bonnier, Lund,")
+#  print("Absolutely no warranty.")
+#  print("FOSS, see license GPLv3+.")
+#  d = 5000
+#  delay(d)
 
 def menuitem():
   global a
@@ -48,6 +77,59 @@ def generate():
   print("Generating")
   print("Problems...")
   u = 1
+
+  # Addition 1
+  x = m
+  y = 10
+  dv = x//y
+  x = dv
+  md = x%y
+  if md != 0:
+    for i in range(0, 10):
+      for j in range(0, 10):
+        aa[u] = 10000000 + i * 10000 + j * 100 + 1
+        u += 1
+
+  # Addition 2
+  #x = m
+  #y = 100
+  #dv = x//y
+  #x = dv
+  #y = 10
+  #md = x%y
+  #if md != 0:
+  #  for i in range(0, 10):
+  #    for j in range(0, 10):
+  #      t = 10 * (int(8 * rnd()) + 1)
+  #      aa[u] = 20000000 + (t + i) * 10000 + j * 100 + 1
+  #      u += 1
+
+  # Subtraction 1
+  #x = m
+  #y = 1000
+  #dv = x//y
+  #x = dv
+  #y = 10
+  #md = x%y
+  #if md != 0:
+  #  for i in range(0, 10):
+  #    for j in range(i, 10 + i):
+  #      aa[u] = 30000000 + j * 10000 + i * 100 + 1
+  #      u += 1
+
+  # Subtraction 2
+  #x = m
+  #y = 10000
+  #dv = x//y
+  #x = dv
+  #y = 10
+  #md = x%y
+  #if md != 0:
+  #  for i in range(0, 10):
+  #    for j in range(i, 10 + i):
+  #      t = 10 * (int(9 * rnd()) + 1)
+  #      aa[u] = 40000000 + (t + j) * 10000 + i * 100 + 1
+  #      u += 1
 
   # Multiplication
   x = m
@@ -93,7 +175,6 @@ def practice():
   global k, u, l, aa, sb
 
   while l > 0:
-    # Practice loop
     while k <= u and l > 0:
       cls()
       print("%d problems left. -1 Esc"%l)
@@ -139,7 +220,11 @@ def practice():
       if a == -2:
         continue
 
-      if c == 5:
+      if c in [1, 2]:
+        r = i + j
+      elif c in [3, 4]:
+        r = i - j
+      elif c == 5:
         r = i * j
       elif c == 6:
         x = i
@@ -219,7 +304,7 @@ def setupMenu():
   while True:
     cls()
     n = 0
-    # Calculate the number of selected exercises
+
     for a in range(1, 7):
       r = 10**a
       x = m
@@ -231,19 +316,18 @@ def setupMenu():
       if md != 0:
         n += 90 if a == 6 else 100
 
-    # Display menu items
     a = 0
     nr()
-    print('N/A')
+    print("Addition 1")
 
     nr()
-    print('N/A')
+    print("N/A")
 
     nr()
-    print('N/A')
+    print("N/A")
 
     nr()
-    print('N/A')
+    print("N/A")
 
     nr()
     print("Multiplication")
@@ -304,6 +388,10 @@ def menu():
   menuitem()
   print("Setup and go")
   menuitem()
+  print("N/A")
+  menuitem()
+  print("N/A")
+  menuitem()
   print("Exit")
 
   s = 0
@@ -320,7 +408,9 @@ def menu():
     practice()
   elif oi == 2:
     setupMenu()
-  elif oi == 3:
+  elif oi== 4:
+    pass
+  elif oi == 5:
     quit()
 
 def quit():
@@ -334,10 +424,5 @@ def main():
   except:
     pass
 
-def start():
-  global aa
-  aa = [0.0]*191
-  main()
-
-if __name__ == '__main__':
-  start()
+aa = [0.0]*291
+main()
