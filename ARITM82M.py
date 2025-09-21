@@ -1,6 +1,5 @@
 # Aritm for TI-82 Advanced Edition Python in MicroPython
-from random import random
-from time import sleep
+from time import sleep, ticks_us
 
 # Global variables
 l = 0
@@ -12,13 +11,19 @@ k = 0
 c = 0
 n = 0
 sb = ''
+_seed = 12345
 
 def delay(d):
   #d=0
   sleep(d/1000)
+    
+def my_random():
+    global _seed
+    _seed = (1664525 * _seed + 1013904223) & 0xFFFFFFFF
+    return _seed / 4294967296.0
 
 def rnd():
-  return random()
+  return my_random()
 
 def cls():
   for i in range(10):
@@ -27,11 +32,7 @@ def cls():
 
 def sign(c):
   global sb
-  if c in [1, 2]:
-    sb += '+'
-  elif c in [3, 4]:
-    sb += '-'
-  elif c == 5:
+  if c == 5:
     sb += '*'
   elif c == 6:
     sb += '/'
@@ -128,7 +129,7 @@ def practice():
       sb += str(j)
       sb += ' = '
 
-      ans = input(sb).strip()
+      ans = input(sb)
       try:
         a = float(ans)
       except:
@@ -139,11 +140,7 @@ def practice():
       if a == -2:
         continue
 
-      if c in [1, 2]:
-        r = i + j
-      elif c in [3, 4]:
-        r = i - j
-      elif c == 5:
+      if c == 5:
         r = i * j
       elif c == 6:
         x = i
@@ -218,7 +215,7 @@ def nr():
   print(end='%d%c'%(a,('*' if md != 0 else ' ')))
 
 def setupMenu():
-  global m, n, a, k
+  global m, n, a, k, _seed
 
   while True:
     cls()
@@ -238,16 +235,16 @@ def setupMenu():
     # Display menu items
     a = 0
     nr()
-    print("Addition 1")
+    print('N/A')
 
     nr()
-    print("Addition 2")
+    print('N/A')
 
     nr()
-    print("Subtraction 1")
+    print('N/A')
 
     nr()
-    print("Subtraction 2")
+    print('N/A')
 
     nr()
     print("Multiplication")
@@ -262,7 +259,7 @@ def setupMenu():
       try:
         a = int(ans)
       except:
-        a = -2  # Invalid value
+        a = -2
 
       if a == -1 or ans in ['.1', ',1', '01']:
         return
@@ -272,6 +269,7 @@ def setupMenu():
 
       if a == 0:
         if n > 0:
+          _seed = ticks_us()
           generate()
           shuffle()
           k = 1
@@ -281,7 +279,6 @@ def setupMenu():
           continue
       break
 
-    # Toggle the selected exercise type
     r = 10**a
     x = m
     y = r
@@ -308,10 +305,6 @@ def menu():
   menuitem()
   print("Setup and go")
   menuitem()
-  print("Help")
-  menuitem()
-  print("About")
-  menuitem()
   print("Exit")
 
   s = 0
@@ -329,10 +322,6 @@ def menu():
   elif oi == 2:
     setupMenu()
   elif oi == 3:
-    help()
-  elif oi == 4:
-    about()
-  elif oi == 5:
     quit()
 
 def quit():
@@ -348,7 +337,7 @@ def main():
 
 def start():
   global aa
-  aa = [0.0]*591
+  aa = [0.0]*191
   main()
 
 if __name__ == '__main__':
