@@ -1,14 +1,8 @@
 # Aritm for TI-82 Advanced Edition Python in MicroPython, but doesn't work because too big.
-from math import floor
 from random import random
 from time import sleep
 
 # Global variables
-md = 0.0
-dv = 0.0
-x = 0.0
-y = 0.0
-r = 0.0
 l = 0
 m = 10
 aa = []
@@ -16,22 +10,12 @@ a = 0
 u = 0
 k = 0
 c = 0
-ans = ''
 n = 0
-d = 0
 sb = ''
 
 def delay(d):
   #d=0
   sleep(d/1000)
-
-def mod(y):
-  global md, x
-  md = x%y
-
-def idiv(y):
-  global dv, x
-  dv = x//y
 
 def rnd():
   return random()
@@ -40,10 +24,6 @@ def cls():
   for i in range(10):
     print()
   print("Aritm")
-
-def sound():
-  d = 100
-  delay(d)
 
 def sign(c):
   global sb
@@ -55,10 +35,6 @@ def sign(c):
     sb += '*'
   elif c == 6:
     sb += '/'
-
-def pow10(a):
-  global r
-  r = 10**a
 
 def help():
   cls()
@@ -87,7 +63,7 @@ def menuitem():
   print(end='%d '%a)
 
 def generate():
-  global m, md, dv, x, u, aa, l
+  global m, u, aa, l
 
   cls()
   print("Generating")
@@ -97,9 +73,9 @@ def generate():
   # Addition 1
   x = m
   y = 10
-  idiv(y)
+  dv = x//y
   x = dv
-  mod(y)
+  md = x%y
   if md != 0:
     for i in range(0, 10):
       for j in range(0, 10):
@@ -109,24 +85,24 @@ def generate():
   # Addition 2
   x = m
   y = 100
-  idiv(y)
+  dv = x//y
   x = dv
   y = 10
-  mod(y)
+  md = x%y
   if md != 0:
     for i in range(0, 10):
       for j in range(0, 10):
-        t = 10 * (floor(8 * rnd()) + 1)
+        t = 10 * (int(8 * rnd()) + 1)
         aa[u] = 20000000 + (t + i) * 10000 + j * 100 + 1
         u += 1
 
   # Subtraction 1
   x = m
   y = 1000
-  idiv(y)
+  dv = x//y
   x = dv
   y = 10
-  mod(y)
+  md = x%y
   if md != 0:
     for i in range(0, 10):
       for j in range(i, 10 + i):
@@ -136,24 +112,24 @@ def generate():
   # Subtraction 2
   x = m
   y = 10000
-  idiv(y)
+  dv = x//y
   x = dv
   y = 10
-  mod(y)
+  md = x%y
   if md != 0:
     for i in range(0, 10):
       for j in range(i, 10 + i):
-        t = 10 * (floor(9 * rnd()) + 1)
+        t = 10 * (int(9 * rnd()) + 1)
         aa[u] = 40000000 + (t + j) * 10000 + i * 100 + 1
         u += 1
 
   # Multiplication
   x = m
   y = 100000
-  idiv(y)
+  dv = x//y
   x = dv
   y = 10
-  mod(y)
+  md = x%y
   if md != 0:
     for i in range(0, 10):
       for j in range(0, 10):
@@ -163,14 +139,14 @@ def generate():
   # Division
   x = m
   y = 1000000
-  idiv(y)
+  dv = x//y
   x = dv
   y = 10
-  mod(y)
+  md = x%y
   if md != 0:
     for i in range(0, 10):
       for j in range(1, 10):
-        t = i * j + floor(j * rnd())
+        t = i * j + int(j * rnd())
         aa[u] = 60000000 + t * 10000 + j * 100 + 1
         u += 1
 
@@ -182,13 +158,13 @@ def shuffle():
 
   print("Shuffling...")
   for i in range(u, 1, -1):
-    j = floor(i * rnd()) + 1
+    j = int(i * rnd()) + 1
     t = aa[i]
     aa[i] = aa[j]
     aa[j] = t
 
 def practice():
-  global k, u, l, x, dv, md, ans, a, r, aa, sb
+  global k, u, l, aa, sb
 
   while l > 0:
     # Practice loop
@@ -199,7 +175,7 @@ def practice():
       t = aa[k]
       x = t
       y = 10000000
-      idiv(y)
+      dv = x//y
       c = dv
       sb = ''
       if c == 6:
@@ -207,10 +183,10 @@ def practice():
 
       x = t
       y = 10000
-      idiv(y)
+      dv = x//y
       x = dv
       y = 1000
-      mod(y)
+      md = x%y
       i = md
       sb += str(i)
 
@@ -218,10 +194,10 @@ def practice():
 
       x = t
       y = 100
-      idiv(y)
+      dv = x//y
       x = dv
       y = 100
-      mod(y)
+      md = x%y
       j = md
       sb += str(j)
       sb += ' = '
@@ -246,7 +222,7 @@ def practice():
       elif c == 6:
         x = i
         y = j
-        idiv(y)
+        dv = x//y
         r = dv
 
       if r != a:
@@ -262,20 +238,19 @@ def practice():
 
         x = t
         y = 100
-        mod(y)
+        md = x%y
         if md < 99:
           l += 1
           aa[k] = t + 1
 
         k += 1
-        sound()
-        d = 1200
+        d = 1300
         delay(d)
       else:
         print("Right!")
         x = t
         y = 100
-        mod(y)
+        md = x%y
         if md > 0:
           l -= 1
           aa[k] = t - 1
@@ -296,7 +271,7 @@ def practice():
         t = aa[k]
         x = t
         y = 100
-        mod(y)
+        md = x%y
         if md != 0:
           aa[n] = t
           n += 1
@@ -305,32 +280,32 @@ def practice():
       k = 1
 
 def nr():
-  global a, m, x, r, dv, md
+  global a, m
   a += 1
   x = m
-  pow10(a)
+  r = 10**a
   y = r
-  idiv(y)
+  dv = x//y
   x = dv
   y = 10
-  mod(y)
+  md = x%y
   print(end='%d%c'%(a,('*' if md != 0 else ' ')))
 
 def setupMenu():
-  global m, md, dv, x, n, ans, a, r, k
+  global m, n, a, k
 
   while True:
     cls()
     n = 0
     # Calculate the number of selected exercises
     for a in range(1, 7):
-      pow10(a)
+      r = 10**a
       x = m
       y = r
-      idiv(y)
+      dv = x//y
       x = dv
       y = 10
-      mod(y)
+      md = x%y
       if md != 0:
         n += 90 if a == 6 else 100
 
@@ -357,7 +332,7 @@ def setupMenu():
     print('0 OK and go %d'%n)
 
     while True:
-      ans = input('Toggle 1-6, or 0 or -1: ').strip()
+      ans = input('Toggle 1-6, or 0 or -1: ')
       try:
         a = int(ans)
       except:
@@ -381,13 +356,13 @@ def setupMenu():
       break
 
     # Toggle the selected exercise type
-    pow10(a)
+    r = 10**a
     x = m
     y = r
-    idiv(y)
+    dv = x//y
     x = dv
     y = 10
-    mod(y)
+    md = x%y
 
     if md == 0:
       m += r
@@ -439,10 +414,10 @@ def quit():
   raise KeyboardInterrupt
 
 def main():
-#  try:
+  try:
     while True:
       menu()
-#  except:
+  except:
     pass
 
 def start():
