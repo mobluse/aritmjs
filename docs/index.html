@@ -263,8 +263,14 @@
       const types = Array.from(document.querySelectorAll('.type-option input:checked')).map(e => e.value);
       if (types.length === 0) return;
       
-      let total = parseInt(document.getElementById('total-problems').value) || 20;
-      if (total === 0) total = 9999; // "Alla" = oändligt läge egentligen
+      // Hämta värdet från rutan
+      let val = parseInt(document.getElementById('total-problems').value);
+
+      // Om rutan är tom eller ogiltig, sätt 20 som standard
+      if (isNaN(val)) val = 20;
+
+      // Om värdet är 0 (dvs "Alla"), sätt till ett högt tal
+      let total = (val === 0) ? 9999 : val;
 
       currentState = {
         types: types,
