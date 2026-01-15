@@ -1,0 +1,11 @@
+# Ny implementering
+## Välj typ
+Webbapp
+## Konfiguration
+### Beskrivning
+valfri
+### Webbapp
+#### Kör som
+Användare som har åtkomst till webbappen
+#### Vem har åtkomst
+Alla som har ett Google-konto
