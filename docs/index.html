@@ -112,8 +112,44 @@
     let problemPool = [];
     let currentProblem = null;
     let isProcessing = false;
+    const SAVE_KEY = 'aritm_local_save_v1';
 
     const errorAudio = new Audio('https://www.soundjay.com/buttons/beep-10.mp3');
+
+    // 1. ÅTERSTÄLL VID START (Detta saknades förut!)
+    window.onload = function() {
+      // Fix för viewport på mobiler
+      setTimeout(() => window.scrollTo(0,0), 100);
+      
+      const savedData = localStorage.getItem(SAVE_KEY);
+      if (savedData) {
+        try {
+          const state = JSON.parse(savedData);
+          if (state && state.pool && state.current) {
+            problemPool = state.pool;
+            currentProblem = state.current;
+            showView('game-view');
+            updateUI();
+            return;
+          }
+        } catch(e) {
+          console.error("Kunde inte ladda sparfil", e);
+        }
+      }
+      showView('setup-view');
+    };
+
+    function saveProgress() {
+      const state = {
+        pool: problemPool,
+        current: currentProblem
+      };
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    }
+
+    function clearProgress() {
+      localStorage.removeItem(SAVE_KEY);
+    }
 
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -128,21 +164,15 @@
         if (type === 'add1') {
           for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push({str: `${i} + ${j}`, ans: i+j});
         } else if (type === 'add2') {
-          for (let i=10; i<=19; i++) for (let j=0; j<=9; j++) pool.push({str: `${i} + ${j}`, ans: i+j});
+          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) {let t = 10 * (Math.floor(Math.random() * 8) + 1); pool.push({str: `${t+i} + ${j}`, ans: t+i+j})}
         } else if (type === 'sub1') {
-          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push({str: `${i+j} - ${i}`, ans: j});
+          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push({str: `${i+j} - ${j}`, ans: i});
         } else if (type === 'sub2') {
-          for (let i=10; i<=19; i++) for (let j=0; j<=9; j++) pool.push({str: `${i+j} - ${i}`, ans: j});
+          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) {let t = 10 * (Math.floor(Math.random() * 9) + 1); pool.push({str: `${t+i+j} - ${j}`, ans: t+i})}
         } else if (type === 'mult') {
           for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push({str: `${i} ⋅ ${j}`, ans: i*j});
         } else if (type === 'div') {
-          for (let divisor=2; divisor<=10; divisor++) {
-            for (let quotient=1; quotient<=10; quotient++) {
-              let remainder = (quotient % 3); 
-              let dividend = (divisor * quotient) + remainder;
-              pool.push({str: `${dividend} / ${divisor}`, ans: quotient});
-            }
-          }
+          for (let i = 0; i <= 9; i++) for (let j = 1; j <= 9; j++) pool.push({str: `${i * j + Math.floor(j * Math.random())} / ${j}`, ans:i});
         }
       });
       shuffle(pool);
@@ -153,6 +183,7 @@
       const types = Array.from(document.querySelectorAll('.type-option input:checked')).map(e => e.value);
       if (types.length === 0) return;
 
+      // Skapa ny kortlek
       problemPool = createPool(types);
       let requestedTotal = parseInt(document.getElementById('total-problems').value);
       
@@ -160,7 +191,7 @@
         problemPool = problemPool.slice(0, requestedTotal);
       }
 
-      nextProblem();
+      nextProblem(); // Drar första kortet och sparar
       showView('game-view');
     }
 
@@ -170,6 +201,7 @@
         return;
       }
       currentProblem = problemPool.shift(); 
+      saveProgress(); // SPARA HÄR
       updateUI();
     }
 
@@ -190,7 +222,10 @@
         }, 400);
       } else {
         f.innerText = "Fel! Försök igen."; f.className = "wrong";
-        problemPool.push(currentProblem); 
+        // Lägg tillbaka uppgiften sist
+        problemPool.push(currentProblem);
+        saveProgress(); // SPARA HÄR (viktigt om man stänger ner i frustration)
+        
         errorAudio.play().catch(()=>{});
         document.getElementById('answer-input').value = "";
         document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1);
@@ -199,24 +234,31 @@
     }
 
     function updateUI() {
+      if (!currentProblem) return;
       document.getElementById('problem-text').innerText = currentProblem.str;
+      // +1 för att inkludera det nuvarande problemet i räkningen
       document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1);
       document.getElementById('answer-input').value = "";
     }
 
     function finishGame() {
+      clearProgress(); // Rensa sparfilen när man är klar
       showView('finish-view');
       document.getElementById('final-score').innerText = "Du har klarat alla uppgifter!";
     }
 
     function quitGame() {
       const left = problemPool.length + (currentProblem ? 1 : 0);
+      clearProgress(); // Rensa sparfilen om man avbryter manuellt
       showView('finish-view');
       document.getElementById('finish-title').innerText = "Avbruten";
       document.getElementById('final-score').innerText = "Du hade " + left + " kvar.";
     }
 
-    function restartApp() { showView('setup-view'); }
+    function restartApp() { 
+      clearProgress();
+      showView('setup-view'); 
+    }
     
     function showView(v) {
       ['setup-view', 'game-view', 'finish-view'].forEach(id => document.getElementById(id).style.display = 'none');
