@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <style>
-    /* CSS - Identiskt med din fungerande Aritm Local */
     html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #f0f2f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; position: fixed; width: 100%; top: 0; left: 0; user-select: none; -webkit-user-select: none; }
     body { display: flex; flex-direction: column; }
     #setup-view, #game-view, #finish-view { display: none; flex-direction: column; height: 100%; width: 100%; box-sizing: border-box; }
@@ -91,7 +90,6 @@
   </div>
 
   <script>
-    // --- STORAGE ADAPTER ---
     const isCloud = (typeof google !== 'undefined' && google.script);
     const Storage = {
       saveSettings: (s) => isCloud ? google.script.run.saveCloudSettings(JSON.stringify(s)) : localStorage.setItem('aritm_settings', JSON.stringify(s)),
@@ -108,9 +106,8 @@
     };
 
     let problemPool = [], currentProblemStr = null, isProcessing = false;
-
-    // Syntetiskt ljud
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
     function playError() {
       const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
       o.connect(g); g.connect(audioCtx.destination); o.type = 'sawtooth';
@@ -118,13 +115,21 @@
       o.start(); o.stop(audioCtx.currentTime + 0.2);
     }
 
-    // Tangentbord
+    // --- UPPDATERAT TANGENTBORD ---
     document.addEventListener('keydown', (e) => {
-      if (document.getElementById('game-view').style.display === 'flex') {
+      const isGameView = document.getElementById('game-view').style.display === 'flex';
+      const isSetupView = document.getElementById('setup-view').style.display === 'flex';
+
+      if (isGameView) {
+        if (isProcessing) return;
         if (e.key >= '0' && e.key <= '9') pressKey(e.key);
-        else if (e.key === 'Enter') submitAnswer();
-        else if (e.key === 'Backspace') pressKey('C');
-        else if (e.key === 'Escape') quitGame();
+        else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); submitAnswer(); }
+        else if (e.key === 'Backspace' || e.key === 'Delete' || e.key.toLowerCase() === 'c') { e.preventDefault(); pressKey('C'); }
+        else if (e.key === 'Escape') { e.preventDefault(); quitGame(); }
+      } else if (isSetupView) {
+        if (e.key === '+' || e.key === '=') { e.preventDefault(); adjustTotal(5); }
+        else if (e.key === '-') { e.preventDefault(); adjustTotal(-5); }
+        else if (e.key === 'Enter') startSession();
       }
     });
 
@@ -159,13 +164,14 @@
     }
 
     function startSession() {
-      const selected = Array.from(document.querySelectorAll('.type-option input:checked')).map(i => i.value);
-      if (selected.length === 0) return;
+      const selectedInputs = Array.from(document.querySelectorAll('.type-option input:checked'));
+      const selectedValues = selectedInputs.map(i => i.value);
+      if (selectedValues.length === 0) return;
       
       const total = parseInt(document.getElementById('total-problems').value);
       Storage.saveSettings({total, types: Array.from(document.querySelectorAll('.type-option input')).map(i => ({val: i.value, checked: i.checked}))});
       
-      problemPool = createPool(selected);
+      problemPool = createPool(selectedValues);
       if (total > 0 && total < problemPool.length) problemPool = problemPool.slice(0, total);
       
       nextProblem();
@@ -191,7 +197,7 @@
       const input = document.getElementById('answer-input').value;
       if (!input) return;
       isProcessing = true;
-      const expected = Math.floor(eval(currentProblemStr.replace('⋅', '*')));
+      const expected = Math.floor(eval(currentProblemStr.replace('⋅', '*').replace('/', '/')));
       const f = document.getElementById('feedback');
       if (parseInt(input) === expected) {
         f.innerText = "Rätt!"; f.className = "correct";
