@@ -26,7 +26,6 @@
     .quick-select-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
     .quick-btn { background: white; border: 1.5px solid #1a73e8; color: #1a73e8; padding: 8px 0; text-align: center; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; border: 1.5px solid #1a73e8; }
     
-    /* Tydlig markering för TV-navigation */
     .quick-btn:focus, .adjust-btn:focus, .btn-start:focus, .type-option:focus-within {
       outline: 3px solid #ffc107;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
@@ -117,6 +116,7 @@
     let currentProblemStr = null;
     let isProcessing = false;
     const SAVE_KEY = 'aritm_local_save_v1';
+    const SETTINGS_KEY = 'aritm_local_settings';
     const errorAudio = new Audio('https://www.soundjay.com/buttons/beep-10.mp3');
 
     document.addEventListener('keydown', function(event) {
@@ -135,6 +135,26 @@
         else if (key === '-') { event.preventDefault(); adjustTotal(-5); }
       }
     });
+
+    function saveSettings() {
+      const types = Array.from(document.querySelectorAll('.type-option input')).map(i => ({ val: i.value, checked: i.checked }));
+      const total = document.getElementById('total-problems').value;
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ types, total }));
+    }
+
+    function loadSettings() {
+      const saved = localStorage.getItem(SETTINGS_KEY);
+      if (saved) {
+        try {
+          const { types, total } = JSON.parse(saved);
+          document.getElementById('total-problems').value = total;
+          types.forEach(t => {
+            const input = document.querySelector(`.type-option input[value="${t.val}"]`);
+            if (input) input.checked = t.checked;
+          });
+        } catch(e) { console.error("Kunde inte ladda inställningar", e); }
+      }
+    }
 
     function computeAnswer(str) {
       let expression = str.replace('⋅', '*');
@@ -171,6 +191,7 @@
     }
 
     window.onload = function() {
+      loadSettings(); // Ladda sparade val först
       const savedData = localStorage.getItem(SAVE_KEY);
       if (savedData) {
         try {
@@ -199,6 +220,7 @@
     }
 
     function startSession() {
+      saveSettings(); // Spara inställningarna när man startar
       const types = Array.from(document.querySelectorAll('.type-option input:checked')).map(e => e.value);
       if (types.length === 0) return;
       problemPool = createPool(types);
