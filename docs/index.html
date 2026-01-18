@@ -36,6 +36,7 @@
     .adjust-btn { background: #e8f0fe; color: #1a73e8; width: 45px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 20px; font-weight: bold; cursor: pointer; border: none; }
     
     .btn-start { background: #1a73e8; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+    .btn-continue { background: #28a745 !important; }
 
     #problem-display { flex-grow: 1; display: flex; align-items: center; justify-content: center; font-size: clamp(40px, 10vh, 60px); font-weight: bold; color: #1a73e8; }
     #answer-input { width: 70%; margin: 0 auto 5px; font-size: 32px; text-align: center; padding: 5px; border: 2px solid #1a73e8; border-radius: 8px; background: white; pointer-events: none; flex-shrink: 0; color: #000; min-height: 50px; }
@@ -107,6 +108,9 @@
     <div class="container" style="text-align: center; justify-content: center;">
       <h2 id="finish-title">Bra jobbat!</h2>
       <p id="final-score" style="font-size: 18px; color: #555;"></p>
+      
+      <button id="btn-continue" class="btn-start btn-continue" style="display: none;" onclick="continueSession()">FORTSÄTT</button>
+      
       <button class="btn-start" onclick="restartApp()">NY ÖVNING</button>
     </div>
   </div>
@@ -152,7 +156,7 @@
             const input = document.querySelector(`.type-option input[value="${t.val}"]`);
             if (input) input.checked = t.checked;
           });
-        } catch(e) { console.error("Kunde inte ladda inställningar", e); }
+        } catch(e) {}
       }
     }
 
@@ -191,7 +195,7 @@
     }
 
     window.onload = function() {
-      loadSettings(); // Ladda sparade val först
+      loadSettings();
       const savedData = localStorage.getItem(SAVE_KEY);
       if (savedData) {
         try {
@@ -220,7 +224,7 @@
     }
 
     function startSession() {
-      saveSettings(); // Spara inställningarna när man startar
+      saveSettings();
       const types = Array.from(document.querySelectorAll('.type-option input:checked')).map(e => e.value);
       if (types.length === 0) return;
       problemPool = createPool(types);
@@ -230,6 +234,12 @@
       }
       nextProblem(); 
       showView('game-view');
+    }
+
+    // NY FUNKTION: Fortsätt där man var
+    function continueSession() {
+      showView('game-view');
+      updateUI();
     }
 
     function nextProblem() {
@@ -273,10 +283,32 @@
       document.getElementById('answer-input').value = "";
     }
 
-    function finishGame() { localStorage.removeItem(SAVE_KEY); showView('finish-view'); document.getElementById('final-score').innerText = "Du har klarat alla uppgifter!"; }
-    function quitGame() { localStorage.removeItem(SAVE_KEY); showView('finish-view'); document.getElementById('finish-title').innerText = "Avbruten"; document.getElementById('final-score').innerText = "Du hade " + (problemPool.length + (currentProblemStr ? 1 : 0)) + " kvar."; }
-    function restartApp() { localStorage.removeItem(SAVE_KEY); showView('setup-view'); }
-    function showView(v) { ['setup-view', 'game-view', 'finish-view'].forEach(id => document.getElementById(id).style.display = 'none'); document.getElementById(v).style.display = 'flex'; }
+    function finishGame() { 
+      localStorage.removeItem(SAVE_KEY); 
+      document.getElementById('btn-continue').style.display = 'none'; // Göm fortsätt-knappen om man är helt klar
+      showView('finish-view'); 
+      document.getElementById('final-score').innerText = "Du har klarat alla uppgifter!"; 
+      document.getElementById('finish-title').innerText = "Bra jobbat!";
+    }
+
+    function quitGame() { 
+      // VIKTIGT: Här tar vi INTE bort SAVE_KEY, så sessionen finns kvar.
+      document.getElementById('btn-continue').style.display = 'block'; // Visa fortsätt-knappen
+      showView('finish-view'); 
+      document.getElementById('finish-title').innerText = "Avbruten"; 
+      document.getElementById('final-score').innerText = "Du hade " + (problemPool.length + (currentProblemStr ? 1 : 0)) + " kvar."; 
+    }
+
+    function restartApp() { 
+      localStorage.removeItem(SAVE_KEY); // Om man väljer "NY ÖVNING" raderas den gamla sessionen
+      showView('setup-view'); 
+    }
+
+    function showView(v) { 
+      ['setup-view', 'game-view', 'finish-view'].forEach(id => document.getElementById(id).style.display = 'none'); 
+      document.getElementById(v).style.display = 'flex'; 
+    }
+
     function setTotal(n) { document.getElementById('total-problems').value = n; }
     function adjustTotal(d) { let v = parseInt(document.getElementById('total-problems').value) || 0; document.getElementById('total-problems').value = Math.max(0, v + d); }
     function pressKey(n) { if (isProcessing) return; const i = document.getElementById('answer-input'); if (n === 'C') i.value = ""; else if (i.value.length < 5) i.value += n; }
