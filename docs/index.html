@@ -230,7 +230,7 @@
         saveProgress();
         errorAudio.play().catch(()=>{});
         document.getElementById('answer-input').value = "";
-        document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;";
+        document.getElementById('count-left').innerHTML = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;";
         isProcessing = false;
       }
     }
@@ -238,7 +238,7 @@
     function updateUI() {
       if (!currentProblemStr) return;
       document.getElementById('problem-text').innerText = currentProblemStr;
-      document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;";
+      document.getElementById('count-left').innerHTML = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;";
       document.getElementById('answer-input').value = "";
     }
 
