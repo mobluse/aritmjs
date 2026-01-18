@@ -84,8 +84,8 @@
 
   <div id="game-view">
     <div class="status-bar">
-      <span id="btn-quit-text" onclick="quitGame()">Avbryt (Esc)</span>
-      <span id="count-left">Kvar: -</span>
+      <span id="btn-quit-text" onclick="quitGame()">   Avbryt (Esc)</span>
+      <span id="count-left">Kvar: -   </span>
     </div>
     <div id="problem-display"><span id="problem-text">Laddar...</span></div>
     <input type="text" id="answer-input" readonly placeholder="?">
@@ -125,21 +125,10 @@
       else if (key === 'Escape') { event.preventDefault(); quitGame(); }
     });
 
-    // DIN ÖNSKADE LOGIK: Beräkna svaret från strängen vid behov
     function computeAnswer(str) {
       // Ersätt multiplikationstecken för JS-evaluering
       let expression = str.replace('⋅', '*');
-      let parts = expression.split(' ');
-      
-      let n1 = parseFloat(parts[0]);
-      let op = parts[1];
-      let n2 = parseFloat(parts[2]);
-
-      if (op === '+') return n1 + n2;
-      if (op === '-') return n1 - n2;
-      if (op === '*') return n1 * n2;
-      if (op === '/') return Math.floor(n1 / n2); // Hanterar division med rest
-      return 0;
+      return Math.floor(eval(expression));
     }
 
     // DIN ÖNSKADE LOGIK: createPool lagrar nu bara strängar
@@ -241,7 +230,7 @@
         saveProgress();
         errorAudio.play().catch(()=>{});
         document.getElementById('answer-input').value = "";
-        document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1);
+        document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1) + "   ";
         isProcessing = false;
       }
     }
@@ -249,7 +238,7 @@
     function updateUI() {
       if (!currentProblemStr) return;
       document.getElementById('problem-text').innerText = currentProblemStr;
-      document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1);
+      document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1) + "   ";
       document.getElementById('answer-input').value = "";
     }
 
