@@ -34,7 +34,6 @@
     .btn-start { background: #1a73e8; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
 
     #problem-display { flex-grow: 1; display: flex; align-items: center; justify-content: center; font-size: clamp(40px, 10vh, 60px); font-weight: bold; color: #1a73e8; }
-    /* Cursor pointer added to input to show it's interactable, though readonly */
     #answer-input { width: 70%; margin: 0 auto 5px; font-size: 32px; text-align: center; padding: 5px; border: 2px solid #1a73e8; border-radius: 8px; background: white; pointer-events: none; flex-shrink: 0; color: #000; min-height: 50px; }
     
     #feedback { text-align: center; height: 24px; min-height: 24px; font-weight: bold; font-size: 18px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -117,9 +116,9 @@
 
     const errorAudio = new Audio('https://www.soundjay.com/buttons/beep-10.mp3');
 
-    // HANTERA TANGENTBORD (FÖR TV/DATOR)
+    // HANTERA TANGENTBORD (TV/DATOR)
     document.addEventListener('keydown', function(event) {
-      // Om vi inte är i spelvyn, ignorera tangentbordet
+      // Endast aktivt i spelvyn
       if (document.getElementById('game-view').style.display !== 'flex') return;
       if (isProcessing) return;
 
@@ -129,19 +128,20 @@
       if (key >= '0' && key <= '9') {
         pressKey(key);
       } 
-      // Enter = Svara
-      else if (key === 'Enter') {
-        event.preventDefault(); // Förhindra oönskat beteende i webbläsaren
+      // Enter eller Mellanslag = Svara
+      else if (key === 'Enter' || key === ' ') {
+        event.preventDefault(); // Hindrar scroll vid mellanslag
         submitAnswer();
       } 
-      // Backspace = Sudda sista
-      else if (key === 'Backspace') {
-        const i = document.getElementById('answer-input');
-        i.value = i.value.slice(0, -1);
-      }
-      // Escape/Delete = Rensa allt (C)
-      else if (key === 'Escape' || key === 'Delete') {
+      // Backspace eller Delete = Rensa allt (C)
+      else if (key === 'Backspace' || key === 'Delete') {
+        event.preventDefault(); // Hindrar "Back" i webbläsaren
         pressKey('C');
+      }
+      // Escape = Avbryt
+      else if (key === 'Escape') {
+        event.preventDefault();
+        quitGame();
       }
     });
 
