@@ -8,7 +8,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
-    /* --- UTSEENDE (CSS) --- */
+    /* CSS - Samma rena gränssnitt som tidigare */
     html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #f0f2f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; position: fixed; width: 100%; top: 0; left: 0; user-select: none; -webkit-user-select: none; }
     body { display: flex; flex-direction: column; }
     #setup-view, #game-view, #finish-view { display: none; flex-direction: column; height: 100%; width: 100%; box-sizing: border-box; }
@@ -78,13 +78,13 @@
       </div>
       
       <button class="btn-start" onclick="startSession()">STARTA TRÄNING</button>
-      <p style="font-size: 10px; color: #999; text-align: center; margin-top: 20px;">Öppen källkod - GPLv3</p>
+      <p style="font-size: 10px; color: #999; text-align: center; margin-top: 20px;">Baserad på Aritm Cloud (GPLv3)</p>
     </div>
   </div>
 
   <div id="game-view">
     <div class="status-bar">
-      <span id="btn-quit-text" onclick="quitGame()">Avbryt</span>
+      <span id="btn-quit-text" onclick="quitGame()">Avbryt (Esc)</span>
       <span id="count-left">Kvar: -</span>
     </div>
     <div id="problem-display"><span id="problem-text">Laddar...</span></div>
@@ -108,96 +108,63 @@
   </div>
 
   <script>
-    /* --- LOGIK (JS) --- */
     let problemPool = [];
-    let currentProblem = null;
+    let currentProblemStr = null;
     let isProcessing = false;
     const SAVE_KEY = 'aritm_local_save_v1';
-
     const errorAudio = new Audio('https://www.soundjay.com/buttons/beep-10.mp3');
 
-    // HANTERA TANGENTBORD (TV/DATOR)
+    // TANGENTBORD
     document.addEventListener('keydown', function(event) {
-      // Endast aktivt i spelvyn
       if (document.getElementById('game-view').style.display !== 'flex') return;
       if (isProcessing) return;
-
       const key = event.key;
-
-      // Siffror 0-9
-      if (key >= '0' && key <= '9') {
-        pressKey(key);
-      } 
-      // Enter eller Mellanslag = Svara
-      else if (key === 'Enter' || key === ' ') {
-        event.preventDefault(); // Hindrar scroll vid mellanslag
-        submitAnswer();
-      } 
-      // Backspace eller Delete = Rensa allt (C)
-      else if (key === 'Backspace' || key === 'Delete') {
-        event.preventDefault(); // Hindrar "Back" i webbläsaren
-        pressKey('C');
-      }
-      // Escape = Avbryt
-      else if (key === 'Escape') {
-        event.preventDefault();
-        quitGame();
-      }
+      if (key >= '0' && key <= '9') pressKey(key);
+      else if (key === 'Enter' || key === ' ') { event.preventDefault(); submitAnswer(); }
+      else if (key === 'Backspace' || key === 'Delete') { event.preventDefault(); pressKey('C'); }
+      else if (key === 'Escape') { event.preventDefault(); quitGame(); }
     });
 
-    window.onload = function() {
-      setTimeout(() => window.scrollTo(0,0), 100);
-      const savedData = localStorage.getItem(SAVE_KEY);
-      if (savedData) {
-        try {
-          const state = JSON.parse(savedData);
-          if (state && state.pool && state.current) {
-            problemPool = state.pool;
-            currentProblem = state.current;
-            showView('game-view');
-            updateUI();
-            return;
-          }
-        } catch(e) { console.error(e); }
-      }
-      showView('setup-view');
-    };
+    // DIN ÖNSKADE LOGIK: Beräkna svaret från strängen vid behov
+    function computeAnswer(str) {
+      // Ersätt multiplikationstecken för JS-evaluering
+      let expression = str.replace('⋅', '*');
+      let parts = expression.split(' ');
+      
+      let n1 = parseFloat(parts[0]);
+      let op = parts[1];
+      let n2 = parseFloat(parts[2]);
 
-    function saveProgress() {
-      const state = { pool: problemPool, current: currentProblem };
-      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-    }
-    function clearProgress() { localStorage.removeItem(SAVE_KEY); }
-
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
+      if (op === '+') return n1 + n2;
+      if (op === '-') return n1 - n2;
+      if (op === '*') return n1 * n2;
+      if (op === '/') return Math.floor(n1 / n2); // Hanterar division med rest
+      return 0;
     }
 
+    // DIN ÖNSKADE LOGIK: createPool lagrar nu bara strängar
     function createPool(types) {
       let pool = [];
       types.forEach(type => {
         if (type === 'add1') {
-          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push({str: `${i} + ${j}`, ans: i+j});
+          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push(`${i} + ${j}`);
         } else if (type === 'add2') {
           for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) {
             let t = 10 * (Math.floor(Math.random() * 8) + 1); 
-            pool.push({str: `${t+i} + ${j}`, ans: t+i+j})
+            pool.push(`${t+i} + ${j}`);
           }
         } else if (type === 'sub1') {
-          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push({str: `${i+j} - ${j}`, ans: i});
+          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push(`${i+j} - ${j}`);
         } else if (type === 'sub2') {
           for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) {
             let t = 10 * (Math.floor(Math.random() * 9) + 1); 
-            pool.push({str: `${t+i+j} - ${j}`, ans: t+i})
+            pool.push(`${t+i+j} - ${j}`);
           }
         } else if (type === 'mult') {
-          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push({str: `${i} ⋅ ${j}`, ans: i*j});
+          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push(`${i} ⋅ ${j}`);
         } else if (type === 'div') {
           for (let i = 0; i <= 9; i++) for (let j = 1; j <= 9; j++) {
-            pool.push({str: `${i * j + Math.floor(j * Math.random())} / ${j}`, ans: i});
+            pool.push(`${i * j + Math.floor(j * Math.random())} / ${j}`);
           }
         }
       });
@@ -205,40 +172,63 @@
       return pool;
     }
 
+    window.onload = function() {
+      const savedData = localStorage.getItem(SAVE_KEY);
+      if (savedData) {
+        try {
+          const state = JSON.parse(savedData);
+          if (state && state.pool && state.current) {
+            problemPool = state.pool;
+            currentProblemStr = state.current;
+            showView('game-view');
+            updateUI();
+            return;
+          }
+        } catch(e) {}
+      }
+      showView('setup-view');
+    };
+
+    function saveProgress() {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({ pool: problemPool, current: currentProblemStr }));
+    }
+    
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
     function startSession() {
       const types = Array.from(document.querySelectorAll('.type-option input:checked')).map(e => e.value);
       if (types.length === 0) return;
-
       problemPool = createPool(types);
       let requestedTotal = parseInt(document.getElementById('total-problems').value);
-      
       if (requestedTotal > 0 && requestedTotal < problemPool.length) {
         problemPool = problemPool.slice(0, requestedTotal);
       }
-
       nextProblem(); 
       showView('game-view');
     }
 
     function nextProblem() {
-      if (problemPool.length === 0) {
-        finishGame();
-        return;
-      }
-      currentProblem = problemPool.shift(); 
+      if (problemPool.length === 0) { finishGame(); return; }
+      currentProblemStr = problemPool.shift(); 
       saveProgress(); 
       updateUI();
     }
 
     function submitAnswer() {
-      if (isProcessing || !currentProblem) return;
+      if (isProcessing || !currentProblemStr) return;
       const input = document.getElementById('answer-input').value;
       if (input === "") return;
-
+      
       isProcessing = true;
+      const expected = computeAnswer(currentProblemStr);
       const f = document.getElementById('feedback');
       
-      if (parseInt(input) === currentProblem.ans) {
+      if (parseInt(input) === expected) {
         f.innerText = "Rätt!"; f.className = "correct";
         setTimeout(() => {
           f.innerText = ""; f.className = "";
@@ -247,7 +237,7 @@
         }, 400);
       } else {
         f.innerText = "Fel! Försök igen."; f.className = "wrong";
-        problemPool.push(currentProblem);
+        problemPool.push(currentProblemStr);
         saveProgress();
         errorAudio.play().catch(()=>{});
         document.getElementById('answer-input').value = "";
@@ -257,44 +247,19 @@
     }
 
     function updateUI() {
-      if (!currentProblem) return;
-      document.getElementById('problem-text').innerText = currentProblem.str;
+      if (!currentProblemStr) return;
+      document.getElementById('problem-text').innerText = currentProblemStr;
       document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1);
       document.getElementById('answer-input').value = "";
     }
 
-    function finishGame() {
-      clearProgress(); 
-      showView('finish-view');
-      document.getElementById('final-score').innerText = "Du har klarat alla uppgifter!";
-    }
-
-    function quitGame() {
-      const left = problemPool.length + (currentProblem ? 1 : 0);
-      clearProgress();
-      showView('finish-view');
-      document.getElementById('finish-title').innerText = "Avbruten";
-      document.getElementById('final-score').innerText = "Du hade " + left + " kvar.";
-    }
-
-    function restartApp() { clearProgress(); showView('setup-view'); }
-    
-    function showView(v) {
-      ['setup-view', 'game-view', 'finish-view'].forEach(id => document.getElementById(id).style.display = 'none');
-      document.getElementById(v).style.display = 'flex';
-    }
-
+    function finishGame() { localStorage.removeItem(SAVE_KEY); showView('finish-view'); document.getElementById('final-score').innerText = "Du har klarat alla uppgifter!"; }
+    function quitGame() { localStorage.removeItem(SAVE_KEY); showView('finish-view'); document.getElementById('finish-title').innerText = "Avbruten"; document.getElementById('final-score').innerText = "Du hade " + (problemPool.length + (currentProblemStr ? 1 : 0)) + " kvar."; }
+    function restartApp() { localStorage.removeItem(SAVE_KEY); showView('setup-view'); }
+    function showView(v) { ['setup-view', 'game-view', 'finish-view'].forEach(id => document.getElementById(id).style.display = 'none'); document.getElementById(v).style.display = 'flex'; }
     function setTotal(n) { document.getElementById('total-problems').value = n; }
-    function adjustTotal(d) { 
-      let v = parseInt(document.getElementById('total-problems').value) || 0;
-      document.getElementById('total-problems').value = Math.max(0, v + d);
-    }
-    function pressKey(n) {
-      if (isProcessing) return;
-      const i = document.getElementById('answer-input');
-      if (n === 'C') i.value = "";
-      else if (i.value.length < 5) i.value += n;
-    }
+    function adjustTotal(d) { let v = parseInt(document.getElementById('total-problems').value) || 0; document.getElementById('total-problems').value = Math.max(0, v + d); }
+    function pressKey(n) { if (isProcessing) return; const i = document.getElementById('answer-input'); if (n === 'C') i.value = ""; else if (i.value.length < 5) i.value += n; }
   </script>
 </body>
 </html>
