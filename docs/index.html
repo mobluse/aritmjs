@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <style>
+    /* CSS - Optimerat för både mobil och TV */
     html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #f0f2f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; position: fixed; width: 100%; top: 0; left: 0; user-select: none; -webkit-user-select: none; }
     body { display: flex; flex-direction: column; }
     #setup-view, #game-view, #finish-view { display: none; flex-direction: column; height: 100%; width: 100%; box-sizing: border-box; }
@@ -65,8 +66,8 @@
 
   <div id="game-view">
     <div class="status-bar">
-      <span id="btn-quit-text" onclick="quitGame()">Avbryt (Esc)</span>
-      <span id="count-left">Kvar: -</span>
+      <span id="btn-quit-text" onclick="quitGame()">&nbsp;&nbsp;&nbsp;Avbryt (Esc)</span>
+      <span id="count-left">Kvar: -&nbsp;&nbsp;&nbsp;</span>
     </div>
     <div id="problem-display"><span id="problem-text"></span></div>
     <input type="text" id="answer-input" readonly placeholder="?">
@@ -90,17 +91,18 @@
   </div>
 
   <script>
+    // --- STORAGE ADAPTER (Väljer mellan Google Cloud och LocalStorage) ---
     const isCloud = (typeof google !== 'undefined' && google.script);
     const Storage = {
       saveSettings: (s) => isCloud ? google.script.run.saveCloudSettings(JSON.stringify(s)) : localStorage.setItem('aritm_settings', JSON.stringify(s)),
       loadSettings: (cb) => {
         if (isCloud) google.script.run.withSuccessHandler(res => cb(res ? JSON.parse(res) : null)).loadCloudSettings();
-        else cb(JSON.parse(localStorage.getItem('aritm_settings')));
+        else { const res = localStorage.getItem('aritm_settings'); cb(res ? JSON.parse(res) : null); }
       },
       saveProgress: (p) => isCloud ? google.script.run.saveCloudProgress(JSON.stringify(p)) : localStorage.setItem('aritm_save', JSON.stringify(p)),
       loadProgress: (cb) => {
         if (isCloud) google.script.run.withSuccessHandler(res => cb(res ? JSON.parse(res) : null)).loadCloudProgress();
-        else cb(JSON.parse(localStorage.getItem('aritm_save')));
+        else { const res = localStorage.getItem('aritm_save'); cb(res ? JSON.parse(res) : null); }
       },
       clearProgress: () => isCloud ? google.script.run.clearCloudProgress() : localStorage.removeItem('aritm_save')
     };
@@ -115,7 +117,7 @@
       o.start(); o.stop(audioCtx.currentTime + 0.2);
     }
 
-    // --- UPPDATERAT TANGENTBORD ---
+    // --- TANGENTBORDSSTÖD (Inklusive Mellanslag, Delete, C, +/-) ---
     document.addEventListener('keydown', (e) => {
       const isGameView = document.getElementById('game-view').style.display === 'flex';
       const isSetupView = document.getElementById('setup-view').style.display === 'flex';
@@ -167,13 +169,10 @@
       const selectedInputs = Array.from(document.querySelectorAll('.type-option input:checked'));
       const selectedValues = selectedInputs.map(i => i.value);
       if (selectedValues.length === 0) return;
-      
       const total = parseInt(document.getElementById('total-problems').value);
       Storage.saveSettings({total, types: Array.from(document.querySelectorAll('.type-option input')).map(i => ({val: i.value, checked: i.checked}))});
-      
       problemPool = createPool(selectedValues);
       if (total > 0 && total < problemPool.length) problemPool = problemPool.slice(0, total);
-      
       nextProblem();
       showView('game-view');
     }
@@ -197,7 +196,7 @@
       const input = document.getElementById('answer-input').value;
       if (!input) return;
       isProcessing = true;
-      const expected = Math.floor(eval(currentProblemStr.replace('⋅', '*').replace('/', '/')));
+      const expected = Math.floor(eval(currentProblemStr.replace('⋅', '*')));
       const f = document.getElementById('feedback');
       if (parseInt(input) === expected) {
         f.innerText = "Rätt!"; f.className = "correct";
@@ -211,6 +210,7 @@
     }
 
     function quitGame() {
+      Storage.clearProgress();
       document.getElementById('btn-continue').style.display = 'block';
       document.getElementById('finish-title').innerText = "Avbruten";
       document.getElementById('final-score').innerText = "Du hade " + (problemPool.length + 1) + " kvar.";
@@ -219,11 +219,14 @@
 
     function continueSession() { showView('game-view'); }
     function restartApp() { Storage.clearProgress(); showView('setup-view'); }
+    
+    // --- ÅTERSTÄLLDA MARGINALER MED innerHTML ---
     function updateUI() { 
       document.getElementById('problem-text').innerText = currentProblemStr; 
-      document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1);
+      document.getElementById('count-left').innerHTML = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;";
       document.getElementById('answer-input').value = "";
     }
+
     function showView(v) { ['setup-view', 'game-view', 'finish-view'].forEach(id => document.getElementById(id).style.display = 'none'); document.getElementById(v).style.display = 'flex'; }
     function setTotal(n) { document.getElementById('total-problems').value = n; }
     function adjustTotal(d) { let v = parseInt(document.getElementById('total-problems').value) || 0; document.getElementById('total-problems').value = Math.max(0, v + d); }
