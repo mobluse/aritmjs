@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <title>Aritm Hybrid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <style>
-    /* CSS förblir identisk för att behålla utseendet */
+    /* CSS - Identiskt med din fungerande Aritm Local */
     html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #f0f2f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; position: fixed; width: 100%; top: 0; left: 0; user-select: none; -webkit-user-select: none; }
     body { display: flex; flex-direction: column; }
     #setup-view, #game-view, #finish-view { display: none; flex-direction: column; height: 100%; width: 100%; box-sizing: border-box; }
@@ -16,16 +17,20 @@
     .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .type-option { background: white; padding: 12px; border-radius: 8px; border: 1px solid #ddd; display: flex; align-items: center; font-weight: bold; font-size: 14px; cursor: pointer; }
     .type-option input { margin-right: 10px; transform: scale(1.2); }
-    .quick-btn { background: white; border: 1.5px solid #1a73e8; color: #1a73e8; padding: 8px 0; text-align: center; border-radius: 6px; font-weight: bold; cursor: pointer; }
-    .btn-start { background: #1a73e8; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+    .quick-select-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .quick-btn { background: white; border: 1.5px solid #1a73e8; color: #1a73e8; padding: 8px 0; text-align: center; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; }
+    .adjust-container { display: flex; align-items: center; justify-content: center; background: white; padding: 5px; border-radius: 8px; border: 1px solid #ddd; }
+    #total-problems { width: 60px; text-align: center; font-size: 20px; font-weight: bold; border: none; background: transparent; outline: none; }
+    .adjust-btn { background: #e8f0fe; color: #1a73e8; width: 45px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 20px; cursor: pointer; border: none; }
+    .btn-start { background: #1a73e8; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
     .btn-continue { background: #28a745 !important; margin-bottom: 10px; }
-    #problem-display { flex-grow: 1; display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: bold; color: #1a73e8; }
-    #answer-input { width: 70%; margin: 0 auto 5px; font-size: 32px; text-align: center; padding: 5px; border: 2px solid #1a73e8; border-radius: 8px; background: white; pointer-events: none; }
-    #feedback { text-align: center; height: 24px; font-weight: bold; margin-bottom: 5px; }
+    #problem-display { flex-grow: 1; display: flex; align-items: center; justify-content: center; font-size: clamp(40px, 10vh, 60px); font-weight: bold; color: #1a73e8; }
+    #answer-input { width: 70%; margin: 0 auto 5px; font-size: 32px; text-align: center; padding: 5px; border: 2px solid #1a73e8; border-radius: 8px; background: white; color: #000; pointer-events: none; min-height: 50px; }
+    #feedback { text-align: center; height: 24px; font-weight: bold; font-size: 18px; margin-bottom: 5px; }
     .correct { color: #28a745; } .wrong { color: #dc3545; }
-    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #ccc; width: 100%; }
-    .key { background: white; padding: 25px 0; font-size: 24px; font-weight: bold; text-align: center; cursor: pointer; }
-    .key-0 { grid-column: span 2; } .key-enter { background: #1a73e8; color: white; grid-column: span 3; }
+    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #ccc; width: 100%; padding-bottom: env(safe-area-inset-bottom); }
+    .key { background: white; padding: clamp(15px, 3vh, 25px) 0; font-size: 24px; font-weight: bold; text-align: center; cursor: pointer; }
+    .key-0 { grid-column: span 2; } .key-clear { color: #dc3545; } .key-enter { background: #1a73e8; color: white; grid-column: span 3; }
   </style>
 </head>
 <body>
@@ -41,14 +46,27 @@
         <label class="type-option"><input type="checkbox" value="mult"> Mul</label>
         <label class="type-option"><input type="checkbox" value="div"> Div</label>
       </div>
-      <input type="number" id="total-problems" value="20" style="text-align:center; font-size:20px;" readonly>
-      <button class="btn-start" onclick="startSession()">STARTA</button>
+      
+      <div style="margin-top: 10px;">
+        <div class="quick-select-grid">
+          <button class="quick-btn" onclick="setTotal(10)">10</button>
+          <button class="quick-btn" onclick="setTotal(20)">20</button>
+          <button class="quick-btn" onclick="setTotal(50)">50</button>
+          <button class="quick-btn" onclick="setTotal(0)">Alla</button>
+        </div>
+        <div class="adjust-container" style="margin-top: 8px;">
+          <button class="adjust-btn" onclick="adjustTotal(-5)">-</button>
+          <input type="number" id="total-problems" value="20" readonly>
+          <button class="adjust-btn" onclick="adjustTotal(5)">+</button>
+        </div>
+      </div>
+      <button class="btn-start" onclick="startSession()">STARTA TRÄNING</button>
     </div>
   </div>
 
   <div id="game-view">
     <div class="status-bar">
-      <span id="btn-quit-text" onclick="quitGame()">Avbryt</span>
+      <span id="btn-quit-text" onclick="quitGame()">Avbryt (Esc)</span>
       <span id="count-left">Kvar: -</span>
     </div>
     <div id="problem-display"><span id="problem-text"></span></div>
@@ -58,34 +76,40 @@
       <div class="key" onclick="pressKey('7')">7</div><div class="key" onclick="pressKey('8')">8</div><div class="key" onclick="pressKey('9')">9</div>
       <div class="key" onclick="pressKey('4')">4</div><div class="key" onclick="pressKey('5')">5</div><div class="key" onclick="pressKey('6')">6</div>
       <div class="key" onclick="pressKey('1')">1</div><div class="key" onclick="pressKey('2')">2</div><div class="key" onclick="pressKey('3')">3</div>
-      <div class="key key-0" onclick="pressKey('0')">0</div><div class="key" onclick="pressKey('C')">C</div>
+      <div class="key key-0" onclick="pressKey('0')">0</div><div class="key key-clear" onclick="pressKey('C')">C</div>
       <div class="key key-enter" onclick="submitAnswer()">SVAR</div>
     </div>
   </div>
 
   <div id="finish-view">
     <div class="container" style="text-align: center; justify-content: center;">
-      <h2 id="finish-title">Klar!</h2>
+      <h2 id="finish-title">Bra jobbat!</h2>
       <p id="final-score"></p>
-      <button id="btn-continue" class="btn-start btn-continue" style="display:none;" onclick="showView('game-view')">FORTSÄTT</button>
+      <button id="btn-continue" class="btn-start btn-continue" style="display:none;" onclick="continueSession()">FORTSÄTT</button>
       <button class="btn-start" onclick="restartApp()">NY ÖVNING</button>
     </div>
   </div>
 
   <script>
-    // --- SMART STORAGE ADAPTER ---
+    // --- STORAGE ADAPTER ---
     const isCloud = (typeof google !== 'undefined' && google.script);
     const Storage = {
-      saveSettings: (s) => isCloud ? google.script.run.saveCloudSettings(JSON.stringify(s)) : localStorage.setItem('settings', JSON.stringify(s)),
-      loadSettings: (cb) => isCloud ? google.script.run.withSuccessHandler(res => cb(JSON.parse(res))).loadCloudSettings() : cb(JSON.parse(localStorage.getItem('settings'))),
-      saveProgress: (p) => isCloud ? google.script.run.saveCloudProgress(JSON.stringify(p)) : localStorage.setItem('progress', JSON.stringify(p)),
-      loadProgress: (cb) => isCloud ? google.script.run.withSuccessHandler(res => cb(JSON.parse(res))).loadCloudProgress() : cb(JSON.parse(localStorage.getItem('progress'))),
-      clearProgress: () => isCloud ? google.script.run.clearCloudProgress() : localStorage.removeItem('progress')
+      saveSettings: (s) => isCloud ? google.script.run.saveCloudSettings(JSON.stringify(s)) : localStorage.setItem('aritm_settings', JSON.stringify(s)),
+      loadSettings: (cb) => {
+        if (isCloud) google.script.run.withSuccessHandler(res => cb(res ? JSON.parse(res) : null)).loadCloudSettings();
+        else cb(JSON.parse(localStorage.getItem('aritm_settings')));
+      },
+      saveProgress: (p) => isCloud ? google.script.run.saveCloudProgress(JSON.stringify(p)) : localStorage.setItem('aritm_save', JSON.stringify(p)),
+      loadProgress: (cb) => {
+        if (isCloud) google.script.run.withSuccessHandler(res => cb(res ? JSON.parse(res) : null)).loadCloudProgress();
+        else cb(JSON.parse(localStorage.getItem('aritm_save')));
+      },
+      clearProgress: () => isCloud ? google.script.run.clearCloudProgress() : localStorage.removeItem('aritm_save')
     };
 
     let problemPool = [], currentProblemStr = null, isProcessing = false;
 
-    // Syntetiskt ljud (Offline-säkert)
+    // Syntetiskt ljud
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playError() {
       const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
@@ -94,50 +118,100 @@
       o.start(); o.stop(audioCtx.currentTime + 0.2);
     }
 
+    // Tangentbord
+    document.addEventListener('keydown', (e) => {
+      if (document.getElementById('game-view').style.display === 'flex') {
+        if (e.key >= '0' && e.key <= '9') pressKey(e.key);
+        else if (e.key === 'Enter') submitAnswer();
+        else if (e.key === 'Backspace') pressKey('C');
+        else if (e.key === 'Escape') quitGame();
+      }
+    });
+
     window.onload = () => {
       document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm Local";
       Storage.loadSettings(s => {
-        if (!s) return;
-        document.getElementById('total-problems').value = s.total;
-        s.types.forEach(t => { const el = document.querySelector(`input[value="${t.val}"]`); if(el) el.checked = t.checked; });
+        if (s) {
+          document.getElementById('total-problems').value = s.total;
+          s.types.forEach(t => { const el = document.querySelector(`input[value="${t.val}"]`); if(el) el.checked = t.checked; });
+        }
       });
       Storage.loadProgress(p => {
-        if (p && p.pool) { problemPool = p.pool; currentProblemStr = p.current; showView('game-view'); updateUI(); }
+        if (p && p.pool && p.current) {
+          problemPool = p.pool; currentProblemStr = p.current;
+          showView('game-view'); updateUI();
+        } else { showView('setup-view'); }
       });
     };
 
+    function createPool(types) {
+      let pool = [];
+      types.forEach(type => {
+        if (type === 'add1') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push(`${i} + ${j}`); }
+        else if (type === 'add2') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) { let t = 10 * (Math.floor(Math.random() * 8) + 1); pool.push(`${t+i} + ${j}`); } }
+        else if (type === 'sub1') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push(`${i+j} - ${j}`); }
+        else if (type === 'sub2') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) { let t = 10 * (Math.floor(Math.random() * 9) + 1); pool.push(`${t+i+j} - ${j}`); } }
+        else if (type === 'mult') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push(`${i} ⋅ ${j}`); }
+        else if (type === 'div') { for (let i = 0; i <= 9; i++) for (let j = 1; j <= 9; j++) { pool.push(`${i * j + Math.floor(j * Math.random())} / ${j}`); } }
+      });
+      for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+      return pool;
+    }
+
     function startSession() {
-      const types = Array.from(document.querySelectorAll('input:checked')).map(i => ({val: i.value, checked: true}));
-      Storage.saveSettings({total: document.getElementById('total-problems').value, types});
-      // (Här skulle createPool-funktionen ligga, samma som tidigare...)
-      problemPool = ["2 + 2", "5 ⋅ 5"]; // Exempel för demo
+      const selected = Array.from(document.querySelectorAll('.type-option input:checked')).map(i => i.value);
+      if (selected.length === 0) return;
+      
+      const total = parseInt(document.getElementById('total-problems').value);
+      Storage.saveSettings({total, types: Array.from(document.querySelectorAll('.type-option input')).map(i => ({val: i.value, checked: i.checked}))});
+      
+      problemPool = createPool(selected);
+      if (total > 0 && total < problemPool.length) problemPool = problemPool.slice(0, total);
+      
       nextProblem();
       showView('game-view');
     }
 
     function nextProblem() {
-      if (problemPool.length === 0) { Storage.clearProgress(); showView('finish-view'); return; }
+      if (problemPool.length === 0) {
+        Storage.clearProgress();
+        document.getElementById('finish-title').innerText = "Bra jobbat!";
+        document.getElementById('final-score').innerText = "Du har klarat alla uppgifter!";
+        document.getElementById('btn-continue').style.display = 'none';
+        showView('finish-view');
+        return;
+      }
       currentProblemStr = problemPool.shift();
       Storage.saveProgress({pool: problemPool, current: currentProblemStr});
       updateUI();
     }
 
     function submitAnswer() {
-      const val = document.getElementById('answer-input').value;
-      const correct = eval(currentProblemStr.replace('⋅', '*'));
-      if (parseInt(val) === correct) {
-        document.getElementById('feedback').innerHTML = '<span class="correct">Rätt!</span>';
-        setTimeout(() => { document.getElementById('feedback').innerText = ""; nextProblem(); }, 400);
+      if (isProcessing) return;
+      const input = document.getElementById('answer-input').value;
+      if (!input) return;
+      isProcessing = true;
+      const expected = Math.floor(eval(currentProblemStr.replace('⋅', '*')));
+      const f = document.getElementById('feedback');
+      if (parseInt(input) === expected) {
+        f.innerText = "Rätt!"; f.className = "correct";
+        setTimeout(() => { f.innerText = ""; isProcessing = false; nextProblem(); }, 400);
       } else {
-        playError();
+        f.innerText = "Fel!"; f.className = "wrong"; playError();
         problemPool.push(currentProblemStr);
         Storage.saveProgress({pool: problemPool, current: currentProblemStr});
-        document.getElementById('answer-input').value = "";
-        updateUI();
+        setTimeout(() => { f.innerText = ""; isProcessing = false; updateUI(); }, 600);
       }
     }
 
-    function quitGame() { document.getElementById('btn-continue').style.display = 'block'; showView('finish-view'); }
+    function quitGame() {
+      document.getElementById('btn-continue').style.display = 'block';
+      document.getElementById('finish-title').innerText = "Avbruten";
+      document.getElementById('final-score').innerText = "Du hade " + (problemPool.length + 1) + " kvar.";
+      showView('finish-view');
+    }
+
+    function continueSession() { showView('game-view'); }
     function restartApp() { Storage.clearProgress(); showView('setup-view'); }
     function updateUI() { 
       document.getElementById('problem-text').innerText = currentProblemStr; 
@@ -145,7 +219,9 @@
       document.getElementById('answer-input').value = "";
     }
     function showView(v) { ['setup-view', 'game-view', 'finish-view'].forEach(id => document.getElementById(id).style.display = 'none'); document.getElementById(v).style.display = 'flex'; }
-    function pressKey(n) { if(n==='C') document.getElementById('answer-input').value = ""; else document.getElementById('answer-input').value += n; }
+    function setTotal(n) { document.getElementById('total-problems').value = n; }
+    function adjustTotal(d) { let v = parseInt(document.getElementById('total-problems').value) || 0; document.getElementById('total-problems').value = Math.max(0, v + d); }
+    function pressKey(n) { if(n==='C') document.getElementById('answer-input').value = ""; else if(document.getElementById('answer-input').value.length < 5) document.getElementById('answer-input').value += n; }
   </script>
 </body>
 </html>
