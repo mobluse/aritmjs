@@ -34,6 +34,7 @@
     .btn-start { background: #1a73e8; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
 
     #problem-display { flex-grow: 1; display: flex; align-items: center; justify-content: center; font-size: clamp(40px, 10vh, 60px); font-weight: bold; color: #1a73e8; }
+    /* Cursor pointer added to input to show it's interactable, though readonly */
     #answer-input { width: 70%; margin: 0 auto 5px; font-size: 32px; text-align: center; padding: 5px; border: 2px solid #1a73e8; border-radius: 8px; background: white; pointer-events: none; flex-shrink: 0; color: #000; min-height: 50px; }
     
     #feedback { text-align: center; height: 24px; min-height: 24px; font-weight: bold; font-size: 18px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -116,11 +117,36 @@
 
     const errorAudio = new Audio('https://www.soundjay.com/buttons/beep-10.mp3');
 
-    // 1. ÅTERSTÄLL VID START (Detta saknades förut!)
+    // HANTERA TANGENTBORD (FÖR TV/DATOR)
+    document.addEventListener('keydown', function(event) {
+      // Om vi inte är i spelvyn, ignorera tangentbordet
+      if (document.getElementById('game-view').style.display !== 'flex') return;
+      if (isProcessing) return;
+
+      const key = event.key;
+
+      // Siffror 0-9
+      if (key >= '0' && key <= '9') {
+        pressKey(key);
+      } 
+      // Enter = Svara
+      else if (key === 'Enter') {
+        event.preventDefault(); // Förhindra oönskat beteende i webbläsaren
+        submitAnswer();
+      } 
+      // Backspace = Sudda sista
+      else if (key === 'Backspace') {
+        const i = document.getElementById('answer-input');
+        i.value = i.value.slice(0, -1);
+      }
+      // Escape/Delete = Rensa allt (C)
+      else if (key === 'Escape' || key === 'Delete') {
+        pressKey('C');
+      }
+    });
+
     window.onload = function() {
-      // Fix för viewport på mobiler
       setTimeout(() => window.scrollTo(0,0), 100);
-      
       const savedData = localStorage.getItem(SAVE_KEY);
       if (savedData) {
         try {
@@ -132,24 +158,16 @@
             updateUI();
             return;
           }
-        } catch(e) {
-          console.error("Kunde inte ladda sparfil", e);
-        }
+        } catch(e) { console.error(e); }
       }
       showView('setup-view');
     };
 
     function saveProgress() {
-      const state = {
-        pool: problemPool,
-        current: currentProblem
-      };
+      const state = { pool: problemPool, current: currentProblem };
       localStorage.setItem(SAVE_KEY, JSON.stringify(state));
     }
-
-    function clearProgress() {
-      localStorage.removeItem(SAVE_KEY);
-    }
+    function clearProgress() { localStorage.removeItem(SAVE_KEY); }
 
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -164,15 +182,23 @@
         if (type === 'add1') {
           for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push({str: `${i} + ${j}`, ans: i+j});
         } else if (type === 'add2') {
-          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) {let t = 10 * (Math.floor(Math.random() * 8) + 1); pool.push({str: `${t+i} + ${j}`, ans: t+i+j})}
+          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) {
+            let t = 10 * (Math.floor(Math.random() * 8) + 1); 
+            pool.push({str: `${t+i} + ${j}`, ans: t+i+j})
+          }
         } else if (type === 'sub1') {
           for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push({str: `${i+j} - ${j}`, ans: i});
         } else if (type === 'sub2') {
-          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) {let t = 10 * (Math.floor(Math.random() * 9) + 1); pool.push({str: `${t+i+j} - ${j}`, ans: t+i})}
+          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) {
+            let t = 10 * (Math.floor(Math.random() * 9) + 1); 
+            pool.push({str: `${t+i+j} - ${j}`, ans: t+i})
+          }
         } else if (type === 'mult') {
           for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push({str: `${i} ⋅ ${j}`, ans: i*j});
         } else if (type === 'div') {
-          for (let i = 0; i <= 9; i++) for (let j = 1; j <= 9; j++) pool.push({str: `${i * j + Math.floor(j * Math.random())} / ${j}`, ans:i});
+          for (let i = 0; i <= 9; i++) for (let j = 1; j <= 9; j++) {
+            pool.push({str: `${i * j + Math.floor(j * Math.random())} / ${j}`, ans: i});
+          }
         }
       });
       shuffle(pool);
@@ -183,7 +209,6 @@
       const types = Array.from(document.querySelectorAll('.type-option input:checked')).map(e => e.value);
       if (types.length === 0) return;
 
-      // Skapa ny kortlek
       problemPool = createPool(types);
       let requestedTotal = parseInt(document.getElementById('total-problems').value);
       
@@ -191,7 +216,7 @@
         problemPool = problemPool.slice(0, requestedTotal);
       }
 
-      nextProblem(); // Drar första kortet och sparar
+      nextProblem(); 
       showView('game-view');
     }
 
@@ -201,7 +226,7 @@
         return;
       }
       currentProblem = problemPool.shift(); 
-      saveProgress(); // SPARA HÄR
+      saveProgress(); 
       updateUI();
     }
 
@@ -222,10 +247,8 @@
         }, 400);
       } else {
         f.innerText = "Fel! Försök igen."; f.className = "wrong";
-        // Lägg tillbaka uppgiften sist
         problemPool.push(currentProblem);
-        saveProgress(); // SPARA HÄR (viktigt om man stänger ner i frustration)
-        
+        saveProgress();
         errorAudio.play().catch(()=>{});
         document.getElementById('answer-input').value = "";
         document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1);
@@ -236,29 +259,25 @@
     function updateUI() {
       if (!currentProblem) return;
       document.getElementById('problem-text').innerText = currentProblem.str;
-      // +1 för att inkludera det nuvarande problemet i räkningen
       document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1);
       document.getElementById('answer-input').value = "";
     }
 
     function finishGame() {
-      clearProgress(); // Rensa sparfilen när man är klar
+      clearProgress(); 
       showView('finish-view');
       document.getElementById('final-score').innerText = "Du har klarat alla uppgifter!";
     }
 
     function quitGame() {
       const left = problemPool.length + (currentProblem ? 1 : 0);
-      clearProgress(); // Rensa sparfilen om man avbryter manuellt
+      clearProgress();
       showView('finish-view');
       document.getElementById('finish-title').innerText = "Avbruten";
       document.getElementById('final-score').innerText = "Du hade " + left + " kvar.";
     }
 
-    function restartApp() { 
-      clearProgress();
-      showView('setup-view'); 
-    }
+    function restartApp() { clearProgress(); showView('setup-view'); }
     
     function showView(v) {
       ['setup-view', 'game-view', 'finish-view'].forEach(id => document.getElementById(id).style.display = 'none');
@@ -271,6 +290,7 @@
       document.getElementById('total-problems').value = Math.max(0, v + d);
     }
     function pressKey(n) {
+      if (isProcessing) return;
       const i = document.getElementById('answer-input');
       if (n === 'C') i.value = "";
       else if (i.value.length < 5) i.value += n;
