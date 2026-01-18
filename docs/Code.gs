@@ -9,17 +9,23 @@
  */
 
 function onOpen() {
-  SpreadsheetApp.getUi().createMenu('Aritm Cloud').addItem('Öppna Aritm', 'showSidebar').addToUi();
+  SpreadsheetApp.getUi()
+    .createMenu('Aritm Cloud')
+    .addItem('Öppna Aritm', 'showSidebar')
+    .addToUi();
 }
 
 function showSidebar() {
-  var html = HtmlService.createHtmlOutputFromFile('Sidebar') // Här klistrar du in koden nedan
+  // Här pekar vi nu på filen "index" istället för "Sidebar"
+  var html = HtmlService.createHtmlOutputFromFile('index')
     .setTitle('Aritm Cloud')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+  
   SpreadsheetApp.getUi().showSidebar(html);
 }
 
-// Dessa anropas av den smarta motorn i HTML-filen
+// Lagringsfunktioner för molnet (anropas av Storage-adaptern i index.html)
 function saveCloudSettings(s) { PropertiesService.getUserProperties().setProperty('settings', s); }
 function loadCloudSettings() { return PropertiesService.getUserProperties().getProperty('settings'); }
 function saveCloudProgress(p) { PropertiesService.getUserProperties().setProperty('progress', p); }
