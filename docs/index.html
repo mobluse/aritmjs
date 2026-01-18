@@ -27,9 +27,15 @@
     .quick-select-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
     .quick-btn { background: white; border: 1.5px solid #1a73e8; color: #1a73e8; padding: 8px 0; text-align: center; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; }
     
+    /* Förbättrat fokus för tangentbordsnavigation */
+    .quick-btn:focus, .adjust-btn:focus, .btn-start:focus, .type-option:focus-within {
+      outline: 3px solid #ffc107;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
     .adjust-container { display: flex; align-items: center; justify-content: center; background: white; padding: 5px; border-radius: 8px; border: 1px solid #ddd; }
     #total-problems { width: 60px; text-align: center; font-size: 20px; font-weight: bold; border: none; background: transparent; outline: none; }
-    .adjust-btn { background: #e8f0fe; color: #1a73e8; width: 45px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 20px; font-weight: bold; cursor: pointer; }
+    .adjust-btn { background: #e8f0fe; color: #1a73e8; width: 45px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 20px; font-weight: bold; cursor: pointer; border: none; }
     
     .btn-start { background: #1a73e8; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
 
@@ -65,27 +71,27 @@
       <div style="margin-top: 10px;">
         <label style="font-size: 14px; font-weight: bold; color: #666;">Välj antal uppgifter:</label>
         <div class="quick-select-grid" style="margin-top: 5px;">
-          <div class="quick-btn" onclick="setTotal(10)">10</div>
-          <div class="quick-btn" onclick="setTotal(20)">20</div>
-          <div class="quick-btn" onclick="setTotal(50)">50</div>
-          <div class="quick-btn" onclick="setTotal(0)">Alla</div>
+          <button type="button" class="quick-btn" onclick="setTotal(10)">10</button>
+          <button type="button" class="quick-btn" onclick="setTotal(20)">20</button>
+          <button type="button" class="quick-btn" onclick="setTotal(50)">50</button>
+          <button type="button" class="quick-btn" onclick="setTotal(0)">Alla</button>
         </div>
         <div class="adjust-container" style="margin-top: 8px;">
-          <div class="adjust-btn" onclick="adjustTotal(-5)">-</div>
+          <button type="button" class="adjust-btn" onclick="adjustTotal(-5)">-</button>
           <input type="number" id="total-problems" value="20" readonly>
-          <div class="adjust-btn" onclick="adjustTotal(5)">+</div>
+          <button type="button" class="adjust-btn" onclick="adjustTotal(5)">+</button>
         </div>
       </div>
       
       <button class="btn-start" onclick="startSession()">STARTA TRÄNING</button>
-      <p style="font-size: 10px; color: #999; text-align: center; margin-top: 20px;">Aritm Local är baserad på Aritm Cloud (GPLv3)</p>
+      <p style="font-size: 10px; color: #999; text-align: center; margin-top: 20px;">Baserad på Aritm Cloud (GPLv3)</p>
     </div>
   </div>
 
   <div id="game-view">
     <div class="status-bar">
-      <span id="btn-quit-text" onclick="quitGame()">&nbsp;&nbsp;&nbsp;Avbryt (Esc)</span>
-      <span id="count-left">Kvar: -&nbsp;&nbsp;&nbsp;</span>
+      &nbsp;&nbsp;&nbsp;<span id="btn-quit-text" onclick="quitGame()">Avbryt (Esc)</span>
+      <span id="count-left">Kvar: -</span>
     </div>
     <div id="problem-display"><span id="problem-text">Laddar...</span></div>
     <input type="text" id="answer-input" readonly placeholder="?">
@@ -116,22 +122,36 @@
 
     // TANGENTBORD
     document.addEventListener('keydown', function(event) {
-      if (document.getElementById('game-view').style.display !== 'flex') return;
-      if (isProcessing) return;
       const key = event.key;
-      if (key >= '0' && key <= '9') pressKey(key);
-      else if (key === 'Enter' || key === ' ') { event.preventDefault(); submitAnswer(); }
-      else if (key === 'Backspace' || key === 'Delete') { event.preventDefault(); pressKey('C'); }
-      else if (key === 'Escape') { event.preventDefault(); quitGame(); }
+      const isGameView = document.getElementById('game-view').style.display === 'flex';
+      const isSetupView = document.getElementById('setup-view').style.display === 'flex';
+
+      // Logik för SPELVY
+      if (isGameView) {
+        if (isProcessing) return;
+        if (key >= '0' && key <= '9') pressKey(key);
+        else if (key === 'Enter' || key === ' ') { event.preventDefault(); submitAnswer(); }
+        else if (key === 'Backspace' || key === 'Delete') { event.preventDefault(); pressKey('C'); }
+        else if (key === 'Escape') { event.preventDefault(); quitGame(); }
+      }
+      
+      // Logik för INSTÄLLNINGSVY
+      else if (isSetupView) {
+        if (key === '+' || key === '=') { // '=' för tangentbord utan shift-krav på plus
+          event.preventDefault();
+          adjustTotal(5);
+        } else if (key === '-') {
+          event.preventDefault();
+          adjustTotal(-5);
+        }
+      }
     });
 
     function computeAnswer(str) {
-      // Ersätt multiplikationstecken för JS-evaluering
       let expression = str.replace('⋅', '*');
       return Math.floor(eval(expression));
     }
 
-    // DIN ÖNSKADE LOGIK: createPool lagrar nu bara strängar
     function createPool(types) {
       let pool = [];
       types.forEach(type => {
