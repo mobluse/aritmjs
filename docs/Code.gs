@@ -8,24 +8,37 @@
  * * @OnlyCurrentDoc
  */
 
+// URL till din källkod på GitHub
+var GITHUB_URL = "https://raw.githubusercontent.com/mobluse/aritmjs/refs/heads/master/docs/index.html";
+
+// 1. Denna funktion körs när du öppnar Kalkylarket
 function onOpen() {
-  SpreadsheetApp.getUi()
-    .createMenu('Aritm Cloud')
-    .addItem('Öppna Aritm', 'showSidebar')
-    .addToUi();
+  SpreadsheetApp.getUi().createMenu('Aritm Cloud').addItem('Öppna Aritm', 'showSidebar').addToUi();
 }
 
+// 2. Denna funktion körs när du öppnar WEBBAPPEN (Länken)
+function doGet(e) {
+  return createHtmlOutput();
+}
+
+// 3. Denna funktion körs när du öppnar SIDOPANELEN i Kalkylarket
 function showSidebar() {
-  // Här pekar vi nu på filen "index" istället för "Sidebar"
-  var html = HtmlService.createHtmlOutputFromFile('index')
-    .setTitle('Aritm Cloud')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
-  
+  var html = createHtmlOutput();
   SpreadsheetApp.getUi().showSidebar(html);
 }
 
-// Lagringsfunktioner för molnet (anropas av Storage-adaptern i index.html)
+// Hjälpfunktion för att hämta koden (så vi slipper skriva det två gånger)
+function createHtmlOutput() {
+  var response = UrlFetchApp.fetch(GITHUB_URL);
+  var htmlContent = response.getContentText();
+  
+  return HtmlService.createTemplate(htmlContent).evaluate()
+    .setTitle('Aritm Cloud')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0');
+}
+
+// --- LAGRINGSFUNKTIONER (Anropas från index.html) ---
 function saveCloudSettings(s) { PropertiesService.getUserProperties().setProperty('settings', s); }
 function loadCloudSettings() { return PropertiesService.getUserProperties().getProperty('settings'); }
 function saveCloudProgress(p) { PropertiesService.getUserProperties().setProperty('progress', p); }
