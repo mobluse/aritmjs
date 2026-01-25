@@ -5,8 +5,9 @@
   <title>Aritm Hybrid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <style>
-    /* CSS - Optimerat för både mobil och TV */
+    /* CSS - Optimerat för mobil, dator och TV */
     html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #f0f2f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; position: fixed; width: 100%; top: 0; left: 0; user-select: none; -webkit-user-select: none; }
     body { display: flex; flex-direction: column; }
     #setup-view, #game-view, #finish-view { display: none; flex-direction: column; height: 100%; width: 100%; box-sizing: border-box; }
@@ -31,6 +32,11 @@
     .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #ccc; width: 100%; padding-bottom: env(safe-area-inset-bottom); }
     .key { background: white; padding: clamp(15px, 3vh, 25px) 0; font-size: 24px; font-weight: bold; text-align: center; cursor: pointer; }
     .key-0 { grid-column: span 2; } .key-clear { color: #dc3545; } .key-enter { background: #1a73e8; color: white; grid-column: span 3; }
+    
+    /* Om-ruta styling */
+    #about-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000; }
+    .about-content { background:white; padding:20px; border-radius:12px; width:85%; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); }
+    .about-text { font-size:13px; text-align:left; line-height:1.4; color:#333; margin: 15px 0; }
   </style>
 </head>
 <body>
@@ -61,6 +67,10 @@
         </div>
       </div>
       <button class="btn-start" onclick="startSession()">STARTA TRÄNING</button>
+      
+      <div style="text-align:center; margin-top:auto; padding: 10px 0;">
+        <span onclick="toggleAbout(true)" style="font-size:12px; color:#666; cursor:pointer; text-decoration:underline;">Om Aritm / Licens</span>
+      </div>
     </div>
   </div>
 
@@ -85,13 +95,28 @@
     <div class="container" style="text-align: center; justify-content: center;">
       <h2 id="finish-title">Bra jobbat!</h2>
       <p id="final-score"></p>
-      <button id="btn-continue" class="btn-start btn-continue" style="display:none;" onclick="continueSession()">FORTSÄTT</button>
-      <button class="btn-start" onclick="restartApp()">NY ÖVNING</button>
+      <button id="btn-continue" class="btn-start btn-continue" style="display:none;" onclick="continueSession()">FORTSÄTT (Esc)</button>
+      <button class="btn-start" onclick="restartApp()">NY ÖVNING (Enter)</button>
+    </div>
+  </div>
+
+  <div id="about-modal">
+    <div class="about-content">
+      <h3 style="margin-top:0; color:#1a73e8;">Om Aritm Hybrid</h3>
+      <div class="about-text">
+        <strong>Aritm Hybrid - Frontend</strong><br>
+        Copyright (C) 2026 Mikael O. Bonnier, Lund, Sweden.<br><br>
+        Detta program är fri programvara. Du kan distribuera det och/eller modifiera 
+        det under villkoren i GNU General Public License, version 3 eller senare, 
+        enligt vad som publicerats av Free Software Foundation.<br><br>
+        Se: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" style="color:#1a73e8;">gnu.org/licenses/gpl-3.0.html</a>
+      </div>
+      <button class="btn-start" onclick="toggleAbout(false)" style="width:100%;">Stäng (Esc)</button>
     </div>
   </div>
 
   <script>
-    // --- STORAGE ADAPTER (Väljer mellan Google Cloud och LocalStorage) ---
+    // --- STORAGE ADAPTER ---
     const isCloud = (typeof google !== 'undefined' && google.script);
     const Storage = {
       saveSettings: (s) => isCloud ? google.script.run.saveCloudSettings(JSON.stringify(s)) : localStorage.setItem('aritm_settings', JSON.stringify(s)),
@@ -117,10 +142,21 @@
       o.start(); o.stop(audioCtx.currentTime + 0.2);
     }
 
-    // --- TANGENTBORDSSTÖD (Inklusive Mellanslag, Delete, C, +/-) ---
+    function toggleAbout(show) {
+      document.getElementById('about-modal').style.display = show ? 'flex' : 'none';
+    }
+
+    // --- TANGENTBORDSLOGIK ---
     document.addEventListener('keydown', (e) => {
+      // Om About-modalen är öppen
+      if (document.getElementById('about-modal').style.display === 'flex') {
+        if (e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); toggleAbout(false); }
+        return;
+      }
+
       const isGameView = document.getElementById('game-view').style.display === 'flex';
       const isSetupView = document.getElementById('setup-view').style.display === 'flex';
+      const isFinishView = document.getElementById('finish-view').style.display === 'flex';
 
       if (isGameView) {
         if (isProcessing) return;
@@ -128,10 +164,20 @@
         else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); submitAnswer(); }
         else if (e.key === 'Backspace' || e.key === 'Delete' || e.key.toLowerCase() === 'c') { e.preventDefault(); pressKey('C'); }
         else if (e.key === 'Escape') { e.preventDefault(); quitGame(); }
-      } else if (isSetupView) {
-        if (e.key === '+' || e.key === '=') { e.preventDefault(); adjustTotal(5); }
+      } 
+      else if (isSetupView) {
+        if (e.key === 'Enter') { e.preventDefault(); startSession(); }
+        else if (e.key === '+' || e.key === '=') { e.preventDefault(); adjustTotal(5); }
         else if (e.key === '-') { e.preventDefault(); adjustTotal(-5); }
-        else if (e.key === 'Enter') startSession();
+        // Mellanslag lämnas ifred här så att checkboxes kan hanteras av standard-browser-tabbing
+      }
+      else if (isFinishView) {
+        if (e.key === 'Escape') {
+          const btnCont = document.getElementById('btn-continue');
+          if (btnCont.style.display !== 'none') { e.preventDefault(); continueSession(); }
+        } else if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault(); restartApp();
+        }
       }
     });
 
@@ -140,7 +186,7 @@
       Storage.loadSettings(s => {
         if (s) {
           document.getElementById('total-problems').value = s.total;
-          s.types.forEach(t => { const el = document.querySelector(`input[value="${t.val}"]`); if(el) el.checked = t.checked; });
+          if (s.types) s.types.forEach(t => { const el = document.querySelector(`input[value="${t.val}"]`); if(el) el.checked = t.checked; });
         }
       });
       Storage.loadProgress(p => {
@@ -166,12 +212,11 @@
     }
 
     function startSession() {
-      const selectedInputs = Array.from(document.querySelectorAll('.type-option input:checked'));
-      const selectedValues = selectedInputs.map(i => i.value);
-      if (selectedValues.length === 0) return;
+      const selected = Array.from(document.querySelectorAll('.type-option input:checked')).map(i => i.value);
+      if (selected.length === 0) return;
       const total = parseInt(document.getElementById('total-problems').value);
       Storage.saveSettings({total, types: Array.from(document.querySelectorAll('.type-option input')).map(i => ({val: i.value, checked: i.checked}))});
-      problemPool = createPool(selectedValues);
+      problemPool = createPool(selected);
       if (total > 0 && total < problemPool.length) problemPool = problemPool.slice(0, total);
       nextProblem();
       showView('game-view');
@@ -210,7 +255,6 @@
     }
 
     function quitGame() {
-      Storage.clearProgress();
       document.getElementById('btn-continue').style.display = 'block';
       document.getElementById('finish-title').innerText = "Avbruten";
       document.getElementById('final-score').innerText = "Du hade " + (problemPool.length + 1) + " kvar.";
@@ -220,7 +264,6 @@
     function continueSession() { showView('game-view'); }
     function restartApp() { Storage.clearProgress(); showView('setup-view'); }
     
-    // --- ÅTERSTÄLLDA MARGINALER MED innerHTML ---
     function updateUI() { 
       document.getElementById('problem-text').innerText = currentProblemStr; 
       document.getElementById('count-left').innerHTML = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;";
