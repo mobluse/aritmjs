@@ -2,6 +2,7 @@
 Aritm for various programming languages, e.g. dialects of BASIC, PHP, and JavaScript, is FOSS.
 
 Run online in browser:
+* https://mobluse.github.io/aritmjs/
 * http://bc3c.orbin.se (Works well in Chrome on Android and iPhone.)
 * https://calormen.com/jsbasic/ (Works well in Chrome on iPhone.)
 * https://www.commanderx16.com/webemu/x16emu.html?manifest=/forum/download/file.php?id=1518
@@ -14,7 +15,7 @@ See demos on YouTube:
 Aritm exists for many plattforms e.g. graphing calculators (TI and Casio), spreadsheets, feature phones with Java, etc., see http://aritm.orbin.se. Aritm was first developed in C in 1992, and then in Java, TI-BASIC 83, and TinyBASIC. The versions for other BASIC dialects were developed from the Tiny BASIC version or its descendants. 
 
 The original purpose of this repository was to develop a version for JavaScript that works like the BASIC versions for retro computers, but since
-JavaScript doesn't have `goto` that has been difficult to write so far.
+JavaScript doesn't have `goto` that was difficult to write until DeepSeek AI could convert the spaghetti code of the original aritm.php to aritm-struct.php and that made the JavaScript and Python versions possible.
 
 Convert BASIC to JavaScript:
 * https://paulsperambulations.wordpress.com/2017/03/04/converting-basic-to-javascript/
