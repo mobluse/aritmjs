@@ -2,7 +2,7 @@
 Aritm for various programming languages, e.g. dialects of BASIC, PHP, and JavaScript, is FOSS.
 
 Run online in browser:
-* https://mobluse.github.io/aritmjs/
+* https://mobluse.github.io/aritmjs/ (Mostly for mobile browsers. Uses Local Storage to save data between invocations and can be run in flight mode.)
 * http://bc3c.orbin.se (Works well in Chrome on Android and iPhone.)
 * https://calormen.com/jsbasic/ (Works well in Chrome on iPhone.)
 * https://www.commanderx16.com/webemu/x16emu.html?manifest=/forum/download/file.php?id=1518
