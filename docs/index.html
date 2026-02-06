@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <title>Aritm Hybrid</title>
+  <title>Aritm Local</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -27,7 +27,10 @@
     .btn-continue { background: #28a745 !important; margin-bottom: 10px; }
     #problem-display { flex-grow: 1; display: flex; align-items: center; justify-content: center; font-size: clamp(40px, 10vh, 60px); font-weight: bold; color: #1a73e8; }
     #answer-input { width: 70%; margin: 0 auto 5px; font-size: 32px; text-align: center; padding: 5px; border: 2px solid #1a73e8; border-radius: 8px; background: white; color: #000; pointer-events: none; min-height: 50px; }
-    #feedback { text-align: center; height: 24px; font-weight: bold; font-size: 18px; margin-bottom: 5px; }
+    
+    /* UPPDATERAT: Flexibel höjd för att rymma "Fel! 1+1=2" */
+    #feedback { text-align: center; min-height: 24px; font-weight: bold; font-size: 18px; margin-bottom: 5px; white-space: nowrap; }
+    
     .correct { color: #28a745; } .wrong { color: #dc3545; }
     .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #ccc; width: 100%; padding-bottom: env(safe-area-inset-bottom); }
     .key { background: white; padding: clamp(15px, 3vh, 25px) 0; font-size: 24px; font-weight: bold; text-align: center; cursor: pointer; }
@@ -104,12 +107,13 @@
     <div class="about-content">
       <h3 style="margin-top:0; color:#1a73e8;">Om Aritm Hybrid</h3>
       <div class="about-text">
-        <strong>Aritm Hybrid - Frontend</strong><br>
+        <strong>Aritm Hybrid</strong><br>
         Copyright (C) 2026 Mikael O. Bonnier, Lund, Sweden.<br><br>
         Detta program är fri programvara. Du kan distribuera det och/eller modifiera 
         det under villkoren i GNU General Public License, version 3 eller senare, 
         enligt vad som publicerats av Free Software Foundation.<br><br>
-        Se: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" style="color:#1a73e8;">gnu.org/licenses/gpl-3.0.html</a>
+        Licens: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" style="color:#1a73e8;">gnu.org/licenses/gpl-3.0.html</a><br>
+        Källkod: <a href="https://github.com/mobluse/aritmjs" target="_blank" style="color:#1a73e8;">github.com/mobluse/aritmjs</a> under mappen docs.
       </div>
       <button class="btn-start" onclick="toggleAbout(false)" style="width:100%;">Stäng (Esc)</button>
     </div>
@@ -148,7 +152,6 @@
 
     // --- TANGENTBORDSLOGIK ---
     document.addEventListener('keydown', (e) => {
-      // Om About-modalen är öppen
       if (document.getElementById('about-modal').style.display === 'flex') {
         if (e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); toggleAbout(false); }
         return;
@@ -169,7 +172,6 @@
         if (e.key === 'Enter') { e.preventDefault(); startSession(); }
         else if (e.key === '+' || e.key === '=') { e.preventDefault(); adjustTotal(5); }
         else if (e.key === '-') { e.preventDefault(); adjustTotal(-5); }
-        // Mellanslag lämnas ifred här så att checkboxes kan hanteras av standard-browser-tabbing
       }
       else if (isFinishView) {
         if (e.key === 'Escape') {
@@ -223,6 +225,9 @@
     }
 
     function nextProblem() {
+      // Rensa eventuella gamla meddelanden
+      document.getElementById('feedback').innerText = "";
+      
       if (problemPool.length === 0) {
         Storage.clearProgress();
         document.getElementById('finish-title').innerText = "Bra jobbat!";
@@ -240,21 +245,36 @@
       if (isProcessing) return;
       const input = document.getElementById('answer-input').value;
       if (!input) return;
-      isProcessing = true;
+      
       const expected = Math.floor(eval(currentProblemStr.replace('⋅', '*')));
       const f = document.getElementById('feedback');
+      
       if (parseInt(input) === expected) {
+        // RÄTT SVAR
+        isProcessing = true;
         f.innerText = "Rätt!"; f.className = "correct";
         setTimeout(() => { f.innerText = ""; isProcessing = false; nextProblem(); }, 400);
       } else {
-        f.innerText = "Fel!"; f.className = "wrong"; playError();
+        // FEL SVAR (UPPDATERAD LOGIK)
+        // 1. Visa facit: "Fel! 4 + 5 = 9"
+        f.innerText = "Fel! " + currentProblemStr + " = " + expected;
+        f.className = "wrong";
+        playError();
+        
+        // 2. Lägg tillbaka uppgiften sist
         problemPool.push(currentProblemStr);
         Storage.saveProgress({pool: problemPool, current: currentProblemStr});
-        setTimeout(() => { f.innerText = ""; isProcessing = false; updateUI(); }, 600);
+        
+        // 3. Rensa inmatningsfältet så man är redo att försöka igen
+        document.getElementById('answer-input').value = "";
+        
+        // OBS: Ingen isProcessing=true här, så användaren kan skriva direkt.
+        // Meddelandet ligger kvar tills man trycker en knapp (se pressKey).
       }
     }
 
     function quitGame() {
+      document.getElementById('feedback').innerText = ""; // Rensa meddelande
       document.getElementById('btn-continue').style.display = 'block';
       document.getElementById('finish-title').innerText = "Avbruten";
       document.getElementById('final-score').innerText = "Du hade " + (problemPool.length + 1) + " kvar.";
@@ -273,7 +293,15 @@
     function showView(v) { ['setup-view', 'game-view', 'finish-view'].forEach(id => document.getElementById(id).style.display = 'none'); document.getElementById(v).style.display = 'flex'; }
     function setTotal(n) { document.getElementById('total-problems').value = n; }
     function adjustTotal(d) { let v = parseInt(document.getElementById('total-problems').value) || 0; document.getElementById('total-problems').value = Math.max(0, v + d); }
-    function pressKey(n) { if(n==='C') document.getElementById('answer-input').value = ""; else if(document.getElementById('answer-input').value.length < 5) document.getElementById('answer-input').value += n; }
+    
+    // UPPDATERAD pressKey: Rensar feedback när man börjar skriva
+    function pressKey(n) { 
+      const f = document.getElementById('feedback');
+      if (f.innerText !== "") f.innerText = ""; // Ta bort "Fel!..." meddelandet
+      
+      if(n==='C') document.getElementById('answer-input').value = ""; 
+      else if(document.getElementById('answer-input').value.length < 5) document.getElementById('answer-input').value += n; 
+    }
   </script>
 </body>
 </html>
