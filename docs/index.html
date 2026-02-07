@@ -10,7 +10,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="mobile-web-app-capable" content="yes">
-  
+  <link rel="manifest" href="manifest.json">
+
   <style>
     /* FÄRGVARIABLER (Ljust läge som standard) */
     :root {
@@ -86,6 +87,28 @@
     .about-content { background:var(--container-bg); color: var(--text); padding:20px; border-radius:12px; width:85%; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.5); border: 1px solid var(--border); }
     .about-text { font-size:13px; text-align:left; line-height:1.4; margin: 15px 0; }
     .about-text a { color: var(--accent); }
+
+    /* Förbättrad touch-känsla och prestanda */
+.key {
+  touch-action: manipulation; /* Förhindrar zoom-delay på mobil */
+  transition: background-color 0.1s, transform 0.05s;
+}
+
+.key:active {
+  background-color: var(--border); /* Visuell feedback */
+  transform: scale(0.95);
+}
+
+/* Förhindra oavsiktlig textmarkering */
+* {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Tillåt textmarkering endast i input om det behövs */
+#answer-input {
+  user-select: text;
+}
   </style>
 </head>
 <body>
@@ -158,7 +181,7 @@
         Copyright © 2026 Mikael O. Bonnier, Lund, Sweden.<br><br>
         Detta program är fri programvara. Du kan distribuera det och/eller modifiera 
         det under villkoren i GNU General Public License, version 3 eller senare.<br><br>
-        Licens: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">gnu.org/licenses/gpl-3.0.html</a><br>
+        Licens: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">gnu.org/licenses/gpl-3.0.html</a>.<br><br>
         Källkod: <a href="https://github.com/mobluse/aritmjs" target="_blank">github.com/mobluse/aritmjs</a> under mappen docs.
       </div>
       <button class="btn-start" onclick="toggleAbout(false)" style="width:100%;">Stäng (Esc)</button>
@@ -321,7 +344,14 @@
       document.getElementById('count-left').innerHTML = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;";
       document.getElementById('answer-input').value = "";
     }
-    function showView(v) { ['setup-view', 'game-view', 'finish-view'].forEach(id => document.getElementById(id).style.display = 'none'); document.getElementById(v).style.display = 'flex'; }
+
+function showView(v) {
+  document.body.setAttribute('data-current-view', v); // Underlättar för Puppeteer
+  ['setup-view', 'game-view', 'finish-view'].forEach(id => {
+    document.getElementById(id).style.display = (id === v) ? 'flex' : 'none';
+  });
+}
+
     function setTotal(n) { document.getElementById('total-problems').value = n; }
     function adjustTotal(d) { let v = parseInt(document.getElementById('total-problems').value) || 0; document.getElementById('total-problems').value = Math.max(0, v + d); }
     function pressKey(n) { 
@@ -331,5 +361,14 @@
       else if(document.getElementById('answer-input').value.length < 5) document.getElementById('answer-input').value += n; 
     }
   </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('Service Worker registrerad!'))
+        .catch(err => console.error('SW-fel:', err));
+    });
+  }
+</script>
 </body>
 </html>
