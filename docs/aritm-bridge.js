@@ -12,6 +12,7 @@ const requestedCount = process.argv[2] || "0";
     args: ['--no-sandbox', '--disable-setuid-sandbox'] 
   });
   const page = await browser.newPage();
+  await page.setCacheEnabled(false); // Inaktivera cache under testning
 
   await page.goto(`file://${process.cwd()}/index.html`);
 
