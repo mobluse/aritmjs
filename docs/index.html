@@ -20,7 +20,6 @@
       }
     }
     * { -webkit-tap-highlight-color: transparent; user-select: none; box-sizing: border-box; }
-    /* Ingen blå ram vid fokus enligt önskemål */
     :focus { outline: none; }
     
     html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; position: fixed; width: 100%; }
@@ -38,8 +37,8 @@
     .quick-select-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
     .quick-btn { background: var(--container-bg); border: 1.5px solid var(--accent); color: var(--accent); padding: 8px 0; border-radius: 6px; font-weight: bold; cursor: pointer; }
     
-    .adjust-container { display: flex; align-items: center; justify-content: center; background: var(--container-bg); border-radius: 8px; border: 1px solid var(--border); padding: 4px; }
-    #total-problems { width: 60px; text-align: center; font-size: 20px; border: none; background: transparent; color: var(--text); font-weight: bold; }
+    .adjust-container { display: flex; align-items: center; justify-content: center; background: var(--container-bg); border-radius: 8px; border: 1px solid var(--border); padding: 4px; margin-top: 4px; }
+    #total-problems { width: 70px; text-align: center; font-size: 20px; border: none; background: transparent; color: var(--text); font-weight: bold; }
     .adjust-btn { background: var(--accent); color: white; width: 45px; height: 35px; border-radius: 6px; font-size: 20px; border: none; cursor: pointer; }
 
     #problem-display { flex-grow: 1; display: flex; align-items: center; justify-content: center; font-size: clamp(40px, 10vh, 70px); font-weight: bold; color: var(--accent); }
@@ -49,8 +48,7 @@
 
     .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); padding-bottom: env(safe-area-inset-bottom); }
     .key { background: var(--key-bg); color: var(--key-text); padding: 20px 0; font-size: 26px; font-weight: bold; text-align: center; cursor: pointer; touch-action: manipulation; }
-    /* Vi använder en subtil bakgrundsfärg vid fokus istället för ram för TV */
-    .key:focus, .type-option:focus, .btn-start:focus { background: var(--bg); }
+    .key:focus, .type-option:focus, .btn-start:focus, .quick-btn:focus, .adjust-btn:focus { background: var(--border); }
     .key:active { background: var(--bg); }
     .key-0 { grid-column: span 2; } .key-clear { color: #dc3545; } .key-enter { background: var(--accent); color: white; grid-column: span 3; }
     
@@ -71,13 +69,21 @@
         <label class="type-option" tabindex="5"><input type="checkbox" value="mul"> Mul</label>
         <label class="type-option" tabindex="6"><input type="checkbox" value="div"> Div</label>
       </div>
+      
       <div class="quick-select-grid" style="margin-top:10px;">
         <button class="quick-btn" tabindex="7" onclick="setTotal(10)">10</button>
         <button class="quick-btn" tabindex="8" onclick="setTotal(20)">20</button>
         <button class="quick-btn" tabindex="9" onclick="setTotal(50)">50</button>
         <button class="quick-btn" tabindex="10" onclick="setTotal(0)">Alla</button>
       </div>
-      <button class="btn-start" tabindex="11" onclick="startSession()">STARTA TRÄNING</button>
+
+      <div class="adjust-container">
+        <button class="adjust-btn" tabindex="11" onclick="adjustTotal(-5)">-</button>
+        <input type="number" id="total-problems" value="20" readonly>
+        <button class="adjust-btn" tabindex="12" onclick="adjustTotal(5)">+</button>
+      </div>
+
+      <button class="btn-start" id="main-start-btn" tabindex="13" onclick="startSession()">STARTA TRÄNING</button>
     </div>
   </div>
 
@@ -116,7 +122,6 @@
   </div>
 
   <script>
-    // ... Samma Storage och logik som tidigare ...
     const Storage = {
       saveSettings: (s) => localStorage.setItem('aritm_settings', JSON.stringify(s)),
       loadSettings: () => JSON.parse(localStorage.getItem('aritm_settings')),
@@ -246,7 +251,6 @@
         showView('game-view');
       }
     };
-
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
     }
