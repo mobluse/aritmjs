@@ -2,7 +2,10 @@
 import pexpect
 import math
 
-c='node aritm-node.js'
+c='python3 ARITM82M.py'
+#c='python3 aritm.py'
+#c='js102 aritm-mozjs.js'
+#c='node aritm-node.js'
 #c='php aritm-struct.php'
 #c='pcbasic aritm-bc3c-gw.bas -n -i=stdio'
 #c='~/Downloads/mmb4l-2022.01.00-a3-armv6l/mmbasic aritm-mm.bas'
@@ -12,17 +15,17 @@ c='node aritm-node.js'
 #c='yabasic aritm-ya.bas'
 #c='cbmbasic aritm-cbm.bas'
 
-s=': ' # Node.js/PHP/Applesoft-&MM-&GW-BASIC
+s=': ' # MozJS/Node.js/PHP/Applesoft-&MM-&GW-BASIC
 #s='> ' # ZX81
 #s='\? ' # BASICODE
 #s='\[C' # cbmbasic
 
-s3='= ' # Node.js/PHP/Applesoft-&MM-&GW-BASIC
+s3='= ' # MozJS/Node.js/PHP/Applesoft-&MM-&GW-BASIC
 #s3='> ' # ZX81
 #s3='\? ' # BASICODE
 #s3='\[C' # cbmbasic
 
-b,e=-6,-1 # Node.js/PHP/Applesoft-&MM-&GW-BASIC
+b,e=-6,-1 # MozJS/Node.js/PHP/Applesoft-&MM-&GW-BASIC
 #b,e=-9,-3 # BASICODE
 #b,e=-9,-4 # ZX81
 #b,e=-10,-5 # cbmbasic
@@ -53,7 +56,7 @@ child=pexpect.spawn(c)
 
 #child.interact()
 
-n=5*100+90-1
+n=1*100+90-1
 child.expect(s)
 print('L1')
 child.sendline('1')
