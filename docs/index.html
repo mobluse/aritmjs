@@ -24,7 +24,7 @@
     
     html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; position: fixed; width: 100%; }
     
-    #setup-view, #game-view, #finish-view, #quit-confirm-view, #about-view { display: none; flex-direction: column; height: 100%; width: 100%; }
+    #setup-view, #game-view, #finish-view, #quit-confirm-view { display: none; flex-direction: column; height: 100%; width: 100%; }
     .container { padding: 10px; display: flex; flex-direction: column; gap: 6px; flex-grow: 1; overflow-y: auto; }
     
     .status-bar { display: flex; justify-content: space-between; align-items: center; background: var(--status-bg); border-bottom: 1px solid var(--border); height: 35px; flex-shrink: 0; font-weight: bold; }
@@ -48,12 +48,19 @@
 
     .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); padding-bottom: env(safe-area-inset-bottom); }
     .key { background: var(--key-bg); color: var(--key-text); padding: 20px 0; font-size: 26px; font-weight: bold; text-align: center; cursor: pointer; touch-action: manipulation; }
-    .key:focus, .type-option:focus, .btn-start:focus, .quick-btn:focus, .adjust-btn:focus, .btn-secondary:focus { background: var(--border); }
+    .key:focus, .type-option:focus, .btn-start:focus, .quick-btn:focus, .adjust-btn:focus, .btn-secondary:focus, .discrete-link:focus { background: var(--border); }
     
     .key-0 { grid-column: span 2; } .key-clear { color: #dc3545; } .key-enter { background: var(--accent); color: white; grid-column: span 3; }
     
     .btn-start { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
     .btn-secondary { background: var(--border); color: var(--text); border: none; padding: 15px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+
+    /* About Modal Styles */
+    #about-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .about-content { background: var(--container-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); width: 100%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); color: var(--text); }
+    .about-text { font-size: 14px; line-height: 1.5; margin-bottom: 20px; text-align: left; }
+    .about-text a { color: var(--accent); }
+    .discrete-link { margin-top: 15px; text-align: center; font-size: 14px; color: var(--text); opacity: 0.7; cursor: pointer; padding: 10px; border-radius: 4px; text-decoration: underline; }
   </style>
 </head>
 <body data-current-view="setup-view">
@@ -84,7 +91,7 @@
       </div>
 
       <button class="btn-start" tabindex="13" onclick="startSession()">STARTA TRÄNING</button>
-      <button class="btn-secondary" tabindex="14" onclick="showView('about-view')">OM ARITM</button>
+      <div class="discrete-link" tabindex="14" onclick="toggleAbout(true)">Om Aritm Hybrid</div>
     </div>
   </div>
 
@@ -105,12 +112,18 @@
     </div>
   </div>
 
-  <div id="about-view">
-    <div class="container" style="text-align:center; justify-content:center;">
-      <h2>Om Aritm Local</h2>
-      <p>Ett enkelt verktyg för huvudräkning.</p>
-      <p>Version 1.0 (PWA)</p>
-      <button class="btn-start" onclick="showView('setup-view')" tabindex="1">TILLBAKA</button>
+  <div id="about-modal">
+    <div class="about-content">
+      <h3 style="margin-top:0;">Om Aritm Hybrid</h3>
+      <div class="about-text">
+        <strong>Aritm Hybrid</strong><br>
+        Copyright © 2026 Mikael O. Bonnier, Lund, Sweden.<br><br>
+        Detta program är fri programvara. Du kan distribuera det och/eller modifiera 
+        det under villkoren i GNU General Public License, version 3 eller senare.<br><br>
+        Licens: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">gnu.org/licenses/gpl-3.0.html</a><br><br>
+        Källkod: <a href="https://github.com/mobluse/aritmjs" target="_blank">github.com/mobluse/aritmjs</a> under mappen docs.
+      </div>
+      <button class="btn-start" tabindex="1" onclick="toggleAbout(false)" style="width:100%;">Stäng (Esc)</button>
     </div>
   </div>
 
@@ -155,9 +168,19 @@
 
     function showView(v) {
       document.body.setAttribute('data-current-view', v);
-      ['setup-view', 'game-view', 'finish-view', 'quit-confirm-view', 'about-view'].forEach(id => {
+      ['setup-view', 'game-view', 'finish-view', 'quit-confirm-view'].forEach(id => {
         document.getElementById(id).style.display = (id === v) ? 'flex' : 'none';
       });
+    }
+    
+    function toggleAbout(show) {
+      const modal = document.getElementById('about-modal');
+      modal.style.display = show ? 'flex' : 'none';
+      if(show) {
+        modal.querySelector('button').focus();
+      } else {
+        document.querySelector('.discrete-link').focus();
+      }
     }
 
     function createPool(types) {
@@ -232,17 +255,23 @@
 
     window.addEventListener('keydown', (e) => {
       const view = document.body.getAttribute('data-current-view');
+      const isAboutOpen = document.getElementById('about-modal').style.display === 'flex';
+
+      // Hantera Enter/Space för knappar och länkar
       if (e.key === ' ' || e.key === 'Enter') {
-        if (view === 'game-view') { e.preventDefault(); submitAnswer(); }
+        if (view === 'game-view' && !isAboutOpen) { e.preventDefault(); submitAnswer(); }
         else if (document.activeElement && document.activeElement.click) document.activeElement.click();
         return;
       }
+      
       if (e.key === 'Escape') {
+        if (isAboutOpen) { toggleAbout(false); return; }
         if (view === 'game-view') confirmQuit();
-        else if (view === 'quit-confirm-view' || view === 'about-view') showView(view === 'about-view' ? 'setup-view' : 'game-view');
+        else if (view === 'quit-confirm-view') resumeGame();
         return;
       }
-      if (view !== 'game-view' || isProcessing) return;
+      
+      if (view !== 'game-view' || isProcessing || isAboutOpen) return;
       if (e.key >= '0' && e.key <= '9') pressKey(e.key);
       else if (e.key === 'Backspace' || e.key === 'c' || e.key === 'C') pressKey('C');
     });
