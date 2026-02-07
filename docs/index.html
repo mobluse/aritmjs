@@ -22,11 +22,14 @@
     * { -webkit-tap-highlight-color: transparent; user-select: none; box-sizing: border-box; }
     html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; position: fixed; width: 100%; }
     
+    /* Android TV / Keyboard Focus Styles */
+    :focus { outline: 3px solid var(--accent); outline-offset: 2px; }
+    
     #setup-view, #game-view, #finish-view, #quit-confirm-view { display: none; flex-direction: column; height: 100%; width: 100%; }
     .container { padding: 10px; display: flex; flex-direction: column; gap: 6px; flex-grow: 1; overflow-y: auto; }
     
     .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; background: var(--status-bg); border-bottom: 1px solid var(--border); height: 35px; flex-shrink: 0; font-weight: bold; }
-    #btn-quit-text { color: #dc3545; cursor: pointer; }
+    #btn-quit-text { color: #dc3545; cursor: pointer; padding: 5px; }
 
     .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .type-option { background: var(--container-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); display: flex; align-items: center; font-weight: bold; cursor: pointer; }
@@ -48,6 +51,7 @@
     .key { background: var(--key-bg); color: var(--key-text); padding: 20px 0; font-size: 26px; font-weight: bold; text-align: center; cursor: pointer; touch-action: manipulation; }
     .key:active { background: var(--bg); }
     .key-0 { grid-column: span 2; } .key-clear { color: #dc3545; } .key-enter { background: var(--accent); color: white; grid-column: span 3; }
+    
     .btn-start { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
     .btn-secondary { background: var(--border); color: var(--text); border: none; padding: 15px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
   </style>
@@ -58,12 +62,12 @@
     <div class="container">
       <h2 style="text-align:center; color:var(--accent);">Aritm</h2>
       <div class="type-grid">
-        <label class="type-option"><input type="checkbox" value="add1" checked> Add 1</label>
-        <label class="type-option"><input type="checkbox" value="add2"> Add 2</label>
-        <label class="type-option"><input type="checkbox" value="sub1"> Sub 1</label>
-        <label class="type-option"><input type="checkbox" value="sub2"> Sub 2</label>
-        <label class="type-option"><input type="checkbox" value="mul"> Mul</label>
-        <label class="type-option"><input type="checkbox" value="div"> Div</label>
+        <label class="type-option" tabindex="0"><input type="checkbox" value="add1" checked> Add 1</label>
+        <label class="type-option" tabindex="0"><input type="checkbox" value="add2"> Add 2</label>
+        <label class="type-option" tabindex="0"><input type="checkbox" value="sub1"> Sub 1</label>
+        <label class="type-option" tabindex="0"><input type="checkbox" value="sub2"> Sub 2</label>
+        <label class="type-option" tabindex="0"><input type="checkbox" value="mul"> Mul</label>
+        <label class="type-option" tabindex="0"><input type="checkbox" value="div"> Div</label>
       </div>
       <div class="quick-select-grid" style="margin-top:10px;">
         <button class="quick-btn" onclick="setTotal(10)">10</button>
@@ -72,9 +76,9 @@
         <button class="quick-btn" onclick="setTotal(0)">Alla</button>
       </div>
       <div class="adjust-container">
-        <button class="adjust-btn" onclick="adjustTotal(-5)">-</button>
+        <button class="adjust-btn" onclick="adjustTotal(-5)" aria-label="Minska">-</button>
         <input type="number" id="total-problems" value="20" readonly>
-        <button class="adjust-btn" onclick="adjustTotal(5)">+</button>
+        <button class="adjust-btn" onclick="adjustTotal(5)" aria-label="Öka">+</button>
       </div>
       <button class="btn-start" onclick="startSession()">STARTA TRÄNING</button>
     </div>
@@ -82,27 +86,26 @@
 
   <div id="game-view">
     <div class="status-bar">
-      <span id="btn-quit-text" onclick="confirmQuit()">Avbryt (Esc)</span>
+      <span id="btn-quit-text" onclick="confirmQuit()" tabindex="0">Avbryt (Esc)</span>
       <span id="count-left"></span>
     </div>
     <div id="problem-display"><span id="problem-text"></span></div>
     <input type="text" id="answer-input" readonly placeholder="?">
     <div id="feedback"></div>
     <div class="keypad">
-      <div class="key" onclick="pressKey('7')">7</div><div class="key" onclick="pressKey('8')">8</div><div class="key" onclick="pressKey('9')">9</div>
-      <div class="key" onclick="pressKey('4')">4</div><div class="key" onclick="pressKey('5')">5</div><div class="key" onclick="pressKey('6')">6</div>
-      <div class="key" onclick="pressKey('1')">1</div><div class="key" onclick="pressKey('2')">2</div><div class="key" onclick="pressKey('3')">3</div>
-      <div class="key key-0" onclick="pressKey('0')">0</div><div class="key key-clear" onclick="pressKey('C')">C</div>
-      <div class="key key-enter" onclick="submitAnswer()">SVAR</div>
+      <div class="key" tabindex="0" onclick="pressKey('7')">7</div><div class="key" tabindex="0" onclick="pressKey('8')">8</div><div class="key" tabindex="0" onclick="pressKey('9')">9</div>
+      <div class="key" tabindex="0" onclick="pressKey('4')">4</div><div class="key" tabindex="0" onclick="pressKey('5')">5</div><div class="key" tabindex="0" onclick="pressKey('6')">6</div>
+      <div class="key" tabindex="0" onclick="pressKey('1')">1</div><div class="key" tabindex="0" onclick="pressKey('2')">2</div><div class="key" tabindex="0" onclick="pressKey('3')">3</div>
+      <div class="key key-0" tabindex="0" onclick="pressKey('0')">0</div><div class="key key-clear" tabindex="0" onclick="pressKey('C')">C</div>
+      <div class="key key-enter" tabindex="0" onclick="submitAnswer()">SVAR</div>
     </div>
   </div>
 
   <div id="quit-confirm-view">
     <div class="container" style="text-align:center; justify-content:center;">
       <h2>Avbryta?</h2>
-      <p>Vill du verkligen avsluta övningen?</p>
-      <button class="btn-start" style="background:#dc3545;" onclick="quitGame()">JA, AVSLUTA</button>
-      <button class="btn-secondary" onclick="resumeGame()">NEJ, FORTSÄTT</button>
+      <button class="btn-start" style="background:#dc3545;" onclick="quitGame()" tabindex="0">JA, AVSLUTA</button>
+      <button class="btn-secondary" onclick="resumeGame()" tabindex="0">NEJ, FORTSÄTT</button>
     </div>
   </div>
 
@@ -110,8 +113,8 @@
     <div class="container" style="text-align:center; justify-content:center;">
       <h2 id="finish-title">Klar!</h2>
       <p id="final-score"></p>
-      <p id="speed-stats" style="font-weight:bold;"></p>
-      <button class="btn-start" onclick="restartApp()">NY ÖVNING</button>
+      <p id="speed-stats"></p>
+      <button class="btn-start" onclick="restartApp()" tabindex="0">NY ÖVNING</button>
     </div>
   </div>
 
@@ -129,10 +132,12 @@
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     function playError() {
-      const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-      o.connect(g); g.connect(audioCtx.destination); o.type = 'sawtooth';
-      o.frequency.setValueAtTime(150, audioCtx.currentTime); g.gain.setValueAtTime(0.05, audioCtx.currentTime);
-      o.start(); o.stop(audioCtx.currentTime + 0.2);
+      try {
+        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        o.connect(g); g.connect(audioCtx.destination); o.type = 'sawtooth';
+        o.frequency.setValueAtTime(150, audioCtx.currentTime); g.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        o.start(); o.stop(audioCtx.currentTime + 0.2);
+      } catch(e) {}
     }
 
     function showView(v) {
@@ -140,6 +145,9 @@
       ['setup-view', 'game-view', 'finish-view', 'quit-confirm-view'].forEach(id => {
         document.getElementById(id).style.display = (id === v) ? 'flex' : 'none';
       });
+      // Sätt fokus på huvudknappen i den nya vyn för TV-navigering
+      const firstBtn = document.getElementById(v).querySelector('button, [tabindex="0"]');
+      if (firstBtn) firstBtn.focus();
     }
 
     function createPool(types) {
@@ -159,10 +167,10 @@
     function startSession() {
       const selected = Array.from(document.querySelectorAll('.type-option input:checked')).map(i => i.value);
       if (!selected.length) return;
-      const totalInput = parseInt(document.getElementById('total-problems').value);
-      Storage.saveSettings({total: totalInput, types: Array.from(document.querySelectorAll('.type-option input')).map(i => ({val: i.value, checked: i.checked}))});
+      const totalVal = parseInt(document.getElementById('total-problems').value);
+      Storage.saveSettings({total: totalVal, types: Array.from(document.querySelectorAll('.type-option input')).map(i => ({val: i.value, checked: i.checked}))});
       problemPool = createPool(selected);
-      if (totalInput > 0 && totalInput < problemPool.length) problemPool = problemPool.slice(0, totalInput);
+      if (totalVal > 0 && totalVal < problemPool.length) problemPool = problemPool.slice(0, totalVal);
       startTime = Date.now(); initialTotal = problemPool.length;
       nextProblem(); showView('game-view');
     }
@@ -172,7 +180,7 @@
       if (!problemPool.length) {
         Storage.clearProgress();
         const min = (Date.now() - startTime) / 60000;
-        document.getElementById('final-score').innerText = "Du klarade alla!";
+        document.getElementById('final-score').innerText = "Klar!";
         document.getElementById('speed-stats').innerText = min > 0 ? (initialTotal/min).toFixed(1).replace('.',',') + " uppgifter/min" : "";
         showView('finish-view'); return;
       }
@@ -206,6 +214,7 @@
     function restartApp() { showView('setup-view'); }
     function setTotal(n) { document.getElementById('total-problems').value = n; }
     function adjustTotal(d) { let v = parseInt(document.getElementById('total-problems').value)||0; setTotal(Math.max(0,v+d)); }
+    
     function pressKey(n) { 
       if (isProcessing) return;
       const inp = document.getElementById('answer-input');
@@ -213,16 +222,30 @@
       else if(inp.value.length < 5) inp.value += n; 
     }
 
+    // Tangentbords- och TV-stöd
     window.addEventListener('keydown', (e) => {
       const view = document.body.getAttribute('data-current-view');
+      
+      // Mellanslag eller Enter för att skicka svar
+      if (e.key === ' ' || e.key === 'Enter') {
+        if (view === 'game-view') {
+           e.preventDefault();
+           submitAnswer();
+        } else if (document.activeElement && document.activeElement.click) {
+           // På TV/Setup: klicka på den fokuserade knappen
+           document.activeElement.click();
+        }
+        return;
+      }
+
       if (e.key === 'Escape') {
         if (view === 'game-view') confirmQuit();
         else if (view === 'quit-confirm-view') resumeGame();
         return;
       }
+
       if (view !== 'game-view' || isProcessing) return;
       if (e.key >= '0' && e.key <= '9') pressKey(e.key);
-      else if (e.key === 'Enter') submitAnswer();
       else if (e.key === 'Backspace' || e.key === 'c' || e.key === 'C') pressKey('C');
     });
 
@@ -240,6 +263,15 @@
         showView('game-view');
       }
     };
+    
+    // Registrera Service Worker för offline-stöd (PWA)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registrerad!'))
+          .catch(err => console.error('SW-fel:', err));
+      });
+    }
   </script>
 </body>
 </html>
