@@ -2,7 +2,8 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <title>Aritm Local</title>
+  <title>Aritm Local</title> 
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
   <link rel="manifest" href="manifest.json">
@@ -24,7 +25,7 @@
     
     html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; position: fixed; width: 100%; }
     
-    #setup-view, #game-view, #finish-view, #quit-confirm-view { display: none; flex-direction: column; height: 100%; width: 100%; }
+    #setup-view, #game-view, #finish-view, #quit-confirm-view, #about-view { display: none; flex-direction: column; height: 100%; width: 100%; }
     .container { padding: 10px; display: flex; flex-direction: column; gap: 6px; flex-grow: 1; overflow-y: auto; }
     
     .status-bar { display: flex; justify-content: space-between; align-items: center; background: var(--status-bg); border-bottom: 1px solid var(--border); height: 35px; flex-shrink: 0; font-weight: bold; }
@@ -33,6 +34,8 @@
     .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .type-option { background: var(--container-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); display: flex; align-items: center; font-weight: bold; cursor: pointer; }
     .type-option input { margin-right: 10px; transform: scale(1.2); }
+    /* Visuell feedback när checkbox är vald/fokuserad */
+    .type-option:focus { background: var(--border); }
 
     .quick-select-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
     .quick-btn { background: var(--container-bg); border: 1.5px solid var(--accent); color: var(--accent); padding: 8px 0; border-radius: 6px; font-weight: bold; cursor: pointer; }
@@ -48,7 +51,9 @@
 
     .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); padding-bottom: env(safe-area-inset-bottom); }
     .key { background: var(--key-bg); color: var(--key-text); padding: 20px 0; font-size: 26px; font-weight: bold; text-align: center; cursor: pointer; touch-action: manipulation; }
-    .key:focus, .type-option:focus, .btn-start:focus, .quick-btn:focus, .adjust-btn:focus, .btn-secondary:focus, .discrete-link:focus { background: var(--border); }
+    
+    /* Fokus-stilar */
+    .key:focus, .btn-start:focus, .quick-btn:focus, .adjust-btn:focus, .btn-secondary:focus, .discrete-link:focus { background: var(--border); }
     
     .key-0 { grid-column: span 2; } .key-clear { color: #dc3545; } .key-enter { background: var(--accent); color: white; grid-column: span 3; }
     
@@ -67,7 +72,7 @@
 
   <div id="setup-view" style="display: flex;">
     <div class="container">
-      <h2 style="text-align:center; color:var(--accent);">Aritm</h2>
+      <h2 id="app-title" style="text-align:center; color:var(--accent);">Aritm</h2>
       <div class="type-grid">
         <label class="type-option" tabindex="1"><input type="checkbox" value="add1" checked> Add 1</label>
         <label class="type-option" tabindex="2"><input type="checkbox" value="add2"> Add 2</label>
@@ -168,9 +173,11 @@
 
     function showView(v) {
       document.body.setAttribute('data-current-view', v);
-      ['setup-view', 'game-view', 'finish-view', 'quit-confirm-view'].forEach(id => {
+      ['setup-view', 'game-view', 'finish-view', 'quit-confirm-view', 'about-view'].forEach(id => {
         document.getElementById(id).style.display = (id === v) ? 'flex' : 'none';
       });
+      // Vid vybyte: om TV, fokusera första logiska element
+      /* Endast om inte mus/touch används - kan läggas till vid behov */
     }
     
     function toggleAbout(show) {
@@ -257,10 +264,31 @@
       const view = document.body.getAttribute('data-current-view');
       const isAboutOpen = document.getElementById('about-modal').style.display === 'flex';
 
-      // Hantera Enter/Space för knappar och länkar
+      // 1. Hantera tangentbordsupprepning (bounce)
+      if (e.repeat) return; 
+
+      // 2. Hantera Mellanslag och Enter
       if (e.key === ' ' || e.key === 'Enter') {
-        if (view === 'game-view' && !isAboutOpen) { e.preventDefault(); submitAnswer(); }
-        else if (document.activeElement && document.activeElement.click) document.activeElement.click();
+        if (view === 'game-view' && !isAboutOpen) {
+          e.preventDefault(); submitAnswer(); 
+          return;
+        }
+
+        // Setup-vy och menyer
+        const el = document.activeElement;
+        if (el) {
+          e.preventDefault(); // Förhindra scroll vid space
+          
+          // Om det är en checkbox-label: toggla input manuellt
+          if (el.classList.contains('type-option')) {
+            const cb = el.querySelector('input');
+            if (cb) cb.checked = !cb.checked;
+          }
+          // Om det är en knapp eller länk: klicka på den
+          else if (el.tagName === 'BUTTON' || el.classList.contains('discrete-link')) {
+            el.click();
+          }
+        }
         return;
       }
       
@@ -277,6 +305,9 @@
     });
 
     window.onload = () => {
+      // Sätt rubriken baserat på dokumentets titel (Local/Cloud)
+      document.getElementById('app-title').innerText = document.title;
+
       const s = Storage.loadSettings();
       if (s) {
         setTotal(s.total);
