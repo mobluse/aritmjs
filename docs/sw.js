@@ -1,7 +1,9 @@
 const CACHE_NAME = 'aritm-v1';
 const ASSETS = [
   './',
-  './index.html'
+  './index.html',
+  './manifest.json',
+  './icon-192.png'
 ];
 
 // Installera Service Worker och cacha filer
