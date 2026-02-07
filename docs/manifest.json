@@ -7,7 +7,7 @@
   "theme_color": "#1a73e8",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/mobluse/aritmjs/master/docs/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     }
