@@ -198,8 +198,37 @@
     function restartApp() { showView('setup-view'); }
     function setTotal(n) { document.getElementById('total-problems').value = n; }
     function adjustTotal(d) { let v = parseInt(document.getElementById('total-problems').value)||0; setTotal(Math.max(0,v+d)); }
-    function pressKey(n) { if(n==='C') document.getElementById('answer-input').value = ""; else if(document.getElementById('answer-input').value.length < 5) document.getElementById('answer-input').value += n; }
-
+    function pressKey(n) {
+      if (isProcessing) return; // Förhindra inmatning under feedback-pausen
+      const input = document.getElementById('answer-input');
+      if (n === 'C') {
+        input.value = "";
+      } else if (input.value.length < 5) {
+        input.value += n;
+      }
+    }
+    
+    // Återinför stöd för fysiskt tangentbord
+    window.addEventListener('keydown', (e) => {
+      // Om vi inte är i spelloopen, gör ingenting (förutom Esc för att avbryta)
+      const currentView = document.body.getAttribute('data-current-view');
+      
+      if (e.key === 'Escape') {
+        quitGame();
+        return;
+      }
+    
+      if (currentView !== 'game-view' || isProcessing) return;
+    
+      if (e.key >= '0' && e.key <= '9') {
+        pressKey(e.key);
+      } else if (e.key === 'Enter') {
+        submitAnswer();
+      } else if (e.key === 'Backspace' || e.key === 'c' || e.key === 'C') {
+        pressKey('C');
+      }
+    });
+    
     window.onload = () => {
       const s = Storage.loadSettings();
       if (s) {
