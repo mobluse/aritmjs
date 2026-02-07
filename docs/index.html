@@ -257,25 +257,27 @@
       if (problemPool.length === 0) {
         Storage.clearProgress();
         
-        // --- BERÄKNA HASTIGHET ---
+        // --- BERÄKNA HASTIGHET (SVENSKT FORMAT) ---
         const durationMin = (Date.now() - startTime) / 60000;
         let speedText = "";
         if (initialTotal > 0 && durationMin > 0) {
-          const speed = (initialTotal / durationMin).toFixed(1);
-          // Ta bort .0 om det är ett heltal för snyggare visning
-          speedText = speed.replace('.0', '') + " uppgifter/min";
+          let speed = (initialTotal / durationMin).toFixed(1);
+          // Byt punkt till komma för svensk standard
+          speed = speed.replace('.', ',');
+          // Ta bort ,0 om det är ett heltal för snyggare visning
+          speedText = speed.replace(',0', '') + " uppgifter/min";
         }
 
         document.getElementById('finish-title').innerText = "Bra jobbat!";
         document.getElementById('final-score').innerText = "Du har klarat alla uppgifter!";
-        document.getElementById('speed-stats').innerText = speedText; // Visa hastighet
+        document.getElementById('speed-stats').innerText = speedText; 
         document.getElementById('btn-continue').style.display = 'none';
         
         showView('finish-view');
         return;
       }
       currentProblemStr = problemPool.shift();
-      // Spara även startTime och initialTotal så tidtagningen håller vid omstart
+      // Spara även startTime och initialTotal
       Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime: startTime, initialTotal: initialTotal});
       updateUI();
     }
@@ -307,7 +309,7 @@
       document.getElementById('btn-continue').style.display = 'block';
       document.getElementById('finish-title').innerText = "Avbruten";
       document.getElementById('final-score').innerText = "Du hade " + (problemPool.length + 1) + " kvar.";
-      document.getElementById('speed-stats').innerText = ""; // Ingen hastighet vid avbrott
+      document.getElementById('speed-stats').innerText = ""; 
       showView('finish-view');
     }
 
