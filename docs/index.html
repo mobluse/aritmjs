@@ -89,26 +89,28 @@
     .about-text a { color: var(--accent); }
 
     /* Förbättrad touch-känsla och prestanda */
-.key {
-  touch-action: manipulation; /* Förhindrar zoom-delay på mobil */
-  transition: background-color 0.1s, transform 0.05s;
-}
+    .key {
+      touch-action: manipulation; /* Förhindrar zoom-delay på mobil */
+      transition: background-color 0.1s, transform 0.05s;
+    }
 
-.key:active {
-  background-color: var(--border); /* Visuell feedback */
-  transform: scale(0.95);
-}
+    /* .active-state läggs till via JS för att simulera tryck */
+    .key:active, .key.active-state {
+      background-color: var(--border); /* Visuell feedback */
+      transform: scale(0.95);
+      filter: brightness(0.9);
+    }
 
-/* Förhindra oavsiktlig textmarkering */
-* {
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
+    /* Förhindra oavsiktlig textmarkering */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
 
-/* Tillåt textmarkering endast i input om det behövs */
-#answer-input {
-  user-select: text;
-}
+    /* Tillåt textmarkering endast i input om det behövs */
+    #answer-input {
+      user-select: text;
+    }
   </style>
 </head>
 <body>
@@ -155,11 +157,12 @@
     <input type="text" id="answer-input" readonly placeholder="?" onclick="submitAnswer()">
     <div id="feedback"></div>
     <div class="keypad">
-      <div class="key" onclick="pressKey('7')">7</div><div class="key" onclick="pressKey('8')">8</div><div class="key" onclick="pressKey('9')">9</div>
-      <div class="key" onclick="pressKey('4')">4</div><div class="key" onclick="pressKey('5')">5</div><div class="key" onclick="pressKey('6')">6</div>
-      <div class="key" onclick="pressKey('1')">1</div><div class="key" onclick="pressKey('2')">2</div><div class="key" onclick="pressKey('3')">3</div>
-      <div class="key key-0" onclick="pressKey('0')">0</div><div class="key key-clear" onclick="pressKey('C')">C</div>
-      <div class="key key-enter" onclick="submitAnswer()">SVAR</div>
+      <!-- Added data-key attributes for JS mapping -->
+      <div class="key" data-key="7" onclick="pressKey('7')">7</div><div class="key" data-key="8" onclick="pressKey('8')">8</div><div class="key" data-key="9" onclick="pressKey('9')">9</div>
+      <div class="key" data-key="4" onclick="pressKey('4')">4</div><div class="key" data-key="5" onclick="pressKey('5')">5</div><div class="key" data-key="6" onclick="pressKey('6')">6</div>
+      <div class="key" data-key="1" onclick="pressKey('1')">1</div><div class="key" data-key="2" onclick="pressKey('2')">2</div><div class="key" data-key="3" onclick="pressKey('3')">3</div>
+      <div class="key key-0" data-key="0" onclick="pressKey('0')">0</div><div class="key key-clear" data-key="C" onclick="pressKey('C')">C</div>
+      <div class="key key-enter" data-key="Enter" onclick="submitAnswer()">SVAR</div>
     </div>
   </div>
 
@@ -218,7 +221,25 @@
 
     function toggleAbout(show) { document.getElementById('about-modal').style.display = show ? 'flex' : 'none'; }
 
+    // Helper to toggle visual state of keys
+    function highlightKey(keyVal, active) {
+      let selector = null;
+      if (keyVal >= '0' && keyVal <= '9') selector = `[data-key="${keyVal}"]`;
+      else if (['Enter', ' '].includes(keyVal)) selector = `[data-key="Enter"]`;
+      else if (['Backspace', 'Delete', 'c', 'C'].includes(keyVal)) selector = `[data-key="C"]`;
+      
+      if (selector) {
+        const el = document.querySelector(selector);
+        if (el) {
+          if (active) el.classList.add('active-state');
+          else el.classList.remove('active-state');
+        }
+      }
+    }
+
     document.addEventListener('keydown', (e) => {
+      if (e.repeat) return; // Prevent flickering or multi-trigger on hold if not desired
+
       if (document.getElementById('about-modal').style.display === 'flex') {
         if (e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); toggleAbout(false); }
         return;
@@ -226,7 +247,11 @@
       const isGameView = document.getElementById('game-view').style.display === 'flex';
       const isSetupView = document.getElementById('setup-view').style.display === 'flex';
       const isFinishView = document.getElementById('finish-view').style.display === 'flex';
+      
       if (isGameView) {
+        // Visual feedback
+        highlightKey(e.key, true);
+
         if (isProcessing) return;
         if (e.key >= '0' && e.key <= '9') pressKey(e.key);
         else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); submitAnswer(); }
@@ -244,6 +269,10 @@
           if (btnCont.style.display !== 'none') { e.preventDefault(); continueSession(); }
         } else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); restartApp(); }
       }
+    });
+
+    document.addEventListener('keyup', (e) => {
+       highlightKey(e.key, false);
     });
 
     window.onload = () => {
@@ -345,12 +374,12 @@
       document.getElementById('answer-input').value = "";
     }
 
-function showView(v) {
-  document.body.setAttribute('data-current-view', v); // Underlättar för Puppeteer
-  ['setup-view', 'game-view', 'finish-view'].forEach(id => {
-    document.getElementById(id).style.display = (id === v) ? 'flex' : 'none';
-  });
-}
+    function showView(v) {
+      document.body.setAttribute('data-current-view', v); // Underlättar för Puppeteer
+      ['setup-view', 'game-view', 'finish-view'].forEach(id => {
+        document.getElementById(id).style.display = (id === v) ? 'flex' : 'none';
+      });
+    }
 
     function setTotal(n) { document.getElementById('total-problems').value = n; }
     function adjustTotal(d) { let v = parseInt(document.getElementById('total-problems').value) || 0; document.getElementById('total-problems').value = Math.max(0, v + d); }
@@ -361,13 +390,13 @@ function showView(v) {
       else if(document.getElementById('answer-input').value.length < 5) document.getElementById('answer-input').value += n; 
     }
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-    for(let registration of registrations) {
-      registration.unregister();
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+        }
+      });
     }
-  });
-}
-</script>
+  </script>
 </body>
 </html>
