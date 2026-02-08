@@ -121,7 +121,7 @@
         <label class="type-option"><input type="checkbox" value="add2"> Add 2</label>
         <label class="type-option"><input type="checkbox" value="sub1"> Sub 1</label>
         <label class="type-option"><input type="checkbox" value="sub2"> Sub 2</label>
-        <label class="type-option"><input type="checkbox" value="mult"> Mul</label>
+        <label class="type-option"><input type="checkbox" value="mul"> Mul</label>
         <label class="type-option"><input type="checkbox" value="div"> Div</label>
       </div>
       
@@ -271,7 +271,7 @@
         else if (type === 'add2') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) { let t = 10 * (Math.floor(Math.random() * 8) + 1); pool.push(`${t+i} + ${j}`); } }
         else if (type === 'sub1') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push(`${i+j} - ${j}`); }
         else if (type === 'sub2') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) { let t = 10 * (Math.floor(Math.random() * 9) + 1); pool.push(`${t+i+j} - ${j}`); } }
-        else if (type === 'mult') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push(`${i} ⋅ ${j}`); }
+        else if (type === 'mul') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push(`${i} ⋅ ${j}`); }
         else if (type === 'div') { for (let i = 0; i <= 9; i++) for (let j = 1; j <= 9; j++) { pool.push(`${i * j + Math.floor(j * Math.random())} / ${j}`); } }
       });
       for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
