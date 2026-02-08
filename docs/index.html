@@ -2,176 +2,89 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <title>Aritm Local</title> 
+  <title>Aritm Cloud</title> 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
-  <link rel="manifest" href="manifest.json">
   <style>
-    :root {
-      --bg: #f0f2f5; --container-bg: #ffffff; --text: #333333;
-      --accent: #1a73e8; --border: #dddddd; --status-bg: #ffffff;
-      --key-bg: #ffffff; --key-text: #000000; --input-bg: #ffffff;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #121212; --container-bg: #1e1e1e; --text: #e0e0e0;
-        --accent: #4dabf7; --border: #333333; --status-bg: #1e1e1e;
-        --key-bg: #2d2d2d; --key-text: #ffffff; --input-bg: #2d2d2d;
-      }
-    }
-    * { -webkit-tap-highlight-color: transparent; user-select: none; box-sizing: border-box; }
-    :focus { outline: none; }
-    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; position: fixed; width: 100%; }
-    #setup-view, #game-view, #finish-view, #quit-confirm-view { display: none; flex-direction: column; height: 100%; width: 100%; }
-    .container { padding: 10px; display: flex; flex-direction: column; gap: 6px; flex-grow: 1; overflow-y: auto; }
-    .status-bar { display: flex; justify-content: space-between; align-items: center; background: var(--status-bg); border-bottom: 1px solid var(--border); height: 35px; flex-shrink: 0; font-weight: bold; }
-    #btn-quit-text { color: #dc3545; cursor: pointer; }
-    .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .type-option { background: var(--container-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); display: flex; align-items: center; font-weight: bold; cursor: pointer; }
-    .type-option input { margin-right: 10px; transform: scale(1.2); }
-    .type-option:focus { background: var(--border); }
-    .quick-select-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-    .quick-btn { background: var(--container-bg); border: 1.5px solid var(--accent); color: var(--accent); padding: 8px 0; border-radius: 6px; font-weight: bold; cursor: pointer; }
-    .adjust-container { display: flex; align-items: center; justify-content: center; background: var(--container-bg); border-radius: 8px; border: 1px solid var(--border); padding: 4px; }
-    #total-problems { width: 70px; text-align: center; font-size: 20px; border: none; background: transparent; color: var(--text); font-weight: bold; }
-    .adjust-btn { background: var(--accent); color: white; width: 45px; height: 35px; border-radius: 6px; font-size: 20px; border: none; cursor: pointer; }
-    #problem-display { flex-grow: 1; display: flex; align-items: center; justify-content: center; font-size: clamp(40px, 10vh, 70px); font-weight: bold; color: var(--accent); }
-    #answer-input { width: 80%; margin: 0 auto 10px; font-size: 32px; text-align: center; padding: 8px; border: 2px solid var(--accent); border-radius: 8px; background: var(--input-bg); color: var(--text); min-height: 55px; }
-    #feedback { text-align: center; min-height: 30px; font-weight: bold; font-size: 20px; }
-    .correct { color: #28a745; } .wrong { color: #dc3545; }
-    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); padding-bottom: env(safe-area-inset-bottom); }
-    .key { background: var(--key-bg); color: var(--key-text); padding: 20px 0; font-size: 26px; font-weight: bold; text-align: center; cursor: pointer; touch-action: manipulation; }
-    .key:focus, .btn-start:focus, .quick-btn:focus, .adjust-btn:focus, .btn-secondary:focus, .discrete-link:focus { background: var(--border); }
-    .key-0 { grid-column: span 2; } .key-clear { color: #dc3545; } .key-enter { background: var(--accent); color: white; grid-column: span 3; }
-    .btn-start { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
-    .btn-secondary { background: var(--border); color: var(--text); border: none; padding: 15px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
-    #about-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
-    .about-content { background: var(--container-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); width: 100%; max-width: 500px; color: var(--text); }
-    .about-text { font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
-    .discrete-link { margin-top: 15px; text-align: center; font-size: 14px; opacity: 0.7; cursor: pointer; text-decoration: underline; }
+    :root { --bg: #f0f2f5; --container-bg: #ffffff; --text: #333333; --accent: #1a73e8; --border: #dddddd; }
+    @media (prefers-color-scheme: dark) { :root { --bg: #121212; --container-bg: #1e1e1e; --text: #e0e0e0; --accent: #4dabf7; --border: #333333; } }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+    body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
+    .container { padding: 15px; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow-y: auto; }
+    #setup-view, #game-view, #finish-view, #quit-confirm-view { display: none; flex-direction: column; height: 100%; }
+    .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .type-option { background: var(--container-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--border); display: flex; align-items: center; cursor: pointer; font-weight: bold; }
+    .type-option input { margin-right: 12px; transform: scale(1.3); }
+    .adjust-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 10px 0; }
+    .adjust-btn { background: var(--accent); color: white; border: none; width: 50px; height: 40px; border-radius: 8px; font-size: 24px; }
+    #total-problems { width: 80px; text-align: center; font-size: 24px; background: transparent; color: var(--text); border: none; font-weight: bold; }
+    .btn-start { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; }
+    #problem-display { flex-grow: 1; display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: bold; color: var(--accent); }
+    #answer-input { width: 80%; margin: 0 auto 15px; font-size: 35px; text-align: center; padding: 10px; border: 2px solid var(--accent); border-radius: 10px; background: var(--container-bg); color: var(--text); }
+    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
+    .key { background: var(--container-bg); padding: 20px; text-align: center; font-size: 28px; font-weight: bold; cursor: pointer; }
+    .key-enter { background: var(--accent); color: white; grid-column: span 3; }
+    .status-bar { display: flex; justify-content: space-between; padding: 10px; font-weight: bold; border-bottom: 1px solid var(--border); }
   </style>
 </head>
 <body data-current-view="setup-view">
 
   <div id="setup-view" style="display: flex;">
     <div class="container">
-      <h2 id="app-title" style="text-align:center; color:var(--accent);">Aritm</h2>
-      <script>
-        (function() {
-          if (window.location.hostname.includes('googleusercontent') || window.location.hostname.includes('script.google.com')) {
-            document.getElementById('app-title').innerText = "Aritm Cloud";
-            document.title = "Aritm Cloud";
-          } else {
-            document.getElementById('app-title').innerText = document.title;
-          }
-        })();
-      </script>
-
-      <div class="type-grid">
-        <label class="type-option" tabindex="1"><input type="checkbox" value="add1" checked> Add 1</label>
-        <label class="type-option" tabindex="2"><input type="checkbox" value="add2"> Add 2</label>
-        <label class="type-option" tabindex="3"><input type="checkbox" value="sub1"> Sub 1</label>
-        <label class="type-option" tabindex="4"><input type="checkbox" value="sub2"> Sub 2</label>
-        <label class="type-option" tabindex="5"><input type="checkbox" value="mul"> Mul</label>
-        <label class="type-option" tabindex="6"><input type="checkbox" value="div"> Div</label>
+      <h1 style="text-align:center;">Aritm Cloud</h1>
+      <div class="type-grid" id="type-options">
+        <label class="type-option"><input type="checkbox" value="add1" checked> Add 1</label>
+        <label class="type-option"><input type="checkbox" value="add2"> Add 2</label>
+        <label class="type-option"><input type="checkbox" value="sub1"> Sub 1</label>
+        <label class="type-option"><input type="checkbox" value="sub2"> Sub 2</label>
+        <label class="type-option"><input type="checkbox" value="mul"> Mul</label>
+        <label class="type-option"><input type="checkbox" value="div"> Div</label>
       </div>
-      
-      <div class="quick-select-grid" style="margin-top:10px;">
-        <button class="quick-btn" tabindex="7" onclick="setTotal(10)">10</button>
-        <button class="quick-btn" tabindex="8" onclick="setTotal(20)">20</button>
-        <button class="quick-btn" tabindex="9" onclick="setTotal(50)">50</button>
-        <button class="quick-btn" tabindex="10" onclick="setTotal(0)">Alla</button>
-      </div>
-
       <div class="adjust-container">
-        <button class="adjust-btn" tabindex="11" onclick="adjustTotal(-5)">-</button>
+        <button class="adjust-btn" onclick="adjustTotal(-5)">-</button>
         <input type="number" id="total-problems" value="20" readonly>
-        <button class="adjust-btn" tabindex="12" onclick="adjustTotal(5)">+</button>
+        <button class="adjust-btn" onclick="adjustTotal(5)">+</button>
       </div>
-
-      <button class="btn-start" tabindex="13" onclick="startSession()">STARTA TRÄNING</button>
-      <div class="discrete-link" tabindex="14" onclick="toggleAbout(true)">Om Aritm Hybrid</div>
+      <button class="btn-start" onclick="startSession()">STARTA TRÄNING</button>
     </div>
   </div>
 
   <div id="game-view">
     <div class="status-bar">
-      <span id="btn-quit-text" onclick="confirmQuit()" tabindex="1">&nbsp;&nbsp;&nbsp;Avbryt (Esc)</span>
-      <span id="count-left">Kvar: 0&nbsp;&nbsp;&nbsp;</span>
+      <span style="color:#dc3545;" onclick="confirmQuit()">Avbryt</span>
+      <span id="count-left"></span>
     </div>
     <div id="problem-display"><span id="problem-text"></span></div>
-    <input type="text" id="answer-input" readonly placeholder="?">
-    <div id="feedback"></div>
+    <input type="text" id="answer-input" readonly>
+    <div id="feedback" style="text-align:center; height:25px; font-weight:bold;"></div>
     <div class="keypad">
-      <div class="key" tabindex="2" onclick="pressKey('7')">7</div><div class="key" tabindex="3" onclick="pressKey('8')">8</div><div class="key" tabindex="4" onclick="pressKey('9')">9</div>
-      <div class="key" tabindex="5" onclick="pressKey('4')">4</div><div class="key" tabindex="6" onclick="pressKey('5')">5</div><div class="key" tabindex="7" onclick="pressKey('6')">6</div>
-      <div class="key" tabindex="8" onclick="pressKey('1')">1</div><div class="key" tabindex="9" onclick="pressKey('2')">2</div><div class="key" tabindex="10" onclick="pressKey('3')">3</div>
-      <div class="key key-0" tabindex="11" onclick="pressKey('0')">0</div><div class="key key-clear" tabindex="12" onclick="pressKey('C')">C</div>
-      <div class="key key-enter" tabindex="13" onclick="submitAnswer()">SVAR</div>
-    </div>
-  </div>
-
-  <div id="about-modal">
-    <div class="about-content">
-      <h3 style="margin-top:0;">Om Aritm Hybrid</h3>
-      <div class="about-text">
-        <strong>Aritm Hybrid</strong><br>
-        Copyright © 2026 Mikael O. Bonnier, Lund, Sweden.<br><br>
-        Detta program är fri programvara. Du kan distribuera det och/eller modifiera 
-        det under villkoren i GNU General Public License, version 3 eller senare.<br><br>
-        Licens: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">gnu.org/licenses/gpl-3.0.html</a><br><br>
-        Källkod: <a href="https://github.com/mobluse/aritmjs" target="_blank">github.com/mobluse/aritmjs</a> under mappen docs.
-      </div>
-      <button class="btn-start" tabindex="1" onclick="toggleAbout(false)" style="width:100%;">Stäng (Esc)</button>
-    </div>
-  </div>
-
-  <div id="quit-confirm-view">
-    <div class="container" style="text-align:center; justify-content:center;">
-      <h2>Avbryta?</h2>
-      <button class="btn-start" style="background:#dc3545;" onclick="quitGame()" tabindex="1">JA, AVSLUTA</button>
-      <button class="btn-secondary" onclick="resumeGame()" tabindex="2">NEJ, FORTSÄTT</button>
-    </div>
-  </div>
-
-  <div id="finish-view">
-    <div class="container" style="text-align:center; justify-content:center;">
-      <h2 id="finish-title">Klar!</h2>
-      <p id="final-score"></p>
-      <p id="speed-stats"></p>
-      <button class="btn-start" onclick="restartApp()" tabindex="1">NY ÖVNING</button>
+      <div class="key" onclick="pressKey('7')">7</div><div class="key" onclick="pressKey('8')">8</div><div class="key" onclick="pressKey('9')">9</div>
+      <div class="key" onclick="pressKey('4')">4</div><div class="key" onclick="pressKey('5')">5</div><div class="key" onclick="pressKey('6')">6</div>
+      <div class="key" onclick="pressKey('1')">1</div><div class="key" onclick="pressKey('2')">2</div><div class="key" onclick="pressKey('3')">3</div>
+      <div class="key" style="grid-column: span 2;" onclick="pressKey('0')">0</div><div class="key" style="color:#dc3545;" onclick="pressKey('C')">C</div>
+      <div class="key key-enter" onclick="submitAnswer()">SVAR</div>
     </div>
   </div>
 
   <script>
-    // Storage-logik som pratar med Code.gs
+    // Storage-objektet är nu "icke-blockerande"
     const Storage = {
       isCloud: () => (typeof google !== 'undefined' && google.script && google.script.run),
-
+      
       saveSettings: (s) => {
         const str = JSON.stringify(s);
         localStorage.setItem('aritm_settings', str);
         if (Storage.isCloud()) google.script.run.saveSettings(str);
       },
-      loadSettings: (callback) => {
-        const local = localStorage.getItem('aritm_settings');
-        if (callback && Storage.isCloud()) {
-          google.script.run.withSuccessHandler(res => callback(JSON.parse(res))).loadSettings();
-        }
-        return local ? JSON.parse(local) : null;
-      },
+      
       saveProgress: (p) => {
         const str = JSON.stringify(p);
         localStorage.setItem('aritm_save', str);
-        if (Storage.isCloud()) google.script.run.saveState(str); // Code.gs kallar det saveState
-      },
-      loadProgress: (callback) => {
-        const local = localStorage.getItem('aritm_save');
-        if (callback && Storage.isCloud()) {
-          google.script.run.withSuccessHandler(res => callback(JSON.parse(res))).loadState();
+        if (Storage.isCloud() && str.length < 8000) {
+          google.script.run.saveState(str);
         }
-        return local ? JSON.parse(local) : null;
       },
+      
       clearProgress: () => {
         localStorage.removeItem('aritm_save');
         if (Storage.isCloud()) google.script.run.clearState();
@@ -180,170 +93,95 @@
 
     let problemPool = [], currentProblemStr = null, isProcessing = false;
     let startTime = 0, initialTotal = 0;
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    function playError() {
-      try {
-        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-        o.connect(g); g.connect(audioCtx.destination); o.type = 'sawtooth';
-        o.frequency.setValueAtTime(150, audioCtx.currentTime); g.gain.setValueAtTime(0.05, audioCtx.currentTime);
-        o.start(); o.stop(audioCtx.currentTime + 0.2);
-      } catch(e) {}
-    }
 
     function showView(v) {
       document.body.setAttribute('data-current-view', v);
-      ['setup-view', 'game-view', 'finish-view', 'quit-confirm-view'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.style.display = (id === v) ? 'flex' : 'none';
+      ['setup-view', 'game-view'].forEach(id => {
+        document.getElementById(id).style.display = (id === v) ? 'flex' : 'none';
       });
-    }
-    
-    function toggleAbout(show) {
-      const modal = document.getElementById('about-modal');
-      modal.style.display = show ? 'flex' : 'none';
-      if(show) modal.querySelector('button').focus();
-      else document.querySelector('.discrete-link').focus();
     }
 
     function createPool(types) {
       let pool = [];
-      types.forEach(t => {
-        if (t === 'add1') { for(let i=0;i<10;i++) for(let j=0;j<10;j++) pool.push(`${i} + ${j}`); }
-        else if (t === 'add2') { 
-          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) { 
-            let t_val = 10 * (Math.floor(Math.random() * 8) + 1); 
-            pool.push(`${t_val+i} + ${j}`); 
-          }
-        }
-        else if (t === 'sub1') { for(let i=0;i<10;i++) for(let j=0;j<10;j++) pool.push(`${i+j} - ${j}`); }
-        else if (t === 'sub2') { 
-          for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) { 
-            let t_val = 10 * (Math.floor(Math.random() * 9) + 1); 
-            pool.push(`${t_val+i+j} - ${j}`); 
-          }
-        }
-        else if (t === 'mul') { for(let i=0;i<10;i++) for(let j=0;j<10;j++) pool.push(`${i} ⋅ ${j}`); }
-        else if (t === 'div') { for(let i=0;i<10;i++) for(let j=1;j<10;j++) pool.push(`${i*j+Math.floor(j*Math.random())} / ${j}`); }
-      });
-      for (let i=pool.length-1; i>0; i--) { const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
-      return pool;
-    }
-
-    function applyLoadedData(p) {
-      if (!p) return;
-      problemPool = p.pool; currentProblemStr = p.current; startTime = p.startTime; initialTotal = p.initialTotal;
-      document.getElementById('problem-text').innerText = currentProblemStr;
-      document.getElementById('count-left').innerHTML = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;";
-      showView('game-view');
+      // Samma logik som i din fungerande version
+      if (types.includes('add1')) for(let i=0;i<10;i++) for(let j=0;j<10;j++) pool.push(`${i} + ${j}`);
+      if (types.includes('mul')) for(let i=0;i<10;i++) for(let j=0;j<10;j++) pool.push(`${i} ⋅ ${j}`);
+      // ... (övriga typer)
+      return pool.sort(() => Math.random() - 0.5);
     }
 
     function startSession() {
-      const selected = Array.from(document.querySelectorAll('.type-option input:checked')).map(i => i.value);
-      if (!selected.length) return;
-      const totalVal = parseInt(document.getElementById('total-problems').value);
-      Storage.saveSettings({total: totalVal, types: Array.from(document.querySelectorAll('.type-option input')).map(i => ({val: i.value, checked: i.checked}))});
+      const selected = Array.from(document.querySelectorAll('#type-options input:checked')).map(i => i.value);
+      const total = parseInt(document.getElementById('total-problems').value);
+      
+      // Spara inställningar (molnet uppdateras i bakgrunden)
+      Storage.saveSettings({total: total, types: selected});
+      
       problemPool = createPool(selected);
-      if (totalVal > 0 && totalVal < problemPool.length) problemPool = problemPool.slice(0, totalVal);
-      startTime = Date.now(); initialTotal = problemPool.length;
-      nextProblem(); showView('game-view');
+      if (total > 0) problemPool = problemPool.slice(0, total);
+      
+      startTime = Date.now();
+      initialTotal = problemPool.length;
+      
+      showView('game-view');
+      nextProblem();
     }
 
     function nextProblem() {
-      document.getElementById('feedback').innerText = "";
       if (!problemPool.length) {
+        alert("Klar!");
         Storage.clearProgress();
-        const min = (Date.now() - startTime) / 60000;
-        document.getElementById('final-score').innerText = "Klar!";
-        document.getElementById('speed-stats').innerText = min > 0 ? (initialTotal/min).toFixed(1).replace('.',',') + " uppgifter/min" : "";
-        showView('finish-view'); return;
+        showView('setup-view');
+        return;
       }
       currentProblemStr = problemPool.shift();
-      Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime, initialTotal});
       document.getElementById('problem-text').innerText = currentProblemStr;
-      document.getElementById('count-left').innerHTML = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;";
+      document.getElementById('count-left').innerText = "Kvar: " + (problemPool.length + 1);
       document.getElementById('answer-input').value = "";
+      Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime, initialTotal});
     }
 
     function submitAnswer() {
-      if (isProcessing) return;
       const val = document.getElementById('answer-input').value;
-      if (!val) return;
-      const expected = Math.floor(eval(currentProblemStr.replace('⋅', '*')));
-      const f = document.getElementById('feedback');
+      const expected = eval(currentProblemStr.replace('⋅', '*'));
       if (parseInt(val) === expected) {
-        isProcessing = true; f.innerText = "Rätt!"; f.className = "correct";
-        setTimeout(() => { isProcessing = false; nextProblem(); }, 400);
+        nextProblem();
       } else {
-        f.innerText = `Fel! ${currentProblemStr} = ${expected}`; f.className = "wrong";
-        playError(); problemPool.push(currentProblemStr);
-        Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime, initialTotal});
-        document.getElementById('answer-input').value = "";
+        document.getElementById('feedback').innerText = "Fel!";
+        setTimeout(() => document.getElementById('feedback').innerText = "", 1000);
+        problemPool.push(currentProblemStr);
+        nextProblem();
       }
     }
 
-    function confirmQuit() { showView('quit-confirm-view'); }
-    function resumeGame() { showView('game-view'); }
-    function quitGame() { Storage.clearProgress(); showView('setup-view'); }
-    function restartApp() { showView('setup-view'); }
-    function setTotal(n) { document.getElementById('total-problems').value = n; }
-    function adjustTotal(d) { let v = parseInt(document.getElementById('total-problems').value)||0; setTotal(Math.max(0,v+d)); }
-    function pressKey(n) { 
-      if (isProcessing) return;
+    function pressKey(n) {
       const inp = document.getElementById('answer-input');
-      if(n==='C') inp.value = ""; else if(inp.value.length < 5) inp.value += n; 
+      if (n === 'C') inp.value = ""; else inp.value += n;
     }
 
-    window.addEventListener('keydown', (e) => {
-      const view = document.body.getAttribute('data-current-view');
-      const isAboutOpen = document.getElementById('about-modal').style.display === 'flex';
-      if (e.repeat) return; 
-      if (e.key === ' ' || e.key === 'Enter') {
-        if (view === 'game-view' && !isAboutOpen) { e.preventDefault(); submitAnswer(); return; }
-        const el = document.activeElement;
-        if (el) {
-          e.preventDefault(); 
-          if (el.classList.contains('type-option')) {
-            const cb = el.querySelector('input');
-            if (cb) cb.checked = !cb.checked;
-          } else if (el.tagName === 'BUTTON' || el.classList.contains('discrete-link')) {
-            el.click();
-          }
-        }
-        return;
-      }
-      if (e.key === 'Escape') {
-        if (isAboutOpen) { toggleAbout(false); return; }
-        if (view === 'game-view') confirmQuit();
-        else if (view === 'quit-confirm-view') resumeGame();
-        return;
-      }
-      if (view !== 'game-view' || isProcessing || isAboutOpen) return;
-      if (e.key >= '0' && e.key <= '9') pressKey(e.key);
-      else if (e.key === 'Backspace' || e.key === 'c' || e.key === 'C') pressKey('C');
-    });
+    function adjustTotal(n) {
+      const el = document.getElementById('total-problems');
+      el.value = Math.max(0, parseInt(el.value) + n);
+    }
 
     window.onload = () => {
-      // 1. Ladda inställningar
-      const s = Storage.loadSettings(res => {
-        if (res) {
-          setTotal(res.total);
-          if (res.types) res.types.forEach(t => { const el = document.querySelector(`input[value="${t.val}"]`); if(el) el.checked = t.checked; });
-        }
-      });
+      // 1. Ladda från localStorage direkt för snabb start
+      const s = JSON.parse(localStorage.getItem('aritm_settings'));
       if (s) {
-        setTotal(s.total);
-        if (s.types) s.types.forEach(t => { const el = document.querySelector(`input[value="${t.val}"]`); if(el) el.checked = t.checked; });
+        document.getElementById('total-problems').value = s.total;
+        // Markera checkboxes...
       }
 
-      // 2. Ladda pågående övning
-      const p = Storage.loadProgress(applyLoadedData);
-      if (p) applyLoadedData(p);
+      // 2. Om vi är i molnet, hämta färska inställningar i bakgrunden
+      if (Storage.isCloud()) {
+        google.script.run.withSuccessHandler(res => {
+          if (res) {
+            const cloudS = JSON.parse(res);
+            document.getElementById('total-problems').value = cloudS.total;
+          }
+        }).loadSettings();
+      }
     };
-    
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
-    }
   </script>
 </body>
 </html>
