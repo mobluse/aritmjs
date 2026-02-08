@@ -2,7 +2,8 @@
 import pexpect
 import math
 
-c='python3 ARITM82M.py'
+c='node aritm-bridge.js'
+#c='python3 ARITM82M.py'
 #c='python3 aritm.py'
 #c='js102 aritm-mozjs.js'
 #c='node aritm-node.js'
@@ -25,7 +26,8 @@ s3='= ' # MozJS/Node.js/PHP/Applesoft-&MM-&GW-BASIC
 #s3='\? ' # BASICODE
 #s3='\[C' # cbmbasic
 
-b,e=-6,-1 # MozJS/Node.js/PHP/Applesoft-&MM-&GW-BASIC
+b,e=-8,-1 # bridge.js
+#b,e=-6,-1 # MozJS/Node.js/PHP/Applesoft-&MM-&GW-BASIC
 #b,e=-9,-3 # BASICODE
 #b,e=-9,-4 # ZX81
 #b,e=-10,-5 # cbmbasic
@@ -56,28 +58,28 @@ child=pexpect.spawn(c)
 
 #child.interact()
 
-n=1*100+90-1
-child.expect(s)
-print('L1')
-child.sendline('1')
-child.expect(s)
-print('L2a')
-child.sendline('2')
-child.expect(s)
-print('L2b')
-child.sendline('3')
-child.expect(s)
-print('L2c')
-child.sendline('4')
-child.expect(s)
-print('L2d')
-child.sendline('5')
-child.expect(s)
-print('L2e')
-child.sendline('6')
-child.expect(s)
-print('L3')
-child.sendline('0')
+n=5*100+90-1
+#child.expect(s)
+#print('L1')
+#child.sendline('1')
+#child.expect(s)
+#print('L2a')
+#child.sendline('2')
+#child.expect(s)
+#print('L2b')
+#child.sendline('3')
+#child.expect(s)
+#print('L2c')
+#child.sendline('4')
+#child.expect(s)
+#print('L2d')
+#child.sendline('5')
+#child.expect(s)
+#print('L2e')
+#child.sendline('6')
+#child.expect(s)
+#print('L3')
+#child.sendline('0')
 child.expect(s3)
 print('L4')
 for i in range(n):
@@ -87,6 +89,7 @@ for i in range(n):
     s=s.replace(b'F',b' ') # ZX81
     s=s.replace(b'\n',b' ')
     s=s.replace(b'\r',b' ')
+    s=s.replace('⋅'.encode('utf-8'), b'*') # bridge.js
     print(s)
     r=int(math.floor(eval(s)))
     print('%i: result %g'%(i,r))
