@@ -360,15 +360,14 @@ function showView(v) {
       if(n==='C') document.getElementById('answer-input').value = ""; 
       else if(document.getElementById('answer-input').value.length < 5) document.getElementById('answer-input').value += n; 
     }
-  </script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker registrerad!'))
-        .catch(err => console.error('SW-fel:', err));
-    });
-  }
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    for(let registration of registrations) {
+      registration.unregister();
+    }
+  });
+}
 </script>
 </body>
 </html>
