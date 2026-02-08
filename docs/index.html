@@ -150,8 +150,8 @@
 
   <div id="game-view">
     <div class="status-bar">
-      <span id="btn-quit-text" onclick="quitGame()">&nbsp;&nbsp;&nbsp;Avbryt (Esc)</span>
-      <span id="count-left">Kvar: -&nbsp;&nbsp;&nbsp;</span>
+      <span id="btn-quit-text" onclick="quitGame()">&nbsp;&nbsp;&nbsp;&nbsp;Avbryt (Esc)</span>
+      <span id="count-left">Kvar: -&nbsp;&nbsp;&nbsp;&nbsp;</span>
     </div>
     <div id="problem-display"><span id="problem-text"></span></div>
     <input type="text" id="answer-input" readonly placeholder="?" onclick="submitAnswer()">
@@ -370,7 +370,7 @@
     function restartApp() { Storage.clearProgress(); showView('setup-view'); }
     function updateUI() { 
       document.getElementById('problem-text').innerText = currentProblemStr; 
-      document.getElementById('count-left').innerHTML = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;";
+      document.getElementById('count-left').innerHTML = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;&nbsp;";
       document.getElementById('answer-input').value = "";
     }
 
