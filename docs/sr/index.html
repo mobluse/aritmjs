@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <title>Aritm Local</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  
+  <meta name="color-scheme" content="light dark">
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <style>
+    /* FÄRGVARIABLER (Ljust läge som standard) */
+    :root {
+      --bg: #f0f2f5;
+      --container-bg: #ffffff;
+      --text: #333333;
+      --accent: #1a73e8;
+      --border: #dddddd;
+      --status-bg: #ffffff;
+      --key-bg: #ffffff;
+      --key-text: #000000;
+      --input-bg: #ffffff;
+      --mic-off: #666666;
+      --mic-on: #dc3545;
+      --mic-active: #28a745; /* Grön när den faktiskt hör ljud/är redo */
+    }
+
+    /* MÖRKT LÄGE (Systemstyrt) */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121212;
+        --container-bg: #1e1e1e;
+        --text: #e0e0e0;
+        --accent: #4dabf7;
+        --border: #333333;
+        --status-bg: #1e1e1e;
+        --key-bg: #2d2d2d;
+        --key-text: #ffffff;
+        --input-bg: #2d2d2d;
+        --mic-off: #888888;
+        --mic-on: #ff5252;
+        --mic-active: #43a047;
+      }
+    }
+
+    html, body { 
+      height: 100%; margin: 0; padding: 0; overflow: hidden; 
+      background-color: var(--bg); 
+      color: var(--text); 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      position: fixed; width: 100%; top: 0; left: 0; 
+      user-select: none; -webkit-user-select: none; 
+    }
+    
+    body { display: flex; flex-direction: column; transition: background-color 0.3s ease; }
+    #setup-view, #game-view, #finish-view { display: none; flex-direction: column; height: 100%; width: 100%; box-sizing: border-box; }
+    
+    .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 2px 10px; background: var(--status-bg); border-bottom: 1px solid var(--border); font-weight: bold; font-size: 14px; height: 30px; flex-shrink: 0; }
+    #btn-quit-text { color: #dc3545; cursor: pointer; }
+    
+    .container { padding: 10px; display: flex; flex-direction: column; gap: 6px; flex-grow: 1; overflow-y: auto; }
+    h2 { color: var(--accent); text-align: center; margin: 4px 0; font-size: 18px; }
+    
+    .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .type-option { background: var(--container-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border); display: flex; align-items: center; font-weight: bold; font-size: 14px; cursor: pointer; }
+    .type-option input { margin-right: 10px; transform: scale(1.2); }
+    
+    .quick-select-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .quick-btn { background: var(--container-bg); border: 1.5px solid var(--accent); color: var(--accent); padding: 8px 0; text-align: center; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; }
+    
+    .adjust-container { display: flex; align-items: center; justify-content: center; background: var(--container-bg); padding: 5px; border-radius: 8px; border: 1px solid var(--border); }
+    #total-problems { width: 60px; text-align: center; font-size: 20px; font-weight: bold; border: none; background: transparent; color: var(--text); outline: none; }
+    
+    .adjust-btn { background: var(--accent); color: white; width: 45px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 20px; cursor: pointer; border: none; opacity: 0.8; }
+    .btn-start { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-size: 18px; font-weight: bold; margin-top: 5px; cursor: pointer; }
+    .btn-continue { background: #28a745 !important; margin-bottom: 10px; }
+    
+    #problem-display { flex-grow: 1; display: flex; align-items: center; justify-content: center; font-size: clamp(36px, 9vh, 60px); font-weight: bold; color: var(--accent); margin: 5px 0; }
+    #answer-input { width: 70%; margin: 0 auto 5px; font-size: 32px; text-align: center; padding: 5px; border: 2px solid var(--accent); border-radius: 8px; background: var(--input-bg); color: var(--text); cursor: pointer; min-height: 45px; }
+    
+    #feedback { text-align: center; min-height: 24px; font-weight: bold; font-size: 18px; margin-bottom: 2px; white-space: nowrap; }
+    .correct { color: #28a745; } .wrong { color: #dc3545; }
+    .interim { color: #888888; font-style: italic; } /* Style for preliminary speech */
+    
+    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); width: 100%; padding-bottom: env(safe-area-inset-bottom); }
+    .key { background: var(--key-bg); color: var(--key-text); padding: clamp(10px, 2.5vh, 20px) 0; font-size: 24px; font-weight: bold; text-align: center; cursor: pointer; }
+    .key-0 { grid-column: span 2; } .key-clear { color: #dc3545; } .key-enter { background: var(--accent); color: white; grid-column: span 3; }
+    
+    #about-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:1000; }
+    .about-content { background:var(--container-bg); color: var(--text); padding:20px; border-radius:12px; width:85%; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.5); border: 1px solid var(--border); }
+    .about-text { font-size:13px; text-align:left; line-height:1.4; margin: 15px 0; }
+    .about-text a { color: var(--accent); }
+
+    /* Speech button styles */
+    #btn-mic { cursor: pointer; opacity: 0.8; display: flex; align-items: center; gap: 4px; color: var(--mic-off); transition: color 0.3s; }
+    #btn-mic.listening { color: var(--mic-on); }
+    #btn-mic.active-listening { color: var(--mic-active); animation: pulse 2s infinite; }
+    #btn-mic.disabled { opacity: 0.5; cursor: not-allowed; text-decoration: line-through; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+    /* Förbättrad touch-känsla och prestanda */
+    .key {
+      touch-action: manipulation; /* Förhindrar zoom-delay på mobil */
+      transition: background-color 0.1s, transform 0.05s;
+    }
+
+    /* .active-state läggs till via JS för att simulera tryck */
+    .key:active, .key.active-state {
+      background-color: var(--border); /* Visuell feedback */
+      transform: scale(0.95);
+      filter: brightness(0.9);
+    }
+
+    /* Förhindra oavsiktlig textmarkering */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* Tillåt textmarkering endast i input om det behövs */
+    #answer-input {
+      user-select: text;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="setup-view" style="display: flex;">
+    <div class="container">
+      <h2 id="app-title">Aritm</h2>
+      <div class="type-grid">
+        <label class="type-option"><input type="checkbox" value="add1" checked> Add 1</label>
+        <label class="type-option"><input type="checkbox" value="add2"> Add 2</label>
+        <label class="type-option"><input type="checkbox" value="sub1"> Sub 1</label>
+        <label class="type-option"><input type="checkbox" value="sub2"> Sub 2</label>
+        <label class="type-option"><input type="checkbox" value="mul"> Mul</label>
+        <label class="type-option"><input type="checkbox" value="div"> Div</label>
+      </div>
+      
+      <div style="margin-top: 5px;">
+        <div class="quick-select-grid">
+          <button class="quick-btn" onclick="setTotal(10)">10</button>
+          <button class="quick-btn" onclick="setTotal(20)">20</button>
+          <button class="quick-btn" onclick="setTotal(50)">50</button>
+          <button class="quick-btn" onclick="setTotal(0)">Alla</button>
+        </div>
+        <div class="adjust-container" style="margin-top: 6px;">
+          <button class="adjust-btn" onclick="adjustTotal(-5)">-</button>
+          <input type="number" id="total-problems" value="20" readonly>
+          <button class="adjust-btn" onclick="adjustTotal(5)">+</button>
+        </div>
+      </div>
+      <button class="btn-start" onclick="startSession()">STARTA TRÄNING</button>
+      
+      <div style="text-align:center; margin-top:auto; padding: 5px 0;">
+        <span onclick="toggleAbout(true)" style="font-size:12px; color:var(--text); cursor:pointer; text-decoration:underline; opacity:0.7;">Om Aritm / Licens</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="game-view">
+    <div class="status-bar">
+      <span id="btn-quit-text" onclick="quitGame()">&nbsp;&nbsp;&nbsp;&nbsp;Avbryt (Esc)</span>
+      <!-- Microphone Toggle -->
+      <span id="btn-mic" onclick="toggleSpeech()">🎤 Tal: Av</span>
+      <span id="count-left">Kvar: -&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    </div>
+    <div id="problem-display"><span id="problem-text"></span></div>
+    <input type="text" id="answer-input" readonly placeholder="?" onclick="submitAnswer()">
+    <div id="feedback"></div>
+    <div class="keypad">
+      <!-- Added data-key attributes for JS mapping -->
+      <div class="key" data-key="7" onclick="pressKey('7')">7</div><div class="key" data-key="8" onclick="pressKey('8')">8</div><div class="key" data-key="9" onclick="pressKey('9')">9</div>
+      <div class="key" data-key="4" onclick="pressKey('4')">4</div><div class="key" data-key="5" onclick="pressKey('5')">5</div><div class="key" data-key="6" onclick="pressKey('6')">6</div>
+      <div class="key" data-key="1" onclick="pressKey('1')">1</div><div class="key" data-key="2" onclick="pressKey('2')">2</div><div class="key" data-key="3" onclick="pressKey('3')">3</div>
+      <div class="key key-0" data-key="0" onclick="pressKey('0')">0</div><div class="key key-clear" data-key="C" onclick="pressKey('C')">C</div>
+      <div class="key key-enter" data-key="Enter" onclick="submitAnswer()">SVAR</div>
+    </div>
+  </div>
+
+  <div id="finish-view">
+    <div class="container" style="text-align: center; justify-content: center;">
+      <h2 id="finish-title">Bra jobbat!</h2>
+      <p id="final-score" style="font-size:18px; margin: 10px 0;"></p>
+      <p id="speed-stats" style="font-size:16px; opacity:0.8; font-weight:bold; margin-bottom:20px;"></p>
+      <button id="btn-continue" class="btn-start btn-continue" style="display:none;" onclick="continueSession()">FORTSÄTT (Esc)</button>
+      <button class="btn-start" onclick="restartApp()">NY ÖVNING (Enter)</button>
+    </div>
+  </div>
+
+  <div id="about-modal">
+    <div class="about-content">
+      <h3 style="margin-top:0;">Om Aritm Hybrid</h3>
+      <div class="about-text">
+        <strong>Aritm Hybrid</strong><br>
+        Copyright © 2026 Mikael O. Bonnier, Lund, Sweden.<br><br>
+        Detta program är fri programvara. Du kan distribuera det och/eller modifiera 
+        det under villkoren i GNU General Public License, version 3 eller senare.<br><br>
+        Licens: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">gnu.org/licenses/gpl-3.0.html</a>.<br><br>
+        Källkod: <a href="https://github.com/mobluse/aritmjs" target="_blank">github.com/mobluse/aritmjs</a> under mappen docs.
+      </div>
+      <button class="btn-start" onclick="toggleAbout(false)" style="width:100%;">Stäng (Esc)</button>
+    </div>
+  </div>
+
+  <script>
+    const isCloud = (typeof google !== 'undefined' && google.script);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    // --- START SVENSK TAL-TILL-SIFFRA LOGIK ---
+    const swedishNumbers = {
+      'noll': 0, 'ett': 1, 'en': 1, 'två': 2, 'tre': 3, 'fyra': 4,
+      'fem': 5, 'sex': 6, 'sju': 7, 'åtta': 8, 'nio': 9, 'tio': 10,
+      'elva': 11, 'tolv': 12, 'tretton': 13, 'fjorton': 14, 'femton': 15,
+      'sexton': 16, 'sjutton': 17, 'arton': 18, 'nitton': 19,
+      'tjugo': 20, 'trettio': 30, 'fyrtio': 40, 'femtio': 50,
+      'sextio': 60, 'sjuttio': 70, 'åttio': 80, 'nittio': 90
+      // "hundra" removed as answers are 0-99
+    };
+
+    function parseSpokenSwedish(transcript) {
+      let clean = transcript.toLowerCase().replace(/[.,!?]/g, '').trim();
+      
+      // Helper: limit to 0-99
+      const isValid = (n) => !isNaN(n) && n >= 0 && n <= 99;
+
+      // 1. Numeric digits in string (e.g. "45")
+      if (/\d/.test(clean)) {
+        let numStr = clean.replace(/\D/g, '');
+        let val = parseInt(numStr);
+        return isValid(val) ? val : null;
+      }
+
+      // 2. Direct map lookup
+      if (swedishNumbers[clean] !== undefined) {
+          return swedishNumbers[clean];
+      }
+
+      // 3. Composite analysis
+      const parts = clean.split(/\s+/);
+      
+      // Extract numbers from words
+      let numbers = [];
+      for (const p of parts) {
+          if (swedishNumbers[p] !== undefined) {
+              numbers.push(swedishNumbers[p]);
+          } else {
+              // Check compound words like "tjugofem"
+              const tens = ['tjugo', 'trettio', 'fyrtio', 'femtio', 'sextio', 'sjuttio', 'åttio', 'nittio'];
+              let found = false;
+              for (let t of tens) {
+                if (p.startsWith(t) && p.length > t.length) {
+                  const remainder = p.substring(t.length);
+                  if (swedishNumbers[remainder] !== undefined) {
+                     numbers.push(swedishNumbers[t] + swedishNumbers[remainder]);
+                     found = true;
+                     break;
+                  }
+                }
+              }
+              if (!found && p === 'hundra') return null; // Too big
+          }
+      }
+
+      if (numbers.length === 0) return null;
+      if (numbers.length === 1) return isValid(numbers[0]) ? numbers[0] : null;
+
+      // Heuristic for sequences
+      if (numbers.length === 2) {
+          const [a, b] = numbers;
+          // Check for Tens + Ones (standard spoken Swedish, e.g. "tjugo fem" -> 25)
+          // Ensure first is a ten (20,30..90) and second is a digit (0-9)
+          if (a >= 20 && a <= 90 && a % 10 === 0 && b >= 0 && b <= 9) {
+              let val = a + b;
+              return isValid(val) ? val : null;
+          }
+          // Otherwise treat as digit concatenation (e.g. "tre fyra" -> 34)
+          if (a >= 0 && a <= 9 && b >= 0 && b <= 9) {
+              let val = parseInt("" + a + b);
+              return isValid(val) ? val : null;
+          }
+      }
+      
+      // Fallback: If all are single digits, concat them
+      let allDigits = numbers.every(n => n >= 0 && n <= 9);
+      if (allDigits) {
+          let s = numbers.join('');
+          let val = parseInt(s);
+          return isValid(val) ? val : null;
+      }
+
+      return null;
+    }
+    // --- SLUT SVENSK TAL-TILL-SIFFRA LOGIK ---
+
+    const Storage = {
+      saveSettings: (s) => isCloud ? google.script.run.saveCloudSettings(JSON.stringify(s)) : localStorage.setItem('aritm_settings', JSON.stringify(s)),
+      loadSettings: (cb) => {
+        if (isCloud) google.script.run.withSuccessHandler(res => cb(res ? JSON.parse(res) : null)).loadCloudSettings();
+        else { const res = localStorage.getItem('aritm_settings'); cb(res ? JSON.parse(res) : null); }
+      },
+      saveProgress: (p) => isCloud ? google.script.run.saveCloudProgress(JSON.stringify(p)) : localStorage.setItem('aritm_save', JSON.stringify(p)),
+      loadProgress: (cb) => {
+        if (isCloud) google.script.run.withSuccessHandler(res => cb(res ? JSON.parse(res) : null)).loadCloudProgress();
+        else { const res = localStorage.getItem('aritm_save'); cb(res ? JSON.parse(res) : null); }
+      },
+      clearProgress: () => isCloud ? google.script.run.clearCloudProgress() : localStorage.removeItem('aritm_save')
+    };
+
+    let problemPool = [], currentProblemStr = null, isProcessing = false;
+    let startTime = 0, initialTotal = 0;
+    let audioCtx = null;
+    
+    // SPEECH RECOGNITION VARIABLES
+    let recognition = null;
+    let isListening = false;
+    let wakeLock = null;
+    let submitTimer = null; 
+    let speechStartTimeout = null;
+    let feedbackTimer = null; // Timer to clear old speech text
+
+    async function requestWakeLock() {
+      if ('wakeLock' in navigator) {
+        try {
+          wakeLock = await navigator.wakeLock.request('screen');
+        } catch (err) { console.log(err); }
+      }
+    }
+
+    function playError() {
+      if (!audioCtx) {
+         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+      o.connect(g); g.connect(audioCtx.destination); o.type = 'sawtooth';
+      o.frequency.setValueAtTime(150, audioCtx.currentTime); g.gain.setValueAtTime(0.05, audioCtx.currentTime);
+      o.start(); o.stop(audioCtx.currentTime + 0.2);
+    }
+
+    function toggleAbout(show) { document.getElementById('about-modal').style.display = show ? 'flex' : 'none'; }
+
+    function highlightKey(keyVal, active) {
+      let selector = null;
+      if (keyVal >= '0' && keyVal <= '9') selector = `[data-key="${keyVal}"]`;
+      else if (['Enter', ' '].includes(keyVal)) selector = `[data-key="Enter"]`;
+      else if (['Backspace', 'Delete', 'c', 'C'].includes(keyVal)) selector = `[data-key="C"]`;
+      if (selector) {
+        const el = document.querySelector(selector);
+        if (el) {
+          if (active) el.classList.add('active-state');
+          else el.classList.remove('active-state');
+        }
+      }
+    }
+
+    // Helper to clear feedback timer
+    function clearFeedbackTimer() {
+        if (feedbackTimer) {
+            clearTimeout(feedbackTimer);
+            feedbackTimer = null;
+        }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.repeat) return; 
+      if (document.getElementById('about-modal').style.display === 'flex') {
+        if (e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); toggleAbout(false); }
+        return;
+      }
+      const isGameView = document.getElementById('game-view').style.display === 'flex';
+      const isSetupView = document.getElementById('setup-view').style.display === 'flex';
+      const isFinishView = document.getElementById('finish-view').style.display === 'flex';
+      
+      if (isGameView) {
+        highlightKey(e.key, true);
+        if (isProcessing) return;
+        if (e.key >= '0' && e.key <= '9') pressKey(e.key);
+        else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); submitAnswer(); }
+        else if (e.key === 'Backspace' || e.key === 'Delete' || e.key.toLowerCase() === 'c') { e.preventDefault(); pressKey('C'); }
+        else if (e.key === 'Escape') { e.preventDefault(); quitGame(); }
+      } 
+      else if (isSetupView) {
+        if (e.key === 'Enter') { e.preventDefault(); startSession(); }
+        else if (e.key === '+' || e.key === '=') { e.preventDefault(); adjustTotal(5); }
+        else if (e.key === '-') { e.preventDefault(); adjustTotal(-5); }
+      }
+      else if (isFinishView) {
+        if (e.key === 'Escape') {
+          const btnCont = document.getElementById('btn-continue');
+          if (btnCont.style.display !== 'none') { e.preventDefault(); continueSession(); }
+        } else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); restartApp(); }
+      }
+    });
+
+    document.addEventListener('keyup', (e) => { highlightKey(e.key, false); });
+
+    // --- NEW ROBUST SPEECH IMPLEMENTATION ---
+    
+    function startListening() {
+      // 1. Clean up old instance if exists
+      if (recognition) {
+        try { recognition.abort(); } catch(e){}
+        recognition = null;
+      }
+
+      if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+         return; 
+      }
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      
+      // 2. Create FRESH instance
+      recognition = new SpeechRecognition();
+      recognition.lang = 'sv-SE';
+      recognition.continuous = false; // Important: Single shot only for max stability
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        clearTimeout(speechStartTimeout);
+        // Clear any old interim text if restarting
+        const f = document.getElementById('feedback');
+        if (f.className === 'interim') {
+            f.innerText = "";
+        }
+
+        if (isListening) {
+           const btn = document.getElementById('btn-mic');
+           btn.classList.add('active-listening'); // Turn Green
+        }
+      };
+      
+      // Also catch onaudiostart as it sometimes fires before onstart
+      recognition.onaudiostart = () => {
+         clearTimeout(speechStartTimeout);
+         if (isListening) {
+           document.getElementById('btn-mic').classList.add('active-listening');
+         }
+      };
+
+      recognition.onresult = (event) => {
+        if (isProcessing) return;
+        
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript;
+        }
+
+        const f = document.getElementById('feedback');
+        f.innerText = transcript + "...";
+        f.className = "interim";
+        
+        // Reset feedback clear timer
+        clearFeedbackTimer();
+        feedbackTimer = setTimeout(() => {
+             // Only clear if it is still showing the speech text
+             if (f.className === "interim") {
+                 f.innerText = "";
+             }
+        }, 2500); // 2.5s clearance time
+
+        const numVal = parseSpokenSwedish(transcript);
+        if (numVal !== null) {
+           document.getElementById('answer-input').value = numVal;
+           
+           const expected = Math.floor(eval(currentProblemStr.replace('⋅', '*')));
+           
+           // Clear existing timer
+           if (submitTimer) clearTimeout(submitTimer);
+           
+           if (parseInt(numVal) === expected) {
+             submitAnswer(); // Submit immediately on match
+           } else {
+             // Debounce for wrong/partial answers
+             submitTimer = setTimeout(() => {
+                submitAnswer();
+             }, 1200);
+           }
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.log("Speech Error:", event.error);
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+           isListening = false;
+           updateMicUI();
+           alert("Mikrofon nekad.");
+        }
+        // Ignore 'aborted', 'no-speech' - they are handled by loop
+      };
+
+      recognition.onend = () => {
+         const btn = document.getElementById('btn-mic');
+         btn.classList.remove('active-listening');
+         
+         if (isListening) {
+            // Loop: Restart immediately (debounced slightly)
+            setTimeout(() => {
+               if (isListening) startListening();
+            }, 100);
+         }
+      };
+
+      try {
+        recognition.start();
+        // Safety timeout: If onstart doesn't fire in 4s, kill it.
+        // This fixes the "Stuck on Red" issue.
+        speechStartTimeout = setTimeout(() => {
+           if (document.getElementById('btn-mic').classList.contains('listening') && 
+               !document.getElementById('btn-mic').classList.contains('active-listening')) {
+               console.log("Speech start timed out. Resetting.");
+               toggleSpeech(); // Turn off
+               alert("Kunde inte starta mikrofonen (timeout). Försök igen.");
+           }
+        }, 4000);
+      } catch (e) {
+        console.log("Start threw error:", e);
+        isListening = false;
+        updateMicUI();
+      }
+    }
+
+    function stopListening() {
+       isListening = false;
+       clearTimeout(speechStartTimeout);
+       if (submitTimer) clearTimeout(submitTimer);
+       clearFeedbackTimer();
+
+       if (recognition) {
+          try { recognition.stop(); } catch(e) {} // stop() allows onend to fire naturally if you want, but here we just want to kill it
+          try { recognition.abort(); } catch(e) {} // Double tap to be sure
+          recognition = null;
+       }
+       if (wakeLock) { wakeLock.release().then(() => wakeLock = null); }
+       updateMicUI();
+    }
+
+    window.onload = () => {
+      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm Local";
+      
+      if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+         document.getElementById('btn-mic').classList.add('disabled');
+      }
+
+      Storage.loadSettings(s => {
+        if (s) {
+          document.getElementById('total-problems').value = s.total;
+          if (s.types) s.types.forEach(t => { const el = document.querySelector(`input[value="${t.val}"]`); if(el) el.checked = t.checked; });
+        }
+      });
+      Storage.loadProgress(p => {
+        if (p && p.pool && p.current) {
+          problemPool = p.pool; currentProblemStr = p.current;
+          startTime = p.startTime || Date.now(); 
+          initialTotal = p.initialTotal || (problemPool.length + 1);
+          showView('game-view'); updateUI();
+        } else { showView('setup-view'); }
+      });
+    };
+    
+    function toggleSpeech() {
+       const btn = document.getElementById('btn-mic');
+       if (btn.classList.contains('disabled')) return;
+       
+       if (isListening) {
+           stopListening();
+       } else {
+           isListening = true;
+           
+           // Ensure AudioContext is active (iOS requirement)
+           if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+           if (audioCtx.state === 'suspended') audioCtx.resume();
+           
+           requestWakeLock();
+           updateMicUI(); // Turns RED
+           startListening();
+       }
+    }
+    
+    function updateMicUI() {
+       const btn = document.getElementById('btn-mic');
+       if (btn.classList.contains('disabled')) return;
+       
+       if (isListening) {
+          btn.innerText = "🎤 Tal: På";
+          btn.classList.add('listening'); // Red (Waiting)
+       } else {
+          btn.innerText = "🎤 Tal: Av";
+          btn.classList.remove('listening');
+          btn.classList.remove('active-listening');
+       }
+    }
+
+    function createPool(types) {
+      let pool = [];
+      types.forEach(type => {
+        if (type === 'add1') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push(`${i} + ${j}`); }
+        else if (type === 'add2') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) { let t = 10 * (Math.floor(Math.random() * 8) + 1); pool.push(`${t+i} + ${j}`); } }
+        else if (type === 'sub1') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push(`${i+j} - ${j}`); }
+        else if (type === 'sub2') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) { let t = 10 * (Math.floor(Math.random() * 9) + 1); pool.push(`${t+i+j} - ${j}`); } }
+        else if (type === 'mul') { for (let i=0; i<=9; i++) for (let j=0; j<=9; j++) pool.push(`${i} ⋅ ${j}`); }
+        else if (type === 'div') { for (let i = 0; i <= 9; i++) for (let j = 1; j <= 9; j++) { pool.push(`${i * j + Math.floor(j * Math.random())} / ${j}`); } }
+      });
+      for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+      return pool;
+    }
+
+    function startSession() {
+      const selected = Array.from(document.querySelectorAll('.type-option input:checked')).map(i => i.value);
+      if (selected.length === 0) return;
+      const total = parseInt(document.getElementById('total-problems').value);
+      Storage.saveSettings({total, types: Array.from(document.querySelectorAll('.type-option input')).map(i => ({val: i.value, checked: i.checked}))});
+      problemPool = createPool(selected);
+      if (total > 0 && total < problemPool.length) problemPool = problemPool.slice(0, total);
+      startTime = Date.now(); initialTotal = problemPool.length;
+      nextProblem(); showView('game-view');
+    }
+
+    function nextProblem() {
+      document.getElementById('feedback').innerText = "";
+      if (problemPool.length === 0) {
+        Storage.clearProgress();
+        const durationMin = (Date.now() - startTime) / 60000;
+        let speedText = "";
+        if (initialTotal > 0 && durationMin > 0) {
+          let speed = (initialTotal / durationMin).toFixed(1).replace('.', ',');
+          speedText = speed.replace(',0', '') + " uppgifter/min";
+        }
+        document.getElementById('finish-title').innerText = "Bra jobbat!";
+        document.getElementById('final-score').innerText = "Du har klarat alla uppgifter!";
+        document.getElementById('speed-stats').innerText = speedText; 
+        document.getElementById('btn-continue').style.display = 'none';
+        
+        stopListening();
+        
+        showView('finish-view'); return;
+      }
+      currentProblemStr = problemPool.shift();
+      Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime: startTime, initialTotal: initialTotal});
+      updateUI();
+    }
+
+    function submitAnswer() {
+      if (submitTimer) clearTimeout(submitTimer);
+      // Don't let feedback timer clear the result message
+      clearFeedbackTimer();
+
+      if (isProcessing) return;
+      const input = document.getElementById('answer-input').value;
+      if (!input) return;
+
+      // Force restart of recognition on every answer to clear buffer and keep connection fresh
+      if (isListening && recognition) {
+         try { recognition.stop(); } catch(e){} // stop() triggers onend which triggers restart
+      }
+      
+      const expected = Math.floor(eval(currentProblemStr.replace('⋅', '*')));
+      const f = document.getElementById('feedback');
+      
+      if (parseInt(input) === expected) {
+        isProcessing = true; f.innerText = "Rätt!"; f.className = "correct";
+        setTimeout(() => { f.innerText = ""; isProcessing = false; nextProblem(); }, 400);
+      } else {
+        f.innerText = "Fel! " + currentProblemStr + " = " + expected; f.className = "wrong";
+        playError();
+        problemPool.push(currentProblemStr);
+        Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime: startTime, initialTotal: initialTotal});
+        document.getElementById('answer-input').value = "";
+      }
+    }
+
+    function quitGame() {
+      document.getElementById('feedback').innerText = ""; 
+      document.getElementById('btn-continue').style.display = 'block';
+      document.getElementById('finish-title').innerText = "Avbruten";
+      document.getElementById('final-score').innerText = "Du hade " + (problemPool.length + 1) + " kvar.";
+      document.getElementById('speed-stats').innerText = ""; 
+      
+      stopListening();
+      
+      showView('finish-view');
+    }
+
+    function continueSession() { 
+      // Resume audio if it exists, otherwise do nothing
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      showView('game-view'); 
+    }
+    function restartApp() { Storage.clearProgress(); showView('setup-view'); }
+    function updateUI() { 
+      document.getElementById('problem-text').innerText = currentProblemStr; 
+      document.getElementById('count-left').innerHTML = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;&nbsp;";
+      document.getElementById('answer-input').value = "";
+    }
+
+    function showView(v) {
+      document.body.setAttribute('data-current-view', v); 
+      ['setup-view', 'game-view', 'finish-view'].forEach(id => {
+        document.getElementById(id).style.display = (id === v) ? 'flex' : 'none';
+      });
+    }
+
+    function setTotal(n) { document.getElementById('total-problems').value = n; }
+    function adjustTotal(d) { let v = parseInt(document.getElementById('total-problems').value) || 0; document.getElementById('total-problems').value = Math.max(0, v + d); }
+    function pressKey(n) { 
+      const f = document.getElementById('feedback');
+      // If user types manually, clear any speech feedback
+      if (f.innerText !== "") {
+         f.innerText = "";
+         clearFeedbackTimer();
+      }
+      if(n==='C') document.getElementById('answer-input').value = ""; 
+      else if(document.getElementById('answer-input').value.length < 5) document.getElementById('answer-input').value += n; 
+    }
+  </script>
+</body>
+</html>
