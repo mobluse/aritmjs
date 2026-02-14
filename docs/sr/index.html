@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <title>Aritm SR</title>
+  <title>Aritm 2.0</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
   <meta name="color-scheme" content="light dark">
@@ -131,7 +131,7 @@
 
   <div id="setup-view" style="display: flex;">
     <div class="container">
-      <h2 id="app-title">Aritm</h2>
+      <h2 id="app-title">Aritm 2.0</h2>
       <div class="type-grid">
         <label class="type-option"><input type="checkbox" value="add1" checked> Add 1</label>
         <label class="type-option"><input type="checkbox" value="add2"> Add 2</label>
@@ -542,7 +542,7 @@
     }
 
     window.onload = () => {
-      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm Local";
+      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm 2.0";
       
       if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
          document.getElementById('btn-mic').classList.add('disabled');
