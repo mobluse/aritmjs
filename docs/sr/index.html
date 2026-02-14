@@ -10,6 +10,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
 
   <style>
     /* FÄRGVARIABLER (Ljust läge som standard) */
@@ -415,7 +416,8 @@
       // 2. Create FRESH instance
       recognition = new SpeechRecognition();
       recognition.lang = 'sv-SE';
-      recognition.continuous = false; // Important: Single shot only for max stability
+      // Use continuous for Android/Desktop to avoid constant beeps. Keep single-shot for iOS stability.
+      recognition.continuous = !isIOS; 
       recognition.interimResults = true;
       recognition.maxAlternatives = 1;
 
@@ -445,6 +447,7 @@
         if (isProcessing) return;
         
         let transcript = '';
+        // event.resultIndex handles continuous mode correctly (points to the new stuff)
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           transcript += event.results[i][0].transcript;
         }
@@ -653,7 +656,8 @@
       if (!input) return;
 
       // Force restart of recognition on every answer to clear buffer and keep connection fresh
-      if (isListening && recognition) {
+      // BUT ONLY ON IOS. On Android/Desktop, we keep it open to avoid "beeps".
+      if (isListening && recognition && isIOS) {
          try { recognition.stop(); } catch(e){} // stop() triggers onend which triggers restart
       }
       
