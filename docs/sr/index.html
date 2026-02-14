@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <title>Aritm 2.0</title>
+  <title>Aritm 2.1</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
   <meta name="color-scheme" content="light dark">
@@ -131,7 +131,7 @@
 
   <div id="setup-view" style="display: flex;">
     <div class="container">
-      <h2 id="app-title">Aritm 2.0</h2>
+      <h2 id="app-title">Aritm 2.1</h2>
       <div class="type-grid">
         <label class="type-option"><input type="checkbox" value="add1" checked> Add 1</label>
         <label class="type-option"><input type="checkbox" value="add2"> Add 2</label>
@@ -221,6 +221,19 @@
       'sextio': 60, 'sjuttio': 70, 'åttio': 80, 'nittio': 90
       // "hundra" removed as answers are 0-99
     };
+    
+    // Homophones and clipped words logic for Android latency compensation
+    const homophones = {
+      'et': 1, 'ät': 1, 'ätt': 1,
+      'tva': 2, 'tvåa': 2, 'va': 2, 'på': 2,
+      'trea': 3, 're': 3, 'te': 3,
+      'fy': 4, 'yra': 4, 'hyra': 4,
+      'em': 5, 'vem': 5, 'hem': 5, 'fäm': 5, 'sen': 5,
+      'säx': 6, 'ex': 6,
+      'ju': 7, 'tj': 7,
+      'otta': 8, 'åta': 8, 'åtta': 8,
+      'ni': 9, 'ne': 9, 'io': 9
+    };
 
     function parseSpokenSwedish(transcript) {
       let clean = transcript.toLowerCase().replace(/[.,!?]/g, '').trim();
@@ -239,6 +252,11 @@
       if (swedishNumbers[clean] !== undefined) {
           return swedishNumbers[clean];
       }
+      
+      // 2b. Homophone / Clipped lookup
+      if (homophones[clean] !== undefined) {
+          return homophones[clean];
+      }
 
       // 3. Composite analysis
       const parts = clean.split(/\s+/);
@@ -248,6 +266,8 @@
       for (const p of parts) {
           if (swedishNumbers[p] !== undefined) {
               numbers.push(swedishNumbers[p]);
+          } else if (homophones[p] !== undefined) {
+              numbers.push(homophones[p]);
           } else {
               // Check compound words like "tjugofem"
               const tens = ['tjugo', 'trettio', 'fyrtio', 'femtio', 'sextio', 'sjuttio', 'åttio', 'nittio'];
@@ -500,10 +520,11 @@
          btn.classList.remove('active-listening');
          
          if (isListening) {
-            // Loop: Restart immediately (debounced slightly)
+            // Loop: Restart immediately. 
+            // Reduced timeout from 100ms to 10ms to make the "beep" gap smaller/faster on Android
             setTimeout(() => {
                if (isListening) startListening();
-            }, 100);
+            }, 10);
          }
       };
 
@@ -542,7 +563,7 @@
     }
 
     window.onload = () => {
-      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm 2.0";
+      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm 2.1";
       
       if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
          document.getElementById('btn-mic').classList.add('disabled');
