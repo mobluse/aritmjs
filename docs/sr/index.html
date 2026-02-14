@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <title>Aritm 2.2</title>
+  <title>Aritm SR Local</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
   <meta name="color-scheme" content="light dark">
@@ -131,7 +131,7 @@
 
   <div id="setup-view" style="display: flex;">
     <div class="container">
-      <h2 id="app-title">Aritm 2.2</h2>
+      <h2 id="app-title">Aritm SR Local</h2>
       <div class="type-grid">
         <label class="type-option"><input type="checkbox" value="add1" checked> Add 1</label>
         <label class="type-option"><input type="checkbox" value="add2"> Add 2</label>
@@ -471,32 +471,46 @@
         let numVal = parseSpokenSwedish(transcript);
         if (numVal !== null) {
            
-           // --- FIX FOR "1" then "2" -> "12" ---
-           let currentInput = document.getElementById('answer-input').value;
-           
-           // If we have a single digit in input, and we hear a single digit, try appending
-           // This helps when browser sends "ett" then "två" as separate events
-           if (currentInput.length === 1 && numVal >= 0 && numVal <= 9 && /^\d$/.test(currentInput)) {
-               let combined = parseInt(currentInput + numVal.toString());
-               if (combined <= 99) {
-                  numVal = combined;
-               }
-           }
-           
-           document.getElementById('answer-input').value = numVal;
-           
+           const inputEl = document.getElementById('answer-input');
+           const currentInputStr = inputEl.value;
            const expected = Math.floor(eval(currentProblemStr.replace('⋅', '*')));
            
-           // Clear existing timer
+           let finalVal = numVal;
+
+           // --- SMART APPENDING LOGIC ---
+           // Enables "1" then "2" -> "12" and "0" then "5" -> "5"
+           // Only attempt append if current input is valid digits and new input is single digit
+           if (currentInputStr.length > 0 && /^\d+$/.test(currentInputStr) && numVal >= 0 && numVal <= 9) {
+                const appended = parseInt(currentInputStr + numVal.toString());
+                
+                // Priority 1: If replacement is correct (Correction: 3 -> 4), use replacement.
+                if (parseInt(numVal) === expected) {
+                    finalVal = numVal;
+                }
+                // Priority 2: If appending is correct (Sequence: 1, 2 -> 12), use appending.
+                else if (appended === expected) {
+                    finalVal = appended;
+                }
+                // Priority 3: If we are building a small number (len < 2), default to append.
+                // This covers the case where user builds "12" but the answer is "123".
+                else if (currentInputStr.length < 2) {
+                    finalVal = appended;
+                }
+                // Else replace (e.g. current is "12", input "3" -> replace with "3" if "123" not expected)
+           }
+           
+           inputEl.value = finalVal;
+           
+           // Clear existing timer on any input change
            if (submitTimer) clearTimeout(submitTimer);
            
-           if (parseInt(numVal) === expected) {
+           if (parseInt(finalVal) === expected) {
              submitAnswer(); // Submit immediately on match
            } else {
-             // Debounce for wrong/partial answers
+             // Increased delay to 3.0s to allow for sequential speech (e.g. "Ett... Två")
              submitTimer = setTimeout(() => {
                 submitAnswer();
-             }, 1200);
+             }, 3000);
            }
         }
       };
@@ -559,7 +573,7 @@
     }
 
     window.onload = () => {
-      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm 2.2";
+      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm SR Local";
       
       if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
          document.getElementById('btn-mic').classList.add('disabled');
