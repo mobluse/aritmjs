@@ -1,6 +1,6 @@
 {
   "name": "Aritm SR Local",
-  "short_name": "Aritm",
+  "short_name": "AritmSRL",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f0f2f5",
