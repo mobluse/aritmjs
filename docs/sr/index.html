@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <title>Aritm SR Local</title>
+  <title>Aritm 2.3</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
   <meta name="color-scheme" content="light dark">
@@ -126,12 +126,13 @@
       user-select: text;
     }
   </style>
+
 </head>
 <body>
 
   <div id="setup-view" style="display: flex;">
     <div class="container">
-      <h2 id="app-title">Aritm SR Local</h2>
+      <h2 id="app-title">Aritm 2.3</h2>
       <div class="type-grid">
         <label class="type-option"><input type="checkbox" value="add1" checked> Add 1</label>
         <label class="type-option"><input type="checkbox" value="add2"> Add 2</label>
@@ -316,6 +317,7 @@
 
     let problemPool = [], currentProblemStr = null, isProcessing = false;
     let startTime = 0, initialTotal = 0;
+    let currentSessionTypes = [];
     let audioCtx = null;
     
     // SPEECH RECOGNITION VARIABLES
@@ -573,7 +575,7 @@
     }
 
     window.onload = () => {
-      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm SR Local";
+      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm 2.3";
       
       if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
          document.getElementById('btn-mic').classList.add('disabled');
@@ -590,6 +592,7 @@
           problemPool = p.pool; currentProblemStr = p.current;
           startTime = p.startTime || Date.now(); 
           initialTotal = p.initialTotal || (problemPool.length + 1);
+          currentSessionTypes = p.types || [];
           showView('game-view'); updateUI();
         } else { showView('setup-view'); }
       });
@@ -643,8 +646,11 @@
     }
 
     function startSession() {
-      const selected = Array.from(document.querySelectorAll('.type-option input:checked')).map(i => i.value);
+      const selectedInputs = Array.from(document.querySelectorAll('.type-option input:checked'));
+      const selected = selectedInputs.map(i => i.value);
       if (selected.length === 0) return;
+      currentSessionTypes = selectedInputs.map(i => i.parentElement.innerText.trim());
+
       const total = parseInt(document.getElementById('total-problems').value);
       Storage.saveSettings({total, types: Array.from(document.querySelectorAll('.type-option input')).map(i => ({val: i.value, checked: i.checked}))});
       problemPool = createPool(selected);
@@ -663,8 +669,10 @@
           let speed = (initialTotal / durationMin).toFixed(1).replace('.', ',');
           speedText = speed.replace(',0', '') + " uppgifter/min";
         }
+        
+        const typesStr = currentSessionTypes.join(", ");
         document.getElementById('finish-title').innerText = "Bra jobbat!";
-        document.getElementById('final-score').innerText = "Du har klarat alla uppgifter!";
+        document.getElementById('final-score').innerText = `Du gjorde ${typesStr}. Du har gjort ${initialTotal} av ${initialTotal} och hade 0 kvar.`;
         document.getElementById('speed-stats').innerText = speedText; 
         document.getElementById('btn-continue').style.display = 'none';
         
@@ -673,7 +681,7 @@
         showView('finish-view'); return;
       }
       currentProblemStr = problemPool.shift();
-      Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime: startTime, initialTotal: initialTotal});
+      Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime: startTime, initialTotal: initialTotal, types: currentSessionTypes});
       updateUI();
     }
 
@@ -702,7 +710,7 @@
         f.innerText = "Fel! " + currentProblemStr + " = " + expected; f.className = "wrong";
         playError();
         problemPool.push(currentProblemStr);
-        Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime: startTime, initialTotal: initialTotal});
+        Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime: startTime, initialTotal: initialTotal, types: currentSessionTypes});
         document.getElementById('answer-input').value = "";
       }
     }
@@ -710,8 +718,13 @@
     function quitGame() {
       document.getElementById('feedback').innerText = ""; 
       document.getElementById('btn-continue').style.display = 'block';
+      
+      const remaining = problemPool.length + 1;
+      const completed = initialTotal - remaining;
+      const typesStr = currentSessionTypes.join(", ");
+
       document.getElementById('finish-title').innerText = "Avbruten";
-      document.getElementById('final-score').innerText = "Du hade " + (problemPool.length + 1) + " kvar.";
+      document.getElementById('final-score').innerText = `Du gjorde ${typesStr}. Du har gjort ${completed} av ${initialTotal} och hade ${remaining} kvar.`;
       document.getElementById('speed-stats').innerText = ""; 
       
       stopListening();
@@ -751,5 +764,6 @@
       else if(document.getElementById('answer-input').value.length < 5) document.getElementById('answer-input').value += n; 
     }
   </script>
+<script type="module" src="/index.tsx"></script>
 </body>
 </html>
