@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <title>Aritm SR Local</title>
+  <title>Aritm 2.3</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
   <meta name="color-scheme" content="light dark">
@@ -132,7 +132,7 @@
 
   <div id="setup-view" style="display: flex;">
     <div class="container">
-      <h2 id="app-title">Aritm SR Local</h2>
+      <h2 id="app-title">Aritm 2.3</h2>
       <div class="type-grid">
         <label class="type-option"><input type="checkbox" value="add1" checked> Add 1</label>
         <label class="type-option"><input type="checkbox" value="add2"> Add 2</label>
@@ -327,6 +327,8 @@
     let submitTimer = null; 
     let speechStartTimeout = null;
     let feedbackTimer = null; // Timer to clear old speech text
+    let lastAnsweredResultIndex = -1;
+    let currentSpeechResultIndex = -1;
 
     async function requestWakeLock() {
       if ('wakeLock' in navigator) {
@@ -428,6 +430,8 @@
 
       recognition.onstart = () => {
         clearTimeout(speechStartTimeout);
+        lastAnsweredResultIndex = -1;
+        currentSpeechResultIndex = -1;
         // Clear any old interim text if restarting
         const f = document.getElementById('feedback');
         if (f.className === 'interim') {
@@ -451,9 +455,16 @@
       recognition.onresult = (event) => {
         if (isProcessing) return;
         
+        let startIndex = Math.max(event.resultIndex, lastAnsweredResultIndex + 1);
+        if (startIndex >= event.results.length) {
+            return;
+        }
+
+        currentSpeechResultIndex = event.results.length - 1;
+
         let transcript = '';
         // event.resultIndex handles continuous mode correctly (points to the new stuff)
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
+        for (let i = startIndex; i < event.results.length; ++i) {
           transcript += event.results[i][0].transcript;
         }
 
@@ -564,6 +575,8 @@
        clearTimeout(speechStartTimeout);
        if (submitTimer) clearTimeout(submitTimer);
        clearFeedbackTimer();
+       lastAnsweredResultIndex = -1;
+       currentSpeechResultIndex = -1;
 
        if (recognition) {
           try { recognition.stop(); } catch(e) {} // stop() allows onend to fire naturally if you want, but here we just want to kill it
@@ -575,7 +588,7 @@
     }
 
     window.onload = () => {
-      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm SR Local";
+      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm 2.3";
       
       if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
          document.getElementById('btn-mic').classList.add('disabled');
@@ -693,6 +706,8 @@
       if (isProcessing) return;
       const input = document.getElementById('answer-input').value;
       if (!input) return;
+
+      lastAnsweredResultIndex = currentSpeechResultIndex;
 
       // Force restart of recognition on every answer to clear buffer and keep connection fresh
       // BUT ONLY ON IOS. On Android/Desktop, we keep it open to avoid "beeps".
