@@ -611,7 +611,7 @@
       });
     };
     
-    function toggleSpeech() {
+    async function toggleSpeech() {
        const btn = document.getElementById('btn-mic');
        if (btn.classList.contains('disabled')) return;
        
@@ -623,6 +623,20 @@
            // Ensure AudioContext is active (iOS requirement)
            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
            if (audioCtx.state === 'suspended') audioCtx.resume();
+           
+           // Explicitly request microphone permission to trigger iOS prompt in PWA mode
+           if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+               try {
+                   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                   stream.getTracks().forEach(track => track.stop());
+               } catch (err) {
+                   console.error("Microphone access denied:", err);
+                   isListening = false;
+                   updateMicUI();
+                   alert("Mikrofon nekad. Tillåt mikrofonåtkomst för webbappen i enhetens inställningar.");
+                   return;
+               }
+           }
            
            requestWakeLock();
            updateMicUI(); // Turns RED
@@ -779,6 +793,5 @@
       else if(document.getElementById('answer-input').value.length < 5) document.getElementById('answer-input').value += n; 
     }
   </script>
-<script type="module" src="/index.tsx"></script>
 </body>
 </html>
