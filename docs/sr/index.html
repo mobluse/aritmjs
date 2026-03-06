@@ -533,7 +533,12 @@
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
            isListening = false;
            updateMicUI();
-           alert("Mikrofon nekad.");
+           const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+           if (isIOS && isStandalone) {
+               alert("Apple tillåter tyvärr inte taligenkänning när appen startas från hemskärmen på iOS. Öppna appen i Safari om du vill använda röststyrning.");
+           } else {
+               alert("Mikrofon nekad.");
+           }
         }
         // Ignore 'aborted', 'no-speech' - they are handled by loop
       };
@@ -618,6 +623,12 @@
        if (isListening) {
            stopListening();
        } else {
+           const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+           if (isIOS && isStandalone) {
+               alert("Apple tillåter tyvärr inte taligenkänning när appen startas från hemskärmen på iOS. Öppna appen i Safari om du vill använda röststyrning.");
+               return;
+           }
+
            isListening = true;
            
            // Ensure AudioContext is active (iOS requirement)
@@ -793,5 +804,6 @@
       else if(document.getElementById('answer-input').value.length < 5) document.getElementById('answer-input').value += n; 
     }
   </script>
+
 </body>
 </html>
