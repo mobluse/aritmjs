@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <title>Aritm 2.3</title>
+  <title>Aritm SR</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
   <meta name="color-scheme" content="light dark">
@@ -132,7 +132,7 @@
 
   <div id="setup-view" style="display: flex;">
     <div class="container">
-      <h2 id="app-title">Aritm 2.3</h2>
+      <h2 id="app-title">Aritm </h2>
       <div class="type-grid">
         <label class="type-option"><input type="checkbox" value="add1" checked> Add 1</label>
         <label class="type-option"><input type="checkbox" value="add2"> Add 2</label>
@@ -147,7 +147,7 @@
           <button class="quick-btn" onclick="setTotal(10)">10</button>
           <button class="quick-btn" onclick="setTotal(20)">20</button>
           <button class="quick-btn" onclick="setTotal(50)">50</button>
-          <button class="quick-btn" onclick="setTotal(0)">Alla</button>
+          <button id="btn-quick-all" class="quick-btn" onclick="setTotal(0)">Alla</button>
         </div>
         <div class="adjust-container" style="margin-top: 6px;">
           <button class="adjust-btn" onclick="adjustTotal(-5)">-</button>
@@ -155,10 +155,10 @@
           <button class="adjust-btn" onclick="adjustTotal(5)">+</button>
         </div>
       </div>
-      <button class="btn-start" onclick="startSession()">STARTA TRÄNING</button>
+      <button id="btn-start-training" class="btn-start" onclick="startSession()">STARTA TRÄNING</button>
       
       <div style="text-align:center; margin-top:auto; padding: 5px 0;">
-        <span onclick="toggleAbout(true)" style="font-size:12px; color:var(--text); cursor:pointer; text-decoration:underline; opacity:0.7;">Om Aritm / Licens</span>
+        <span id="btn-toggle-about" onclick="toggleAbout(true)" style="font-size:12px; color:var(--text); cursor:pointer; text-decoration:underline; opacity:0.7;">Om Aritm / Licens</span>
       </div>
     </div>
   </div>
@@ -179,7 +179,7 @@
       <div class="key" data-key="4" onclick="pressKey('4')">4</div><div class="key" data-key="5" onclick="pressKey('5')">5</div><div class="key" data-key="6" onclick="pressKey('6')">6</div>
       <div class="key" data-key="1" onclick="pressKey('1')">1</div><div class="key" data-key="2" onclick="pressKey('2')">2</div><div class="key" data-key="3" onclick="pressKey('3')">3</div>
       <div class="key key-0" data-key="0" onclick="pressKey('0')">0</div><div class="key key-clear" data-key="C" onclick="pressKey('C')">C</div>
-      <div class="key key-enter" data-key="Enter" onclick="submitAnswer()">SVAR</div>
+      <div id="key-enter" class="key key-enter" data-key="Enter" onclick="submitAnswer()">SVAR</div>
     </div>
   </div>
 
@@ -195,8 +195,8 @@
 
   <div id="about-modal">
     <div class="about-content">
-      <h3 style="margin-top:0;">Om Aritm Hybrid</h3>
-      <div class="about-text">
+      <h3 id="about-title" style="margin-top:0;">Om Aritm Hybrid</h3>
+      <div id="about-text-content" class="about-text">
         <strong>Aritm Hybrid</strong><br>
         Copyright © 2026 Mikael O. Bonnier, Lund, Sweden.<br><br>
         Detta program är fri programvara. Du kan distribuera det och/eller modifiera 
@@ -204,13 +204,117 @@
         Licens: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">gnu.org/licenses/gpl-3.0.html</a>.<br><br>
         Källkod: <a href="https://github.com/mobluse/aritmjs" target="_blank">github.com/mobluse/aritmjs</a> under mappen docs.
       </div>
-      <button class="btn-start" onclick="toggleAbout(false)" style="width:100%;">Stäng (Esc)</button>
+      <button id="btn-close-about" class="btn-start" onclick="toggleAbout(false)" style="width:100%;">Stäng (Esc)</button>
     </div>
   </div>
 
   <script>
     const isCloud = (typeof google !== 'undefined' && google.script);
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const appLang = (navigator.language || 'en').startsWith('sv') ? 'sv' : 'en';
+
+    // --- TRANSLATION DATA ---
+    const translations = {
+      sv: {
+        all: "Alla",
+        startTraining: "STARTA TRÄNING",
+        aboutLicense: "Om Aritm / Licens",
+        cancelEsc: "&nbsp;&nbsp;&nbsp;&nbsp;Avbryt (Esc)",
+        speechOff: "🎤 Tal: Av",
+        speechOn: "🎤 Tal: På",
+        left: "Kvar: {count}&nbsp;&nbsp;&nbsp;&nbsp;",
+        answer: "SVAR",
+        wellDone: "Bra jobbat!",
+        wrong: "Fel!",
+        right: "Rätt!",
+        cancelled: "Avbruten",
+        completedAll: "Du har klarat alla uppgifter!",
+        finishedStats: "Du gjorde {types}. Du har gjort {completed} av {total} och hade {remaining} kvar.",
+        statsPerMin: "{speed} uppgifter/min",
+        continueEsc: "FORTSÄTT (Esc)",
+        newExerciseEnter: "NY ÖVNING (Enter)",
+        aboutHeader: "Om Aritm Hybrid",
+        aboutText: `<strong>Aritm Hybrid</strong><br>
+        Copyright © 2026 Mikael O. Bonnier, Lund, Sweden.<br><br>
+        Detta program är fri programvara. Du kan distribuera det och/eller modifiera 
+        det under villkoren i GNU General Public License, version 3 eller senare.<br><br>
+        Licens: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">gnu.org/licenses/gpl-3.0.html</a>.<br><br>
+        Källkod: <a href="https://github.com/mobluse/aritmjs" target="_blank">github.com/mobluse/aritmjs</a> under mappen docs.`,
+        closeEsc: "Stäng (Esc)",
+        micDeniedApp: "Mikrofon nekad. Tillåt mikrofonåtkomst för webbappen i enhetens inställningar.",
+        micDeniedApple: "Apple tillåter tyvärr inte taligenkänning när appen startas från hemskärmen på iOS. Öppna appen i Safari om du vill använda röststyrning.",
+        micTimeout: "Kunde inte starta mikrofonen (timeout). Försök igen.",
+        micDeniedGeneric: "Mikrofon nekad."
+      },
+      en: {
+        all: "All",
+        startTraining: "START TRAINING",
+        aboutLicense: "About Aritm / License",
+        cancelEsc: "&nbsp;&nbsp;&nbsp;&nbsp;Cancel (Esc)",
+        speechOff: "🎤 Speech: Off",
+        speechOn: "🎤 Speech: On",
+        left: "Left: {count}&nbsp;&nbsp;&nbsp;&nbsp;",
+        answer: "ANSWER",
+        wellDone: "Well done!",
+        wrong: "Wrong!",
+        right: "Correct!",
+        cancelled: "Cancelled",
+        completedAll: "You have completed all tasks!",
+        finishedStats: "You did {types}. You have done {completed} of {total} and had {remaining} left.",
+        statsPerMin: "{speed} tasks/min",
+        continueEsc: "CONTINUE (Esc)",
+        newExerciseEnter: "NEW EXERCISE (Enter)",
+        aboutHeader: "About Aritm Hybrid",
+        aboutText: `<strong>Aritm Hybrid</strong><br>
+        Copyright © 2026 Mikael O. Bonnier, Lund, Sweden.<br><br>
+        This program is free software. You can redistribute it and/or modify 
+        it under the terms of the GNU General Public License, version 3 or later.<br><br>
+        License: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">gnu.org/licenses/gpl-3.0.html</a>.<br><br>
+        Source code: <a href="https://github.com/mobluse/aritmjs" target="_blank">github.com/mobluse/aritmjs</a> under the docs folder.`,
+        closeEsc: "Close (Esc)",
+        micDeniedApp: "Microphone denied. Allow microphone access for the web app in device settings.",
+        micDeniedApple: "Apple unfortunately does not allow speech recognition when the app is started from the home screen on iOS. Open the app in Safari if you want to use voice control.",
+        micTimeout: "Could not start microphone (timeout). Please try again.",
+        micDeniedGeneric: "Microphone denied."
+      }
+    };
+
+    function initTranslation() {
+      document.documentElement.lang = appLang;
+      const t = translations[appLang];
+
+      const btnQuickAll = document.getElementById('btn-quick-all');
+      if (btnQuickAll) btnQuickAll.innerText = t.all;
+
+      const btnStartTraining = document.getElementById('btn-start-training');
+      if (btnStartTraining) btnStartTraining.innerText = t.startTraining;
+
+      const btnToggleAbout = document.getElementById('btn-toggle-about');
+      if (btnToggleAbout) btnToggleAbout.innerText = t.aboutLicense;
+
+      const btnQuitText = document.getElementById('btn-quit-text');
+      if (btnQuitText) btnQuitText.innerHTML = t.cancelEsc;
+
+      const keyEnter = document.getElementById('key-enter');
+      if (keyEnter) keyEnter.innerText = t.answer;
+
+      const btnCloseAbout = document.getElementById('btn-close-about');
+      if (btnCloseAbout) btnCloseAbout.innerText = t.closeEsc;
+
+      const aboutTitle = document.getElementById('about-title');
+      if (aboutTitle) aboutTitle.innerText = t.aboutHeader;
+
+      const aboutTextContent = document.getElementById('about-text-content');
+      if (aboutTextContent) aboutTextContent.innerHTML = t.aboutText;
+      
+      const btnRestart = document.querySelector('#finish-view button[onclick="restartApp()"]');
+      if (btnRestart) btnRestart.innerText = t.newExerciseEnter;
+
+      const btnContinue = document.getElementById('btn-continue');
+      if (btnContinue) btnContinue.innerText = t.continueEsc;
+
+      updateMicUI();
+    }
 
     // --- START SVENSK TAL-TILL-SIFFRA LOGIK ---
     const swedishNumbers = {
@@ -300,6 +404,79 @@
       return null;
     }
     // --- SLUT SVENSK TAL-TILL-SIFFRA LOGIK ---
+
+    // --- START ENGELSK TAL-TILL-SIFFRA LOGIK ---
+    const englishNumbers = {
+      'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+      'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+      'eleven': 11, 'twelve': 12, 'thirteen': 13, 'fourteen': 14, 'fifteen': 15,
+      'sixteen': 16, 'seventeen': 17, 'eighteen': 18, 'nineteen': 19,
+      'twenty': 20, 'thirty': 30, 'forty': 40, 'fifty': 50,
+      'sixty': 60, 'seventy': 70, 'eighty': 80, 'ninety': 90
+    };
+
+    function parseSpokenEnglish(transcript) {
+      let clean = transcript.toLowerCase().replace(/[.,!?]/g, '').replace(/-/g, ' ').trim();
+      const isValid = (n) => !isNaN(n) && n >= 0 && n <= 99;
+      if (/\d/.test(clean)) {
+        let numStr = clean.replace(/\D/g, '');
+        let val = parseInt(numStr);
+        return isValid(val) ? val : null;
+      }
+      if (englishNumbers[clean] !== undefined) {
+          return englishNumbers[clean];
+      }
+      const parts = clean.split(/\s+/);
+      let numbers = [];
+      for (const p of parts) {
+          if (englishNumbers[p] !== undefined) {
+              numbers.push(englishNumbers[p]);
+          } else {
+              const tens = ['twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+              let found = false;
+              for (let t of tens) {
+                if (p.startsWith(t) && p.length > t.length) {
+                  const remainder = p.substring(t.length);
+                  if (englishNumbers[remainder] !== undefined) {
+                     numbers.push(englishNumbers[t] + englishNumbers[remainder]);
+                     found = true;
+                     break;
+                  }
+                }
+              }
+              if (!found && p === 'hundred') return null;
+          }
+      }
+      if (numbers.length === 0) return null;
+      if (numbers.length === 1) return isValid(numbers[0]) ? numbers[0] : null;
+
+      if (numbers.length === 2) {
+          const [a, b] = numbers;
+          if (a >= 20 && a <= 90 && a % 10 === 0 && b >= 0 && b <= 9) {
+              let val = a + b;
+              return isValid(val) ? val : null;
+          }
+          if (a >= 0 && a <= 9 && b >= 0 && b <= 9) {
+              let val = parseInt("" + a + b);
+              return isValid(val) ? val : null;
+          }
+      }
+      let allDigits = numbers.every(n => n >= 0 && n <= 9);
+      if (allDigits) {
+          let s = numbers.join('');
+          let val = parseInt(s);
+          return isValid(val) ? val : null;
+      }
+      return null;
+    }
+
+    function parseSpokenNumber(transcript) {
+      if (appLang === 'sv') {
+        return parseSpokenSwedish(transcript);
+      } else {
+        return parseSpokenEnglish(transcript);
+      }
+    }
 
     const Storage = {
       saveSettings: (s) => isCloud ? google.script.run.saveCloudSettings(JSON.stringify(s)) : localStorage.setItem('aritm_settings', JSON.stringify(s)),
@@ -422,7 +599,7 @@
       
       // 2. Create FRESH instance
       recognition = new SpeechRecognition();
-      recognition.lang = 'sv-SE';
+      recognition.lang = appLang === 'sv' ? 'sv-SE' : 'en-US';
       // Use continuous for Android/Desktop to avoid constant beeps. Keep single-shot for iOS stability.
       recognition.continuous = !isIOS; 
       recognition.interimResults = true;
@@ -481,7 +658,7 @@
              }
         }, 2500); // 2.5s clearance time
 
-        let numVal = parseSpokenSwedish(transcript);
+        let numVal = parseSpokenNumber(transcript);
         if (numVal !== null) {
            
            const inputEl = document.getElementById('answer-input');
@@ -535,9 +712,9 @@
            updateMicUI();
            const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
            if (isIOS && isStandalone) {
-               alert("Apple tillåter tyvärr inte taligenkänning när appen startas från hemskärmen på iOS. Öppna appen i Safari om du vill använda röststyrning.");
+               alert(translations[appLang].micDeniedApple);
            } else {
-               alert("Mikrofon nekad.");
+               alert(translations[appLang].micDeniedApp);
            }
         }
         // Ignore 'aborted', 'no-speech' - they are handled by loop
@@ -593,7 +770,8 @@
     }
 
     window.onload = () => {
-      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm 2.3";
+      initTranslation();
+      document.getElementById('app-title').innerText = isCloud ? "Aritm Cloud" : "Aritm SR";
       
       if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
          document.getElementById('btn-mic').classList.add('disabled');
@@ -625,7 +803,7 @@
        } else {
            const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
            if (isIOS && isStandalone) {
-               alert("Apple tillåter tyvärr inte taligenkänning när appen startas från hemskärmen på iOS. Öppna appen i Safari om du vill använda röststyrning.");
+               alert(translations[appLang].micDeniedApple);
                return;
            }
 
@@ -644,7 +822,7 @@
                    console.error("Microphone access denied:", err);
                    isListening = false;
                    updateMicUI();
-                   alert("Mikrofon nekad. Tillåt mikrofonåtkomst för webbappen i enhetens inställningar.");
+                   alert(translations[appLang].micDeniedApp);
                    return;
                }
            }
@@ -659,11 +837,12 @@
        const btn = document.getElementById('btn-mic');
        if (btn.classList.contains('disabled')) return;
        
+       const t = translations[appLang];
        if (isListening) {
-          btn.innerText = "🎤 Tal: På";
+          btn.innerText = t.speechOn;
           btn.classList.add('listening'); // Red (Waiting)
        } else {
-          btn.innerText = "🎤 Tal: Av";
+          btn.innerText = t.speechOff;
           btn.classList.remove('listening');
           btn.classList.remove('active-listening');
        }
@@ -704,13 +883,19 @@
         const durationMin = (Date.now() - startTime) / 60000;
         let speedText = "";
         if (initialTotal > 0 && durationMin > 0) {
-          let speed = (initialTotal / durationMin).toFixed(1).replace('.', ',');
-          speedText = speed.replace(',0', '') + " uppgifter/min";
+          let rawSpeed = (initialTotal / durationMin);
+          let speedVal = appLang === 'sv' ? rawSpeed.toFixed(1).replace('.', ',') : rawSpeed.toFixed(1);
+          speedText = translations[appLang].statsPerMin.replace('{speed}', speedVal.replace(appLang === 'sv' ? ',0' : '.0', ''));
         }
         
         const typesStr = currentSessionTypes.join(", ");
-        document.getElementById('finish-title').innerText = "Bra jobbat!";
-        document.getElementById('final-score').innerText = `Du gjorde ${typesStr}. Du har gjort ${initialTotal} av ${initialTotal} och hade 0 kvar.`;
+        const t = translations[appLang];
+        document.getElementById('finish-title').innerText = t.wellDone;
+        document.getElementById('final-score').innerText = t.finishedStats
+          .replace('{types}', typesStr)
+          .replace('{completed}', initialTotal)
+          .replace('{total}', initialTotal)
+          .replace('{remaining}', '0');
         document.getElementById('speed-stats').innerText = speedText; 
         document.getElementById('btn-continue').style.display = 'none';
         
@@ -744,10 +929,10 @@
       const f = document.getElementById('feedback');
       
       if (parseInt(input) === expected) {
-        isProcessing = true; f.innerText = "Rätt!"; f.className = "correct";
+        isProcessing = true; f.innerText = translations[appLang].right; f.className = "correct";
         setTimeout(() => { f.innerText = ""; isProcessing = false; nextProblem(); }, 400);
       } else {
-        f.innerText = "Fel! " + currentProblemStr + " = " + expected; f.className = "wrong";
+        f.innerText = translations[appLang].wrong + " " + currentProblemStr + " = " + expected; f.className = "wrong";
         playError();
         problemPool.push(currentProblemStr);
         Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime: startTime, initialTotal: initialTotal, types: currentSessionTypes});
@@ -762,9 +947,14 @@
       const remaining = problemPool.length + 1;
       const completed = initialTotal - remaining;
       const typesStr = currentSessionTypes.join(", ");
+      const t = translations[appLang];
 
-      document.getElementById('finish-title').innerText = "Avbruten";
-      document.getElementById('final-score').innerText = `Du gjorde ${typesStr}. Du har gjort ${completed} av ${initialTotal} och hade ${remaining} kvar.`;
+      document.getElementById('finish-title').innerText = t.cancelled;
+      document.getElementById('final-score').innerText = t.finishedStats
+        .replace('{types}', typesStr)
+        .replace('{completed}', completed)
+        .replace('{total}', initialTotal)
+        .replace('{remaining}', remaining);
       document.getElementById('speed-stats').innerText = ""; 
       
       stopListening();
@@ -780,7 +970,7 @@
     function restartApp() { Storage.clearProgress(); showView('setup-view'); }
     function updateUI() { 
       document.getElementById('problem-text').innerText = currentProblemStr; 
-      document.getElementById('count-left').innerHTML = "Kvar: " + (problemPool.length + 1) + "&nbsp;&nbsp;&nbsp;&nbsp;";
+      document.getElementById('count-left').innerHTML = translations[appLang].left.replace('{count}', problemPool.length + 1);
       document.getElementById('answer-input').value = "";
     }
 
