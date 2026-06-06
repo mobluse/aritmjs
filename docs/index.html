@@ -458,7 +458,7 @@
         setTimeout(() => { f.innerText = ""; isProcessing = false; nextProblem(); }, 400);
       } else {
         leftFloor = ''; rightFloor = '';
-        if (currentProblemStr.includes('/')) { leftFloor = '⌊'; rightFloor = '⌋'; }
+        if (currentProblemStr.includes('/')) { leftFloor = '⌊ '; rightFloor = ' ⌋'; }
         f.innerText = translations[appLang].wrong + " " + leftFloor + currentProblemStr + rightFloor + " = " + expected; f.className = "wrong";
         playError();
         problemPool.push(currentProblemStr);
@@ -495,7 +495,7 @@
     function restartApp() { Storage.clearProgress(); showView('setup-view'); }
     function updateUI() {
       leftFloor = ''; rightFloor = '';
-      if (currentProblemStr.includes('/')) { leftFloor = '⌊'; rightFloor = '⌋'; }
+      if (currentProblemStr.includes('/')) { leftFloor = '⌊ '; rightFloor = ' ⌋'; }
       document.getElementById('problem-text').innerText = leftFloor + currentProblemStr + rightFloor; 
       document.getElementById('count-left').innerHTML = translations[appLang].left.replace('{count}', problemPool.length + 1);
       document.getElementById('answer-input').value = "";
