@@ -445,6 +445,13 @@
       updateUI();
     }
 
+    function fixLooks(s) {
+      if (s.includes('/')) {
+        return '⌊ ' + s + ' ⌋'; 
+      }
+      return s;
+    }
+
     function submitAnswer() {
       if (isProcessing) return;
       const input = document.getElementById('answer-input').value;
@@ -457,9 +464,7 @@
         isProcessing = true; f.innerText = translations[appLang].right; f.className = "correct";
         setTimeout(() => { f.innerText = ""; isProcessing = false; nextProblem(); }, 400);
       } else {
-        leftFloor = ''; rightFloor = '';
-        if (currentProblemStr.includes('/')) { leftFloor = '⌊ '; rightFloor = ' ⌋'; }
-        f.innerText = translations[appLang].wrong + " " + leftFloor + currentProblemStr + rightFloor + " = " + expected; f.className = "wrong";
+        f.innerText = translations[appLang].wrong + " " + fixLooks(currentProblemStr) + " = " + expected; f.className = "wrong";
         playError();
         problemPool.push(currentProblemStr);
         Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime: startTime, initialTotal: initialTotal, types: currentSessionTypes});
@@ -494,9 +499,7 @@
     }
     function restartApp() { Storage.clearProgress(); showView('setup-view'); }
     function updateUI() {
-      leftFloor = ''; rightFloor = '';
-      if (currentProblemStr.includes('/')) { leftFloor = '⌊ '; rightFloor = ' ⌋'; }
-      document.getElementById('problem-text').innerText = leftFloor + currentProblemStr + rightFloor; 
+      document.getElementById('problem-text').innerText = fixLooks(currentProblemStr); 
       document.getElementById('count-left').innerHTML = translations[appLang].left.replace('{count}', problemPool.length + 1);
       document.getElementById('answer-input').value = "";
     }
