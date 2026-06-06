@@ -934,7 +934,9 @@
         isProcessing = true; f.innerText = translations[appLang].right; f.className = "correct";
         setTimeout(() => { f.innerText = ""; isProcessing = false; nextProblem(); }, 400);
       } else {
-        f.innerText = translations[appLang].wrong + " " + currentProblemStr + " = " + expected; f.className = "wrong";
+        leftFloor = ''; rightFloor = '';
+        if (currentProblemStr.includes('/')) { leftFloor = '⌊ '; rightFloor = ' ⌋'; }
+        f.innerText = translations[appLang].wrong + " " + leftFloor + currentProblemStr + rightFloor + " = " + expected; f.className = "wrong";
         playError();
         problemPool.push(currentProblemStr);
         Storage.saveProgress({pool: problemPool, current: currentProblemStr, startTime: startTime, initialTotal: initialTotal, types: currentSessionTypes});
@@ -971,7 +973,9 @@
     }
     function restartApp() { Storage.clearProgress(); showView('setup-view'); }
     function updateUI() { 
-      document.getElementById('problem-text').innerText = currentProblemStr; 
+      leftFloor = ''; rightFloor = '';
+      if (currentProblemStr.includes('/')) { leftFloor = '⌊ '; rightFloor = ' ⌋'; }
+      document.getElementById('problem-text').innerText = leftFloor + currentProblemStr + rightFloor;
       document.getElementById('count-left').innerHTML = translations[appLang].left.replace('{count}', problemPool.length + 1);
       document.getElementById('answer-input').value = "";
     }
