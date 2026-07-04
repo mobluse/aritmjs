@@ -118,7 +118,7 @@
 
   <div id="setup-view" style="display: flex;">
     <div class="container">
-      <h2 id="app-title">Aritm 2.3</h2>
+      <h2 id="app-title">Aritm</h2>
       <div class="type-grid">
         <label class="type-option"><input type="checkbox" value="add1" checked> Add 1</label>
         <label class="type-option"><input type="checkbox" value="add2"> Add 2</label>
@@ -194,7 +194,13 @@
 
   <script>
     const isCloud = (typeof google !== 'undefined' && google.script);
-    const appLang = (navigator.language || 'en').startsWith('sv') ? 'sv' : 'en';
+    const getAppLang = () => {
+      const lang = navigator.language || 'en';
+      if (lang.startsWith('sv')) return 'sv';
+      if (lang.startsWith('de')) return 'de';
+      return 'en';
+    };
+    const appLang = getAppLang();
 
     // --- TRANSLATION DATA ---
     const translations = {
@@ -222,6 +228,30 @@
         Licens: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">gnu.org/licenses/gpl-3.0.html</a>.<br><br>
         Källkod: <a href="https://github.com/mobluse/aritmjs" target="_blank">github.com/mobluse/aritmjs</a> under mappen docs.`,
         closeEsc: "Stäng (Esc)"
+      },
+      de: {
+        all: "Alle",
+        startTraining: "TRAINING STARTEN",
+        aboutLicense: "Über Aritm / Lizenz",
+        cancelEsc: "&nbsp;&nbsp;&nbsp;&nbsp;Abbrechen (Esc)",
+        left: "Übrig: {count}&nbsp;&nbsp;&nbsp;&nbsp;",
+        answer: "ANTWORT",
+        wellDone: "Gut gemacht!",
+        wrong: "Falsch!",
+        right: "Richtig!",
+        cancelled: "Abgebrochen",
+        completedAll: "Du hast alle Aufgaben gelöst!",
+        finishedStats: "Du hast {types} gemacht. Du hast {completed} von {total} gelöst und hattest noch {remaining} übrig.",
+        statsPerMin: "{speed} Aufgaben/Min.",
+        continueEsc: "WEITER (Esc)",
+        newExerciseEnter: "NEUE ÜBUNG (Enter)",
+        aboutHeader: "Über Aritm Hybrid",
+        aboutText: `<strong>Aritm Hybrid</strong><br>
+        Copyright © 2026 Mikael O. Bonnier, Lund, Sweden.<br><br>
+        Dieses Programm ist freie Software. Sie können es unter den Bedingungen der GNU General Public License, Version 3 oder einer späteren Version, weiterverteilen und/oder modifizieren.<br><br>
+        Lizenz: <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">gnu.org/licenses/gpl-3.0.html</a>.<br><br>
+        Quellcode: <a href="https://github.com/mobluse/aritmjs" target="_blank">github.com/mobluse/aritmjs</a> unter dem Ordner docs.`,
+        closeEsc: "Schließen (Esc)"
       },
       en: {
         all: "All",
@@ -423,8 +453,9 @@
         let speedText = "";
         if (initialTotal > 0 && durationMin > 0) {
           let rawSpeed = (initialTotal / durationMin);
-          let speedVal = appLang === 'sv' ? rawSpeed.toFixed(1).replace('.', ',') : rawSpeed.toFixed(1);
-          speedText = translations[appLang].statsPerMin.replace('{speed}', speedVal.replace(appLang === 'sv' ? ',0' : '.0', ''));
+          const useComma = (appLang === 'sv' || appLang === 'de');
+          let speedVal = useComma ? rawSpeed.toFixed(1).replace('.', ',') : rawSpeed.toFixed(1);
+          speedText = translations[appLang].statsPerMin.replace('{speed}', speedVal.replace(useComma ? ',0' : '.0', ''));
         }
         
         const typesStr = currentSessionTypes.join(", ");
@@ -498,7 +529,7 @@
       showView('game-view'); 
     }
     function restartApp() { Storage.clearProgress(); showView('setup-view'); }
-    function updateUI() {
+    function updateUI() { 
       document.getElementById('problem-text').innerText = fixLooks(currentProblemStr); 
       document.getElementById('count-left').innerHTML = translations[appLang].left.replace('{count}', problemPool.length + 1);
       document.getElementById('answer-input').value = "";
